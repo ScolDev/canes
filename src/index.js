@@ -1,1 +1,1 @@
-console.log('canes works!')
+export default 1
