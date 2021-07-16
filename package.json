@@ -9,7 +9,9 @@
     "test": "jest"
   },
   "standard": {
-    "env": ["jest"]
+    "env": [
+      "jest"
+    ]
   },
   "jest": {
     "collectCoverage": true,
