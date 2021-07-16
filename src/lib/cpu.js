@@ -1,6 +1,7 @@
 import CPU_FLAGS from './cpu-flags'
 import CPU_REGISTERS from './cpu-registers'
 import CPU_ADDRESSING_MODES from './cpu-addressing-modes'
+import CPU_MEMORY_MAP from './cpu-mempry-map'
 
 export default () => {
   const MEM = Array(0xffff).fill(0x00)
@@ -30,7 +31,14 @@ export default () => {
       return REG.A
     } else if (addressingMode === CPU_ADDRESSING_MODES.Immediate) {
       return operand & 0xff
+    } else if (addressingMode === CPU_ADDRESSING_MODES.ZeroPage) {
+      return MEM[CPU_MEMORY_MAP.ZeroPage + (operand & 0xff)]
     }
+  }
+
+  const putMemoryValue = (memoryAddress, memoryValue) => {
+    memoryAddress &= 0xffff
+    MEM[memoryAddress] = memoryValue & 0xff
   }
 
   return {
@@ -38,6 +46,7 @@ export default () => {
     REG,
     getFlag,
     getValue,
-    setRegister
+    setRegister,
+    putMemoryValue
   }
 }

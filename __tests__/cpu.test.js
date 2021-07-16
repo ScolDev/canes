@@ -2,6 +2,7 @@ import CPU from '../src/lib/cpu'
 import CPU_REGISTERS from '../src/lib/cpu-registers'
 import CPU_FLAGS from '../src/lib/cpu-flags'
 import CPU_ADDRESSING_MODES from '../src/lib/cpu-addressing-modes'
+import CPU_MEMORY_MAP from '../src/lib/cpu-mempry-map'
 
 describe('Tests for CPU module.', () => {
   let cpu
@@ -160,5 +161,16 @@ describe('Tests for CPU module.', () => {
     const value = cpu.getValue(CPU_ADDRESSING_MODES.Immediate, immediateValue)
 
     expect(value).toBe(immediateValue)
+  })
+
+  test('should get data from Zero Page addressing mode.', () => {
+    const memoryValue = 0x78
+    const zeroPageOffset = 0x10
+    const memoryAddress = CPU_MEMORY_MAP.ZeroPage + zeroPageOffset
+    cpu.putMemoryValue(memoryAddress, memoryValue)
+
+    const value = cpu.getValue(CPU_ADDRESSING_MODES.ZeroPage, zeroPageOffset)
+
+    expect(value).toBe(memoryValue)
   })
 })
