@@ -154,4 +154,11 @@ describe('Tests for CPU module.', () => {
 
     expect(value).toBe(acumulatorValue)
   })
+
+  test('should get data from Immediate addressing mode.', () => {
+    const immediateValue = 0xab
+    const value = cpu.getValue(CPU_ADDRESSING_MODES.Immediate, immediateValue)
+
+    expect(value).toBe(immediateValue)
+  })
 })

@@ -25,9 +25,11 @@ export default () => {
     }
   }
 
-  const getValue = (addressingMode) => {
+  const getValue = (addressingMode, operand) => {
     if (addressingMode === CPU_ADDRESSING_MODES.Acumulator) {
       return REG.A
+    } else if (addressingMode === CPU_ADDRESSING_MODES.Immediate) {
+      return operand & 0xff
     }
   }
 
