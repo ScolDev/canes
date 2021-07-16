@@ -1,5 +1,6 @@
 import CPU_FLAGS from './cpu-flags'
 import CPU_REGISTERS from './cpu-registers'
+import CPU_ADDRESSING_MODES from './cpu-addressing-modes'
 
 export default () => {
   const MEM = Array(0xffff).fill(0x00)
@@ -24,10 +25,17 @@ export default () => {
     }
   }
 
+  const getValue = (addressingMode) => {
+    if (addressingMode === CPU_ADDRESSING_MODES.Acumulator) {
+      return REG.A
+    }
+  }
+
   return {
     MEM,
     REG,
     getFlag,
+    getValue,
     setRegister
   }
 }

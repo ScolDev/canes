@@ -1,6 +1,7 @@
 import CPU from '../src/lib/cpu'
 import CPU_REGISTERS from '../src/lib/cpu-registers'
 import CPU_FLAGS from '../src/lib/cpu-flags'
+import CPU_ADDRESSING_MODES from '../src/lib/cpu-addressing-modes'
 
 describe('Tests for CPU module.', () => {
   let cpu
@@ -129,5 +130,28 @@ describe('Tests for CPU module.', () => {
     expect(cpu.getFlag(CPU_FLAGS.BreakCommand)).toBe(0)
     expect(cpu.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
     expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
+
+  test('should set the P register with 1 and 0 values in the status flags.', () => {
+    const value = 0b10101010
+    cpu.setRegister(CPU_REGISTERS.P, value)
+
+    expect(cpu.REG.P).toBe(0b10101010)
+
+    expect(cpu.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
+    expect(cpu.getFlag(CPU_FLAGS.InterruptDisable)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.BreakCommand)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+  })
+
+  test('should get data from Acumulator addressing mode.', () => {
+    const acumulatorValue = 0xab
+    cpu.setRegister(CPU_REGISTERS.A, acumulatorValue)
+
+    const value = cpu.getValue(CPU_ADDRESSING_MODES.Acumulator)
+
+    expect(value).toBe(acumulatorValue)
   })
 })
