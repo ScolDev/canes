@@ -201,4 +201,18 @@ describe('Tests for CPU module.', () => {
 
     expect(value).toBe(memoryValue)
   })
+
+  test('should get data from Relative addressing mode with negative operand.', () => {
+    const signedValue = 0xff
+
+    const value = cpu.getValue(CPU_ADDRESSING_MODES.Relative, signedValue)
+    expect(value).toBe(-1)
+  })
+
+  test('should get data from Relative addressing mode with positive operand.', () => {
+    const signedValue = 0x7f
+
+    const value = cpu.getValue(CPU_ADDRESSING_MODES.Relative, signedValue)
+    expect(value).toBe(127)
+  })
 })

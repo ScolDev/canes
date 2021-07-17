@@ -2,6 +2,7 @@ import CPU_FLAGS from './cpu-flags'
 import CPU_REGISTERS from './cpu-registers'
 import CPU_ADDRESSING_MODES from './cpu-addressing-modes'
 import CPU_MEMORY_MAP from './cpu-mempry-map'
+import CPU_ALU from './cpu-alu'
 
 export default () => {
   const MEM = Array(0xffff).fill(0x00)
@@ -37,6 +38,8 @@ export default () => {
       return MEM[CPU_MEMORY_MAP.ZeroPage + ((REG.X + operand) & 0xff)]
     } else if (addressingMode === CPU_ADDRESSING_MODES.ZeroPageY) {
       return MEM[CPU_MEMORY_MAP.ZeroPage + ((REG.Y + operand) & 0xff)]
+    } else if (addressingMode === CPU_ADDRESSING_MODES.Relative) {
+      return CPU_ALU.signedByte(operand)
     }
   }
 
