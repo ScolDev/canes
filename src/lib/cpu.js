@@ -35,6 +35,8 @@ export default () => {
       return MEM[CPU_MEMORY_MAP.ZeroPage + (operand & 0xff)]
     } else if (addressingMode === CPU_ADDRESSING_MODES.ZeroPageX) {
       return MEM[CPU_MEMORY_MAP.ZeroPage + ((REG.X + operand) & 0xff)]
+    } else if (addressingMode === CPU_ADDRESSING_MODES.ZeroPageY) {
+      return MEM[CPU_MEMORY_MAP.ZeroPage + ((REG.Y + operand) & 0xff)]
     }
   }
 

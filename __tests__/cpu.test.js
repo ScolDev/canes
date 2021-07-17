@@ -187,4 +187,18 @@ describe('Tests for CPU module.', () => {
 
     expect(value).toBe(memoryValue)
   })
+
+  test('should get data from Zero Page, Y addressing mode.', () => {
+    const memoryValue = 0xd7
+    const registerYValue = 0xff
+    const zeroPageOffset = 0x86
+    const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((zeroPageOffset + registerYValue) & 0xff)
+
+    cpu.setRegister(CPU_REGISTERS.Y, registerYValue)
+    cpu.putMemoryValue(memoryAddress, memoryValue)
+
+    const value = cpu.getValue(CPU_ADDRESSING_MODES.ZeroPageY, zeroPageOffset)
+
+    expect(value).toBe(memoryValue)
+  })
 })
