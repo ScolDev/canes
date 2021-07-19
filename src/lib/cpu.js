@@ -40,6 +40,8 @@ export default () => {
       return MEM[CPU_MEMORY_MAP.ZeroPage + ((REG.Y + operand) & 0xff)]
     } else if (addressingMode === CPU_ADDRESSING_MODES.Relative) {
       return CPU_ALU.signedByte(operand)
+    } else if (addressingMode === CPU_ADDRESSING_MODES.Absolute) {
+      return operand & 0xffff
     }
   }
 

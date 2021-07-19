@@ -215,4 +215,11 @@ describe('Tests for CPU module.', () => {
     const value = cpu.getValue(CPU_ADDRESSING_MODES.Relative, signedValue)
     expect(value).toBe(127)
   })
+
+  test('should get data from Absolute addressing mode.', () => {
+    const absoluteaValue = 0xabcd
+
+    const value = cpu.getValue(CPU_ADDRESSING_MODES.Absolute, absoluteaValue)
+    expect(value).toBe(0xabcd)
+  })
 })
