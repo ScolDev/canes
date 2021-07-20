@@ -7,5 +7,6 @@ export default {
   Relative: 5,
   Absolute: 6,
   AbsoluteX: 7,
-  AbsoluteY: 8
+  AbsoluteY: 8,
+  Indirect: 9
 }

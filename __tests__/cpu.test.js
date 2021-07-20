@@ -3,6 +3,7 @@ import CPU_REGISTERS from '../src/lib/cpu-registers'
 import CPU_FLAGS from '../src/lib/cpu-flags'
 import CPU_ADDRESSING_MODES from '../src/lib/cpu-addressing-modes'
 import CPU_MEMORY_MAP from '../src/lib/cpu-mempry-map'
+import CPU_DATA_SIZE from '../src/lib/cpu-data-size'
 
 describe('Tests for CPU module.', () => {
   let cpu
@@ -237,5 +238,18 @@ describe('Tests for CPU module.', () => {
     cpu.setRegister(CPU_REGISTERS.Y, 0xff)
     const value = cpu.getValue(CPU_ADDRESSING_MODES.AbsoluteY, absoluteaValue)
     expect(value).toBe(0x0001f)
+  })
+
+  test('should get data from Indirect addressing mode.', () => {
+    const memoryAddress = 0xabcde
+    cpu.putMemoryValue(memoryAddress, 0xabcd, CPU_DATA_SIZE.Word)
+
+    const LSB = cpu.getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
+    const MSB = cpu.getMemoryValue(memoryAddress + 1, CPU_DATA_SIZE.Byte)
+    const addressValue = cpu.getMemoryValue(memoryAddress, CPU_DATA_SIZE.Word)
+
+    expect(LSB).toBe(0xcd)
+    expect(MSB).toBe(0xab)
+    expect(addressValue).toBe(0xabcd)
   })
 })

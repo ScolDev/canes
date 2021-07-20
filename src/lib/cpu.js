@@ -1,8 +1,8 @@
-import CPU_FLAGS from './cpu-flags'
 import CPU_REGISTERS from './cpu-registers'
 import CPU_ADDRESSING_MODES from './cpu-addressing-modes'
 import CPU_MEMORY_MAP from './cpu-mempry-map'
 import CPU_ALU from './cpu-alu'
+import CPU_DATA_SIZE from './cpu-data-size'
 
 export default () => {
   const MEM = Array(0xffff).fill(0x00)
@@ -46,12 +46,28 @@ export default () => {
       return (operand + REG.X) & 0xffff
     } else if (addressingMode === CPU_ADDRESSING_MODES.AbsoluteY) {
       return (operand + REG.Y) & 0xffff
+    } else if (addressingMode === CPU_ADDRESSING_MODES.Indirect) {
+      return getMemoryValue(operand, CPU_DATA_SIZE.Word)
     }
   }
 
-  const putMemoryValue = (memoryAddress, memoryValue) => {
+  const getMemoryValue = (memoryAddress, dataSize) => {
+    memoryAddress &= 0xffff
+
+    if (dataSize === CPU_DATA_SIZE.Byte) {
+      return MEM[memoryAddress]
+    }
+
+    return MEM[memoryAddress] + (MEM[memoryAddress + 1] << 8)
+  }
+
+  const putMemoryValue = (memoryAddress, memoryValue, dataSize) => {
     memoryAddress &= 0xffff
     MEM[memoryAddress] = memoryValue & 0xff
+
+    if (dataSize === CPU_DATA_SIZE.Word) {
+      MEM[memoryAddress + 1] = (memoryValue & 0xff00) >> 8
+    }
   }
 
   return {
@@ -60,6 +76,7 @@ export default () => {
     getFlag,
     getValue,
     setRegister,
+    getMemoryValue,
     putMemoryValue
   }
 }
