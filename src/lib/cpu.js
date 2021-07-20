@@ -42,6 +42,8 @@ export default () => {
       return CPU_ALU.signedByte(operand)
     } else if (addressingMode === CPU_ADDRESSING_MODES.Absolute) {
       return operand & 0xffff
+    } else if (addressingMode === CPU_ADDRESSING_MODES.AbsoluteX) {
+      return (operand + REG.X) & 0xffff
     }
   }
 
