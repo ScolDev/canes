@@ -33,11 +33,14 @@ export default () => {
     } else if (addressingMode === CPU_ADDRESSING_MODES.Immediate) {
       return operand & 0xff
     } else if (addressingMode === CPU_ADDRESSING_MODES.ZeroPage) {
-      return MEM[CPU_MEMORY_MAP.ZeroPage + (operand & 0xff)]
+      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + (operand & 0xff)
+      return getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
     } else if (addressingMode === CPU_ADDRESSING_MODES.ZeroPageX) {
-      return MEM[CPU_MEMORY_MAP.ZeroPage + ((REG.X + operand) & 0xff)]
+      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((REG.X + operand) & 0xff)
+      return getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
     } else if (addressingMode === CPU_ADDRESSING_MODES.ZeroPageY) {
-      return MEM[CPU_MEMORY_MAP.ZeroPage + ((REG.Y + operand) & 0xff)]
+      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((REG.Y + operand) & 0xff)
+      return getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
     } else if (addressingMode === CPU_ADDRESSING_MODES.Relative) {
       return CPU_ALU.signedByte(operand)
     } else if (addressingMode === CPU_ADDRESSING_MODES.Absolute) {
