@@ -44,6 +44,8 @@ export default () => {
       return operand & 0xffff
     } else if (addressingMode === CPU_ADDRESSING_MODES.AbsoluteX) {
       return (operand + REG.X) & 0xffff
+    } else if (addressingMode === CPU_ADDRESSING_MODES.AbsoluteY) {
+      return (operand + REG.Y) & 0xffff
     }
   }
 

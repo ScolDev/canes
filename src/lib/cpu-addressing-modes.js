@@ -6,5 +6,6 @@ export default {
   ZeroPageY: 4,
   Relative: 5,
   Absolute: 6,
-  AbsoluteX: 7
+  AbsoluteX: 7,
+  AbsoluteY: 8
 }
