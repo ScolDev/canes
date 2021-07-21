@@ -242,14 +242,14 @@ describe('Tests for CPU module.', () => {
 
   test('should get data from Indirect addressing mode.', () => {
     const memoryAddress = 0xabcde
-    cpu.putMemoryValue(memoryAddress, 0xabcd, CPU_DATA_SIZE.Word)
+    cpu.putMemoryValue(memoryAddress, 0x1234, CPU_DATA_SIZE.Word)
 
     const LSB = cpu.getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
     const MSB = cpu.getMemoryValue(memoryAddress + 1, CPU_DATA_SIZE.Byte)
-    const addressValue = cpu.getMemoryValue(memoryAddress, CPU_DATA_SIZE.Word)
+    const addressValue = cpu.getValue(CPU_ADDRESSING_MODES.Indirect, memoryAddress)
 
-    expect(LSB).toBe(0xcd)
-    expect(MSB).toBe(0xab)
-    expect(addressValue).toBe(0xabcd)
+    expect(LSB).toBe(0x34)
+    expect(MSB).toBe(0x12)
+    expect(addressValue).toBe(0x1234)
   })
 })
