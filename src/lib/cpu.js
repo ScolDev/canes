@@ -28,29 +28,32 @@ export default () => {
   }
 
   const getValue = (addressingMode, operand) => {
-    if (addressingMode === CPU_ADDRESSING_MODES.Acumulator) {
-      return REG.A
-    } else if (addressingMode === CPU_ADDRESSING_MODES.Immediate) {
-      return operand & 0xff
-    } else if (addressingMode === CPU_ADDRESSING_MODES.ZeroPage) {
-      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + (operand & 0xff)
-      return getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
-    } else if (addressingMode === CPU_ADDRESSING_MODES.ZeroPageX) {
-      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((REG.X + operand) & 0xff)
-      return getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
-    } else if (addressingMode === CPU_ADDRESSING_MODES.ZeroPageY) {
-      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((REG.Y + operand) & 0xff)
-      return getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
-    } else if (addressingMode === CPU_ADDRESSING_MODES.Relative) {
-      return CPU_ALU.signedByte(operand)
-    } else if (addressingMode === CPU_ADDRESSING_MODES.Absolute) {
-      return operand & 0xffff
-    } else if (addressingMode === CPU_ADDRESSING_MODES.AbsoluteX) {
-      return (operand + REG.X) & 0xffff
-    } else if (addressingMode === CPU_ADDRESSING_MODES.AbsoluteY) {
-      return (operand + REG.Y) & 0xffff
-    } else if (addressingMode === CPU_ADDRESSING_MODES.Indirect) {
-      return getMemoryValue(operand, CPU_DATA_SIZE.Word)
+    let memoryAddress = 0x0
+
+    switch (addressingMode) {
+      case CPU_ADDRESSING_MODES.Acumulator:
+        return REG.A
+      case CPU_ADDRESSING_MODES.Immediate:
+        return operand & 0xff
+      case CPU_ADDRESSING_MODES.ZeroPage:
+        memoryAddress = CPU_MEMORY_MAP.ZeroPage + (operand & 0xff)
+        return getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
+      case CPU_ADDRESSING_MODES.ZeroPageX:
+        memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((REG.X + operand) & 0xff)
+        return getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
+      case CPU_ADDRESSING_MODES.ZeroPageY:
+        memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((REG.Y + operand) & 0xff)
+        return getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
+      case CPU_ADDRESSING_MODES.Relative:
+        return CPU_ALU.signedByte(operand)
+      case CPU_ADDRESSING_MODES.Absolute:
+        return operand & 0xffff
+      case CPU_ADDRESSING_MODES.AbsoluteX:
+        return (operand + REG.X) & 0xff
+      case CPU_ADDRESSING_MODES.AbsoluteY:
+        return (operand + REG.Y) & 0xff
+      case CPU_ADDRESSING_MODES.Indirect:
+        return getMemoryValue(operand, CPU_DATA_SIZE.Word)
     }
   }
 
