@@ -8,5 +8,6 @@ export default {
   Absolute: 6,
   AbsoluteX: 7,
   AbsoluteY: 8,
-  Indirect: 9
+  Indirect: 9,
+  IndexedIndirect: 10
 }

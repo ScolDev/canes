@@ -29,6 +29,7 @@ export default () => {
 
   const getValue = (addressingMode, operand) => {
     let memoryAddress = 0x0
+    let zeroPageOffset = 0x0
 
     switch (addressingMode) {
       case CPU_ADDRESSING_MODES.Acumulator:
@@ -54,6 +55,10 @@ export default () => {
         return (operand + REG.Y) & 0xff
       case CPU_ADDRESSING_MODES.Indirect:
         return getMemoryValue(operand, CPU_DATA_SIZE.Word)
+      case CPU_ADDRESSING_MODES.IndexedIndirect:
+        zeroPageOffset = (operand + REG.X) & 0xff
+        memoryAddress = getMemoryValue(zeroPageOffset, CPU_DATA_SIZE.Word)
+        return getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
     }
   }
 
