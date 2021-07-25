@@ -273,12 +273,13 @@ describe('Tests for CPU module.', () => {
 
   test('should get data from Indexed Indirect (d, x) addressing mode with Zero Page overflow.', () => {
     const memoryAddress = 0x8000
-    const xRegistervalue = 0x30
-    const zeroPageOffset = 0xf0
+    const xRegistervalue = 0x00
+    const zeroPageOffset = 0xff
 
     cpu.setRegister(CPU_REGISTERS.X, xRegistervalue)
     cpu.putMemoryValue(memoryAddress, 0xcd, CPU_DATA_SIZE.Byte)
-    cpu.putMemoryValue((zeroPageOffset + xRegistervalue) & 0xff, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.putMemoryValue(zeroPageOffset, 0x00, CPU_DATA_SIZE.Byte)
+    cpu.putMemoryValue((zeroPageOffset + 1) & 0xff, 0x80, CPU_DATA_SIZE.Byte)
 
     const memoryValue = cpu.getValue(CPU_ADDRESSING_MODES.IndexedIndirect, zeroPageOffset)
     expect(memoryValue).toBe(0xcd)
