@@ -59,6 +59,10 @@ export default () => {
         zeroPageOffset = (operand + REG.X) & 0xff
         memoryAddress = getMemoryValue(zeroPageOffset, CPU_DATA_SIZE.Word)
         return getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
+      case CPU_ADDRESSING_MODES.IndirectIndexed:
+        memoryAddress = getMemoryValue(operand, CPU_DATA_SIZE.Byte) +
+                        getMemoryValue((operand + 1) & 0xff, CPU_DATA_SIZE.Byte) << 8
+        return getMemoryValue(memoryAddress + REG.Y, CPU_DATA_SIZE.Byte)
     }
   }
 

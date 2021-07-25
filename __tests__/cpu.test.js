@@ -283,4 +283,31 @@ describe('Tests for CPU module.', () => {
     const memoryValue = cpu.getValue(CPU_ADDRESSING_MODES.IndexedIndirect, zeroPageOffset)
     expect(memoryValue).toBe(0xcd)
   })
+
+  test('should get data from Indirect Indexed (d), y addressing mode.', () => {
+    const yRegisterValue = 0x05
+    const zeroPagevalue = 0x8000
+    const zeroPageOffset = 0x10
+
+    cpu.setRegister(CPU_REGISTERS.Y, yRegisterValue)
+    cpu.putMemoryValue(zeroPageOffset, zeroPagevalue, CPU_DATA_SIZE.Word)
+    cpu.putMemoryValue(zeroPagevalue + yRegisterValue, 0xab, CPU_DATA_SIZE.Byte)
+
+    const memoryValue = cpu.getValue(CPU_ADDRESSING_MODES.IndirectIndexed, zeroPageOffset)
+    expect(memoryValue).toBe(0xab)
+  })
+
+  test('should get data from Indirect Indexed (d), y addressing mode with Zero Page overflow.', () => {
+    const yRegisterValue = 0x05
+    const zeroPagevalue = 0x8000
+    const zeroPageOffset = 0xff
+
+    cpu.setRegister(CPU_REGISTERS.Y, yRegisterValue)
+    cpu.putMemoryValue(zeroPageOffset, 0x00, CPU_DATA_SIZE.Byte)
+    cpu.putMemoryValue(0x00, 0x80, CPU_DATA_SIZE.Byte)
+    cpu.putMemoryValue(zeroPagevalue + yRegisterValue, 0xab, CPU_DATA_SIZE.Byte)
+
+    const memoryValue = cpu.getValue(CPU_ADDRESSING_MODES.IndirectIndexed, zeroPageOffset)
+    expect(memoryValue).toBe(0xab)
+  })
 })
