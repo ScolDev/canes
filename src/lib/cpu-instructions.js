@@ -1,4 +1,4 @@
-import CPU_ADDRESSING_MODES from './cpu-addressing-modes'
+import CPU_ADDRESSING_MODES from './cpu-consts/cpu-addressing-modes'
 
 export default (cpu) => {
   const executeAND = (operand) => {

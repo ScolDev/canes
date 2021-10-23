@@ -1,8 +1,8 @@
-import CPU_REGISTERS from './cpu-registers'
-import CPU_ADDRESSING_MODES from './cpu-addressing-modes'
-import CPU_MEMORY_MAP from './cpu-mempry-map'
+import CPU_REGISTERS from './cpu-consts/cpu-registers'
+import CPU_ADDRESSING_MODES from './cpu-consts/cpu-addressing-modes'
+import CPU_MEMORY_MAP from './cpu-consts/cpu-mempry-map'
+import CPU_DATA_SIZE from './cpu-consts/cpu-data-size'
 import CPU_ALU from './cpu-alu'
-import CPU_DATA_SIZE from './cpu-data-size'
 import CPU_INSTRUCTIONS from './cpu-instructions'
 
 export default (instructions) => {
