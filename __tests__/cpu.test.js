@@ -1,10 +1,10 @@
 import CPU from '../src/lib/cpu'
 
-import CPU_REGISTERS from '../src/lib/cpu-registers'
-import CPU_FLAGS from '../src/lib/cpu-flags'
-import CPU_ADDRESSING_MODES from '../src/lib/cpu-addressing-modes'
-import CPU_MEMORY_MAP from '../src/lib/cpu-mempry-map'
-import CPU_DATA_SIZE from '../src/lib/cpu-data-size'
+import CPU_REGISTERS from '../src/lib/cpu-consts/cpu-registers'
+import CPU_FLAGS from '../src/lib/cpu-consts/cpu-flags'
+import CPU_ADDRESSING_MODES from '../src/lib/cpu-consts/cpu-addressing-modes'
+import CPU_MEMORY_MAP from '../src/lib/cpu-consts/cpu-mempry-map'
+import CPU_DATA_SIZE from '../src/lib/cpu-consts/cpu-data-size'
 
 describe('Tests for CPU module.', () => {
   let cpu
