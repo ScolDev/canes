@@ -1,4 +1,5 @@
 import CPU from '../src/lib/cpu'
+
 import CPU_REGISTERS from '../src/lib/cpu-registers'
 import CPU_FLAGS from '../src/lib/cpu-flags'
 import CPU_ADDRESSING_MODES from '../src/lib/cpu-addressing-modes'
@@ -152,14 +153,14 @@ describe('Tests for CPU module.', () => {
     const acumulatorValue = 0xab
     cpu.setRegister(CPU_REGISTERS.A, acumulatorValue)
 
-    const value = cpu.getValue(CPU_ADDRESSING_MODES.Acumulator)
+    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.Acumulator)
 
     expect(value).toBe(acumulatorValue)
   })
 
   test('should get data from Immediate addressing mode.', () => {
     const immediateValue = 0xab
-    const value = cpu.getValue(CPU_ADDRESSING_MODES.Immediate, immediateValue)
+    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.Immediate, immediateValue)
 
     expect(value).toBe(immediateValue)
   })
@@ -170,7 +171,7 @@ describe('Tests for CPU module.', () => {
     const memoryAddress = CPU_MEMORY_MAP.ZeroPage + zeroPageOffset
     cpu.putMemoryValue(memoryAddress, memoryValue)
 
-    const value = cpu.getValue(CPU_ADDRESSING_MODES.ZeroPage, zeroPageOffset)
+    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPage, zeroPageOffset)
 
     expect(value).toBe(memoryValue)
   })
@@ -184,7 +185,7 @@ describe('Tests for CPU module.', () => {
     cpu.setRegister(CPU_REGISTERS.X, registerXValue)
     cpu.putMemoryValue(memoryAddress, memoryValue)
 
-    const value = cpu.getValue(CPU_ADDRESSING_MODES.ZeroPageX, zeroPageOffset)
+    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, zeroPageOffset)
 
     expect(value).toBe(memoryValue)
   })
@@ -198,7 +199,7 @@ describe('Tests for CPU module.', () => {
     cpu.setRegister(CPU_REGISTERS.Y, registerYValue)
     cpu.putMemoryValue(memoryAddress, memoryValue)
 
-    const value = cpu.getValue(CPU_ADDRESSING_MODES.ZeroPageY, zeroPageOffset)
+    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageY, zeroPageOffset)
 
     expect(value).toBe(memoryValue)
   })
@@ -206,21 +207,21 @@ describe('Tests for CPU module.', () => {
   test('should get data from Relative addressing mode with negative operand.', () => {
     const signedValue = 0xff
 
-    const value = cpu.getValue(CPU_ADDRESSING_MODES.Relative, signedValue)
+    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.Relative, signedValue)
     expect(value).toBe(-1)
   })
 
   test('should get data from Relative addressing mode with positive operand.', () => {
     const signedValue = 0x7f
 
-    const value = cpu.getValue(CPU_ADDRESSING_MODES.Relative, signedValue)
+    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.Relative, signedValue)
     expect(value).toBe(127)
   })
 
   test('should get data from Absolute addressing mode.', () => {
     const absoluteaValue = 0xabcd
 
-    const value = cpu.getValue(CPU_ADDRESSING_MODES.Absolute, absoluteaValue)
+    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.Absolute, absoluteaValue)
     expect(value).toBe(0xabcd)
   })
 
@@ -228,7 +229,7 @@ describe('Tests for CPU module.', () => {
     const absoluteaValue = 0xff10
 
     cpu.setRegister(CPU_REGISTERS.X, 0xff)
-    const value = cpu.getValue(CPU_ADDRESSING_MODES.AbsoluteX, absoluteaValue)
+    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, absoluteaValue)
     expect(value).toBe(0x000f)
   })
 
@@ -236,7 +237,7 @@ describe('Tests for CPU module.', () => {
     const absoluteaValue = 0xff20
 
     cpu.setRegister(CPU_REGISTERS.Y, 0xff)
-    const value = cpu.getValue(CPU_ADDRESSING_MODES.AbsoluteY, absoluteaValue)
+    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteY, absoluteaValue)
     expect(value).toBe(0x0001f)
   })
 
@@ -246,7 +247,7 @@ describe('Tests for CPU module.', () => {
 
     const LSB = cpu.getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
     const MSB = cpu.getMemoryValue(memoryAddress + 1, CPU_DATA_SIZE.Byte)
-    const addressValue = cpu.getValue(CPU_ADDRESSING_MODES.Indirect, memoryAddress)
+    const addressValue = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.Indirect, memoryAddress)
 
     expect(LSB).toBe(0x34)
     expect(MSB).toBe(0x12)
@@ -264,7 +265,7 @@ describe('Tests for CPU module.', () => {
 
     const LSB = cpu.getMemoryValue(zeroPageOffset + xRegistervalue, CPU_DATA_SIZE.Byte)
     const MSB = cpu.getMemoryValue(zeroPageOffset + xRegistervalue + 1, CPU_DATA_SIZE.Byte)
-    const memoryValue = cpu.getValue(CPU_ADDRESSING_MODES.IndexedIndirect, zeroPageOffset)
+    const memoryValue = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndexedIndirect, zeroPageOffset)
 
     expect(LSB).toBe(0x00)
     expect(MSB).toBe(0x80)
@@ -281,7 +282,7 @@ describe('Tests for CPU module.', () => {
     cpu.putMemoryValue(zeroPageOffset, 0x00, CPU_DATA_SIZE.Byte)
     cpu.putMemoryValue((zeroPageOffset + 1) & 0xff, 0x80, CPU_DATA_SIZE.Byte)
 
-    const memoryValue = cpu.getValue(CPU_ADDRESSING_MODES.IndexedIndirect, zeroPageOffset)
+    const memoryValue = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndexedIndirect, zeroPageOffset)
     expect(memoryValue).toBe(0xcd)
   })
 
@@ -294,7 +295,7 @@ describe('Tests for CPU module.', () => {
     cpu.putMemoryValue(zeroPageOffset, zeroPagevalue, CPU_DATA_SIZE.Word)
     cpu.putMemoryValue(zeroPagevalue + yRegisterValue, 0xab, CPU_DATA_SIZE.Byte)
 
-    const memoryValue = cpu.getValue(CPU_ADDRESSING_MODES.IndirectIndexed, zeroPageOffset)
+    const memoryValue = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndirectIndexed, zeroPageOffset)
     expect(memoryValue).toBe(0xab)
   })
 
@@ -308,7 +309,34 @@ describe('Tests for CPU module.', () => {
     cpu.putMemoryValue(0x00, 0x80, CPU_DATA_SIZE.Byte)
     cpu.putMemoryValue(zeroPagevalue + yRegisterValue, 0xab, CPU_DATA_SIZE.Byte)
 
-    const memoryValue = cpu.getValue(CPU_ADDRESSING_MODES.IndirectIndexed, zeroPageOffset)
+    const memoryValue = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndirectIndexed, zeroPageOffset)
     expect(memoryValue).toBe(0xab)
+  })
+})
+
+describe('CPU Instructions', () => {
+  let cpu
+
+  beforeEach(() => {
+    cpu = CPU()
+  })
+
+  test('Emulate the AND instruction for Inmediate', () => {
+    const instruction = [0x29, 0xff]
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x00)
+    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
+    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
+
+  test('Emulate the AND instruction for Inmediate with NegativeFlag set to 1', () => {
+    const instruction = [0x29, 0xa9]
+    cpu.setRegister(CPU_REGISTERS.A, 0x80)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x80)
+    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
   })
 })

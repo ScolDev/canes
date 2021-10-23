@@ -3,8 +3,9 @@ import CPU_ADDRESSING_MODES from './cpu-addressing-modes'
 import CPU_MEMORY_MAP from './cpu-mempry-map'
 import CPU_ALU from './cpu-alu'
 import CPU_DATA_SIZE from './cpu-data-size'
+import CPU_INSTRUCTIONS from './cpu-instructions'
 
-export default () => {
+export default (instructions) => {
   const MEM = Array(0xffff).fill(0x00)
   const REG = {
     PC: 0x0000,
@@ -16,7 +17,11 @@ export default () => {
   }
 
   const getFlag = (flag) => {
-    return (REG.P & (2 ** flag)) >> flag
+    return getBitValue(flag, REG.P)
+  }
+
+  const getBitValue = (bit, register) => {
+    return (register & (2 ** bit)) >> bit
   }
 
   const setRegister = (register, value) => {
@@ -27,7 +32,7 @@ export default () => {
     }
   }
 
-  const getValue = (addressingMode, operand) => {
+  const getMemoryValueFromAddressingMode = (addressingMode, operand) => {
     let memoryAddress = 0x0
     let zeroPageOffset = 0x0
 
@@ -58,11 +63,11 @@ export default () => {
       case CPU_ADDRESSING_MODES.IndexedIndirect:
         zeroPageOffset = (operand + REG.X) & 0xff
         memoryAddress = getMemoryValue(zeroPageOffset, CPU_DATA_SIZE.Byte) +
-                        getMemoryValue((zeroPageOffset + 1) & 0xff, CPU_DATA_SIZE.Byte) << 8
+                    getMemoryValue((zeroPageOffset + 1) & 0xff, CPU_DATA_SIZE.Byte) << 8
         return getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
       case CPU_ADDRESSING_MODES.IndirectIndexed:
         memoryAddress = getMemoryValue(operand, CPU_DATA_SIZE.Byte) +
-                        getMemoryValue((operand + 1) & 0xff, CPU_DATA_SIZE.Byte) << 8
+                    getMemoryValue((operand + 1) & 0xff, CPU_DATA_SIZE.Byte) << 8
         return getMemoryValue(memoryAddress + REG.Y, CPU_DATA_SIZE.Byte)
     }
   }
@@ -86,13 +91,23 @@ export default () => {
     }
   }
 
-  return {
+  const execute = (instruction) => {
+    _instructions.execute(instruction)
+  }
+
+  const CPU_API = {
     MEM,
     REG,
+    execute,
     getFlag,
-    getValue,
+    getBitValue,
     setRegister,
     getMemoryValue,
-    putMemoryValue
+    putMemoryValue,
+    getMemoryValueFromAddressingMode
   }
+
+  const _instructions = CPU_INSTRUCTIONS(CPU_API)
+
+  return CPU_API
 }
