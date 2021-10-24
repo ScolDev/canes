@@ -219,26 +219,30 @@ describe('Tests for CPU module.', () => {
   })
 
   test('should get data from Absolute addressing mode.', () => {
-    const absoluteaValue = 0xabcd
+    const memoryAddress = 0xabcd
+    cpu.putMemoryValue(memoryAddress, 0x56)
 
-    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.Absolute, absoluteaValue)
-    expect(value).toBe(0xabcd)
+    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.Absolute, memoryAddress)
+    expect(value).toBe(0x56)
   })
 
   test('should get data from Absolute, X addressing mode.', () => {
-    const absoluteaValue = 0xff10
-
+    const memoryAddress = 0xff10
     cpu.setRegister(CPU_REGISTERS.X, 0xff)
-    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, absoluteaValue)
-    expect(value).toBe(0x000f)
+
+    cpu.putMemoryValue(memoryAddress + cpu.REG.X, 0x56)
+    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, memoryAddress)
+
+    expect(value).toBe(0x56)
   })
 
   test('should get data from Absolute, Y addressing mode.', () => {
-    const absoluteaValue = 0xff20
-
+    const memoryAddress = 0xff20
     cpu.setRegister(CPU_REGISTERS.Y, 0xff)
-    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteY, absoluteaValue)
-    expect(value).toBe(0x0001f)
+
+    cpu.putMemoryValue(memoryAddress + cpu.REG.Y, 0x56)
+    const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteY, memoryAddress)
+    expect(value).toBe(0x56)
   })
 
   test('should get data from Indirect addressing mode.', () => {

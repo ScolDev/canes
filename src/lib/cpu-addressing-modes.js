@@ -45,15 +45,15 @@ export default (cpu, cpuALU) => {
   }
 
   function aboslute (operand) {
-    return operand & 0xffff
+    return cpu.getMemoryValue(operand & 0xffff)
   }
 
   function absoluteX (operand) {
-    return (operand + cpu.REG.X) & 0xff
+    return cpu.getMemoryValue((operand + cpu.REG.X) & 0xffff)
   }
 
   function absoluteY (operand) {
-    return (operand + cpu.REG.Y) & 0xff
+    return cpu.getMemoryValue((operand + cpu.REG.Y) & 0xffff)
   }
 
   function indirect (operand) {
