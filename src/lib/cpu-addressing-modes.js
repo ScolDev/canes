@@ -1,8 +1,7 @@
 import CPU_MEMORY_MAP from './cpu-consts/cpu-mempry-map'
 import CPU_DATA_SIZE from './cpu-consts/cpu-data-size'
-import CPU_ALU from './cpu-alu'
 
-export default (cpu) => {
+export default (cpu, cpuALU) => {
   const addressingModes = [
     acumulator,
     immediate,
@@ -42,7 +41,7 @@ export default (cpu) => {
   }
 
   function relative (operand) {
-    return CPU_ALU.signedByte(operand)
+    return cpuALU.signedByte(operand)
   }
 
   function aboslute (operand) {

@@ -1,4 +1,4 @@
-export default (() => {
+export default () => {
   const signedByte = (byte) => {
     byte = byte & 0xff
     const value = byte & 0x7f
@@ -13,4 +13,4 @@ export default (() => {
   return {
     signedByte
   }
-})()
+}

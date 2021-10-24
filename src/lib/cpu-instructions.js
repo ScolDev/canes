@@ -1,8 +1,16 @@
 import CPU_ADDRESSING_MODES from './cpu-consts/cpu-addressing-modes'
 
 export default (cpu) => {
-  const executeAND = (operand) => {
-    cpu.REG.A = cpu.REG.A & cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.Immediate, operand)
+  const opcodesAND = [0x29, 0x25, 0x35]
+  const addressingModesAND = {
+    0x29: CPU_ADDRESSING_MODES.Immediate,
+    0x25: CPU_ADDRESSING_MODES.ZeroPage,
+    0x35: CPU_ADDRESSING_MODES.ZeroPageX
+  }
+
+  const executeAND = (opcode, operand) => {
+    const addressingMode = addressingModesAND[opcode]
+    cpu.REG.A = cpu.REG.A & cpu.getMemoryValueFromAddressingMode(addressingMode, operand)
     return cpu.REG.A
   }
 
@@ -19,8 +27,8 @@ export default (cpu) => {
   const decodeAndExecute = (instruction) => {
     const [opcode, operand] = instruction
 
-    if (opcode === 0x29) {
-      return executeAND(operand)
+    if (opcodesAND.includes(opcode)) {
+      return executeAND(opcode, operand)
     }
   }
 

@@ -339,4 +339,48 @@ describe('CPU Instructions', () => {
     expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
   })
+
+  test('Emulate the AND instruction for ZeroPage', () => {
+    const address = 0x12
+    const memoryValue = 0x78
+    const instruction = [0x25, address]
+
+    cpu.REG.A = 0x2d
+    cpu.putMemoryValue(address, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x28)
+    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
+
+  test('Emulate the AND instruction for ZeroPage, X', () => {
+    const address = 0x45
+    const memoryValue = 0xab
+    const instruction = [0x35, address]
+
+    cpu.REG.A = 0x9a
+    cpu.REG.X = 0x10
+    cpu.putMemoryValue(address + cpu.REG.X, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x8a)
+    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+  })
+
+  test('Emulate the AND instruction for ZeroPage, X for overflow.', () => {
+    const address = 0xff
+    const memoryValue = 0xff
+    const instruction = [0x35, address]
+
+    cpu.REG.A = 0x00
+    cpu.REG.X = 0x10
+    cpu.putMemoryValue(address + cpu.REG.X, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x00)
+    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
+    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
 })

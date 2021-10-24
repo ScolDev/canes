@@ -2,6 +2,7 @@ import CPU_REGISTERS from './cpu-consts/cpu-registers'
 import CPU_ADDRESSING_MODES from './cpu-addressing-modes'
 import CPU_DATA_SIZE from './cpu-consts/cpu-data-size'
 import CPU_INSTRUCTIONS from './cpu-instructions'
+import CPU_ALU from './cpu-alu'
 
 export default (instructions) => {
   const MEM = Array(0xffff).fill(0x00)
@@ -44,7 +45,7 @@ export default (instructions) => {
     return MEM[memoryAddress] + (MEM[memoryAddress + 1] << 8)
   }
 
-  const putMemoryValue = (memoryAddress, memoryValue, dataSize) => {
+  const putMemoryValue = (memoryAddress, memoryValue, dataSize = CPU_DATA_SIZE.Byte) => {
     memoryAddress &= 0xffff
     MEM[memoryAddress] = memoryValue & 0xff
 
@@ -69,8 +70,9 @@ export default (instructions) => {
     getMemoryValueFromAddressingMode
   }
 
+  const cpuALU = CPU_ALU()
   const Instructions = CPU_INSTRUCTIONS(CPU_API)
-  const AddressingModes = CPU_ADDRESSING_MODES(CPU_API)
+  const AddressingModes = CPU_ADDRESSING_MODES(CPU_API, cpuALU)
 
   return CPU_API
 }
