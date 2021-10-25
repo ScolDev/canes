@@ -62,14 +62,16 @@ export default (cpu, cpuALU) => {
 
   function indexedIndirect (operand) {
     const zeroPageOffset = (operand + cpu.REG.X) & 0xff
+
     const memoryAddress = cpu.getMemoryValue(zeroPageOffset, CPU_DATA_SIZE.Byte) +
-              cpu.getMemoryValue((zeroPageOffset + 1) & 0xff, CPU_DATA_SIZE.Byte) << 8
+              (cpu.getMemoryValue((zeroPageOffset + 1) & 0xff, CPU_DATA_SIZE.Byte) << 8)
+
     return cpu.getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
   }
 
   function indirectIndexed (operand) {
     const memoryAddress = cpu.getMemoryValue(operand, CPU_DATA_SIZE.Byte) +
-              cpu.getMemoryValue((operand + 1) & 0xff, CPU_DATA_SIZE.Byte) << 8
+              (cpu.getMemoryValue((operand + 1) & 0xff, CPU_DATA_SIZE.Byte) << 8)
     return cpu.getMemoryValue(memoryAddress + cpu.REG.Y, CPU_DATA_SIZE.Byte)
   }
 

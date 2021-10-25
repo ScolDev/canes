@@ -259,7 +259,7 @@ describe('Tests for CPU module.', () => {
   })
 
   test('should get data from Indexed Indirect (d, x) addressing mode.', () => {
-    const memoryAddress = 0x8000
+    const memoryAddress = 0x80a2
     const xRegistervalue = 0x10
     const zeroPageOffset = 0x10
 
@@ -271,7 +271,7 @@ describe('Tests for CPU module.', () => {
     const MSB = cpu.getMemoryValue(zeroPageOffset + xRegistervalue + 1, CPU_DATA_SIZE.Byte)
     const memoryValue = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndexedIndirect, zeroPageOffset)
 
-    expect(LSB).toBe(0x00)
+    expect(LSB).toBe(0xa2)
     expect(MSB).toBe(0x80)
     expect(memoryValue).toBe(0xab)
   })
@@ -385,6 +385,88 @@ describe('CPU Instructions', () => {
 
     expect(cpu.REG.A).toBe(0x00)
     expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
+    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
+
+  test('Emulate the AND instruction for Absolute.', () => {
+    const address = 0x1234
+    const memoryValue = 0x18
+    const instruction = [0x2d, address]
+
+    cpu.REG.A = 0x46
+    cpu.putMemoryValue(address, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x00)
+    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
+    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
+
+  test('Emulate the AND instruction for Absolute, X.', () => {
+    const address = 0xffff
+    const memoryValue = 0x95
+    const instruction = [0x3d, address]
+
+    cpu.REG.A = 0xd3
+    cpu.REG.X = 0x3f
+    cpu.putMemoryValue((address + cpu.REG.X) & 0xffff, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x91)
+    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+  })
+
+  test('Emulate the AND instruction for Absolute, Y.', () => {
+    const address = 0xffff
+    const memoryValue = 0x95
+    const instruction = [0x39, address]
+
+    cpu.REG.A = 0xd3
+    cpu.REG.Y = 0x3f
+    cpu.putMemoryValue((address + cpu.REG.Y) & 0xffff, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x91)
+    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+  })
+
+  test('Emulate the AND instruction for IndexedIndirect.', () => {
+    const address = 0x38ad
+    const operand = 0x0a
+    const memoryValue = 0x03
+    const instruction = [0x21, operand]
+
+    cpu.REG.A = 0x92
+    cpu.REG.X = 0x14
+
+    cpu.putMemoryValue(address, memoryValue)
+    cpu.putMemoryValue((operand + cpu.REG.X) & 0xff, address, CPU_DATA_SIZE.Word)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x02)
+    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
+
+  test('Emulate the AND instruction for IndexedIndirect.', () => {
+    const address = 0x38ad
+    const operand = 0x0a
+    const memoryValue = 0xfa
+    const instruction = [0x31, operand]
+
+    cpu.REG.A = 0x13
+    cpu.REG.Y = 0x4a
+
+    cpu.putMemoryValue(address + cpu.REG.Y, memoryValue)
+    cpu.putMemoryValue((operand) & 0xff, address, CPU_DATA_SIZE.Word)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x12)
+    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
 })
