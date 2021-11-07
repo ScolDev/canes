@@ -469,4 +469,51 @@ describe('CPU Instructions', () => {
     expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
+
+  test('Emulate the ADC instruction for Immediate.', () => {
+    const operandA = 0x12
+    const operandB = 0x34
+    const instruction = [0x69, operandB]
+
+    cpu.setRegister(CPU_REGISTERS.P, 0x00)
+    cpu.REG.A = operandA
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x46)
+    expect(cpu.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
+  })
+
+  test('Emulate the ADC instruction for Immediate with carry in, carry out and overflow.', () => {
+    const operandA = 0x90
+    const operandB = 0x83
+    const instruction = [0x69, operandB]
+
+    cpu.setRegister(CPU_REGISTERS.P, 0x01)
+    cpu.REG.A = operandA
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x14)
+    expect(cpu.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
+    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+  })
+
+  test('Emulate the ADC instruction for Immediate without carry out but overflow.', () => {
+    const operandA = 0x50
+    const operandB = 0x45
+    const instruction = [0x69, operandB]
+
+    cpu.REG.A = operandA
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x95)
+    expect(cpu.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+    expect(cpu.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+  })
 })
