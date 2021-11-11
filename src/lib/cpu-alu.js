@@ -1,5 +1,13 @@
-export default () => {
-  const signedByte = (byte) => {
+export default (cpu) => {
+  const getFlag = (flag) => {
+    return getBitValue(flag, cpu.REG.P)
+  }
+
+  const getBitValue = (bit, register) => {
+    return (register & (2 ** bit)) >> bit
+  }
+
+  const getSignedByte = (byte) => {
     byte = byte & 0xff
     const value = byte & 0x7f
     const isNegative = !!((byte & 0x80) >> 7)
@@ -11,6 +19,8 @@ export default () => {
   }
 
   return {
-    signedByte
+    getFlag,
+    getBitValue,
+    getSignedByte
   }
 }

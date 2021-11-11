@@ -5,12 +5,15 @@ import CPU_FLAGS from '../src/lib/cpu-consts/cpu-flags'
 import CPU_ADDRESSING_MODES from '../src/lib/cpu-consts/cpu-addressing-modes'
 import CPU_MEMORY_MAP from '../src/lib/cpu-consts/cpu-mempry-map'
 import CPU_DATA_SIZE from '../src/lib/cpu-consts/cpu-data-size'
+import CPU_ALU from '../src/lib/cpu-alu'
 
 describe('Tests for CPU module.', () => {
   let cpu
+  let cpuALU
 
   beforeEach(() => {
     cpu = CPU()
+    cpuALU = CPU_ALU(cpu)
   })
   test('should load CPU module.', () => {
     expect(cpu).toBeDefined()
@@ -113,12 +116,12 @@ describe('Tests for CPU module.', () => {
 
     expect(cpu.REG.P).toBe(0xff)
 
-    expect(cpu.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
-    expect(cpu.getFlag(CPU_FLAGS.InterruptDisable)).toBe(1)
-    expect(cpu.getFlag(CPU_FLAGS.BreakCommand)).toBe(1)
-    expect(cpu.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.InterruptDisable)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.BreakCommand)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
   })
 
   test('should set the P register and all status flags are setted to 0.', () => {
@@ -127,12 +130,12 @@ describe('Tests for CPU module.', () => {
 
     expect(cpu.REG.P).toBe(0x00)
 
-    expect(cpu.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.InterruptDisable)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.BreakCommand)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.InterruptDisable)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.BreakCommand)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
 
   test('should set the P register with 1 and 0 values in the status flags.', () => {
@@ -141,12 +144,12 @@ describe('Tests for CPU module.', () => {
 
     expect(cpu.REG.P).toBe(0b10101010)
 
-    expect(cpu.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
-    expect(cpu.getFlag(CPU_FLAGS.InterruptDisable)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.BreakCommand)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.InterruptDisable)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.BreakCommand)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
   })
 
   test('should get data from Acumulator addressing mode.', () => {
@@ -320,9 +323,11 @@ describe('Tests for CPU module.', () => {
 
 describe('CPU Instructions', () => {
   let cpu
+  let cpuALU
 
   beforeEach(() => {
     cpu = CPU()
+    cpuALU = CPU_ALU(cpu)
   })
 
   test('Emulate the AND instruction for Inmediate', () => {
@@ -330,8 +335,8 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x00)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
 
   test('Emulate the AND instruction for Inmediate with NegativeFlag set to 1', () => {
@@ -340,8 +345,8 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x80)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
   })
 
   test('Emulate the AND instruction for ZeroPage', () => {
@@ -354,8 +359,8 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x28)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
 
   test('Emulate the AND instruction for ZeroPage, X', () => {
@@ -369,8 +374,8 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x8a)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
   })
 
   test('Emulate the AND instruction for ZeroPage, X for overflow.', () => {
@@ -384,8 +389,8 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x00)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
 
   test('Emulate the AND instruction for Absolute.', () => {
@@ -398,8 +403,8 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x00)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
 
   test('Emulate the AND instruction for Absolute, X.', () => {
@@ -413,8 +418,8 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x91)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
   })
 
   test('Emulate the AND instruction for Absolute, Y.', () => {
@@ -428,8 +433,8 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x91)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
   })
 
   test('Emulate the AND instruction for IndexedIndirect.', () => {
@@ -447,8 +452,8 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x02)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
 
   test('Emulate the AND instruction for IndexedIndirect.', () => {
@@ -466,8 +471,8 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x12)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
 
   test('Emulate the ADC instruction for Immediate.', () => {
@@ -480,10 +485,10 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x46)
-    expect(cpu.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
   })
 
   test('Emulate the ADC instruction for Immediate with carry in, carry out and overflow.', () => {
@@ -496,10 +501,10 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x14)
-    expect(cpu.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
   })
 
   test('Emulate the ADC instruction for Immediate without carry out but overflow.', () => {
@@ -511,9 +516,9 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x95)
-    expect(cpu.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
-    expect(cpu.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
-    expect(cpu.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
   })
 })

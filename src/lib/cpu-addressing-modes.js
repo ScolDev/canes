@@ -41,7 +41,7 @@ export default (cpu, cpuALU) => {
   }
 
   function relative (operand) {
-    return cpuALU.signedByte(operand)
+    return cpuALU.getSignedByte(operand)
   }
 
   function aboslute (operand) {

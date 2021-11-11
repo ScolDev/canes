@@ -15,14 +15,6 @@ export default (instructions) => {
     P: 0x00
   }
 
-  const getFlag = (flag) => {
-    return getBitValue(flag, REG.P)
-  }
-
-  const getBitValue = (bit, register) => {
-    return (register & (2 ** bit)) >> bit
-  }
-
   const setRegister = (register, value) => {
     if (register === CPU_REGISTERS.PC) {
       REG.PC = value & 0xffff
@@ -58,21 +50,19 @@ export default (instructions) => {
     Instructions.execute(instruction)
   }
 
-  const CPU_API = {
+  const cpuApi = {
     MEM,
     REG,
     execute,
-    getFlag,
-    getBitValue,
     setRegister,
     getMemoryValue,
     putMemoryValue,
     getMemoryValueFromAddressingMode
   }
 
-  const cpuALU = CPU_ALU()
-  const Instructions = CPU_INSTRUCTIONS(CPU_API)
-  const AddressingModes = CPU_ADDRESSING_MODES(CPU_API, cpuALU)
+  const cpuALU = CPU_ALU(cpuApi)
+  const Instructions = CPU_INSTRUCTIONS(cpuApi, cpuALU)
+  const AddressingModes = CPU_ADDRESSING_MODES(cpuApi, cpuALU)
 
-  return CPU_API
+  return cpuApi
 }
