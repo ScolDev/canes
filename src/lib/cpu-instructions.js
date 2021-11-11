@@ -1,17 +1,18 @@
 
+import CPU_FLAGS from './cpu-consts/cpu-flags'
 import And from './cpu-instructions/and'
 import Adc from './cpu-instructions/adc'
 
 export default (cpu, cpuALU) => {
   const updateCarryFlag = (result) => {
     if (result > 0xff) {
-      cpu.REG.P = cpu.REG.P | 0b00000001
+      cpuALU.setFlag(CPU_FLAGS.CarryFlag)
     }
   }
 
   const updateZeroFlag = (result) => {
     if ((result & 0xff) === 0x00) {
-      cpu.REG.P = cpu.REG.P | 0b00000010
+      cpuALU.setFlag(CPU_FLAGS.ZeroFlag)
     }
   }
 
@@ -21,13 +22,13 @@ export default (cpu, cpuALU) => {
     const resultBit7 = (result & 0xff) >> 7
 
     if ((operandABit7 === operandBBit7) && (resultBit7 !== operandABit7)) {
-      cpu.REG.P = cpu.REG.P | 0b01000000
+      cpuALU.setFlag(CPU_FLAGS.OverflowFlag)
     }
   }
 
   const updateNegativeFlag = (result) => {
     if (cpuALU.getBitValue(0x07, result) === 0x01) {
-      cpu.REG.P = cpu.REG.P | 0b10000000
+      cpuALU.setFlag(CPU_FLAGS.NegativeFlag)
     }
   }
 

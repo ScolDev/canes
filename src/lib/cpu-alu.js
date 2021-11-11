@@ -1,10 +1,20 @@
 export default (cpu) => {
+  const setFlag = (flag) => {
+    const byteMaskOn = 0x01 << flag
+    cpu.REG.P = cpu.REG.P | byteMaskOn
+  }
+
+  const clearFlag = (flag) => {
+    const byteMaskOff = (0x01 << flag) ^ 0xff
+    cpu.REG.P = cpu.REG.P & byteMaskOff
+  }
+
   const getFlag = (flag) => {
     return getBitValue(flag, cpu.REG.P)
   }
 
-  const getBitValue = (bit, register) => {
-    return (register & (2 ** bit)) >> bit
+  const getBitValue = (bit, byteNumber) => {
+    return (byteNumber & (2 ** bit)) >> bit
   }
 
   const getSignedByte = (byte) => {
@@ -20,6 +30,8 @@ export default (cpu) => {
 
   return {
     getFlag,
+    setFlag,
+    clearFlag,
     getBitValue,
     getSignedByte
   }
