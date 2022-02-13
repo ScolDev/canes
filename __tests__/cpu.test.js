@@ -521,4 +521,57 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
   })
+
+  test('Emulate the ADC instruction for ZeroPage.', () => {
+    const operandA = 0x12
+    const operandB = 0x34
+    const zeroPageOffset = 0x78
+    const instruction = [0x65, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.P, 0x00)
+    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.REG.A = operandA
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x46)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
+  })
+
+  test('Emulate the ADC instruction for ZeroPage with carry in, carry out and overflow.', () => {
+    const operandA = 0x90
+    const operandB = 0x83
+    const zeroPageOffset = 0xab
+    const instruction = [0x65, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.P, 0x01)
+    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.REG.A = operandA
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x14)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+  })
+
+  test('Emulate the ADC instruction for Immediate without carry out but overflow.', () => {
+    const operandA = 0x50
+    const operandB = 0x35
+    const zeroPageOffset = 0xff
+    const instruction = [0x65, zeroPageOffset]
+
+    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.REG.A = operandA
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x85)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+  })
 })
