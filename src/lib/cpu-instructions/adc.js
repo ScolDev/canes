@@ -2,10 +2,11 @@ import CPU_FLAGS from '../cpu-consts/cpu-flags'
 import CPU_ADDRESSING_MODES from '../cpu-consts/cpu-addressing-modes'
 
 export default (cpu, cpuALU, cpuInstructions) => {
-  const opcodes = [0x69, 0x65]
+  const opcodes = [0x69, 0x65, 0x75]
   const addressingModes = {
     0x69: CPU_ADDRESSING_MODES.Immediate,
-    0x65: CPU_ADDRESSING_MODES.ZeroPage
+    0x65: CPU_ADDRESSING_MODES.ZeroPage,
+    0x75: CPU_ADDRESSING_MODES.ZeroPageX
   }
 
   const execute = (opcode, operand) => {
