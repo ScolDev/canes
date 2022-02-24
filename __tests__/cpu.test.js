@@ -558,7 +558,7 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
   })
 
-  test('Emulate the ADC instruction for Immediate without carry out but overflow.', () => {
+  test('Emulate the ADC instruction for ZeroPage without carry out but overflow.', () => {
     const operandA = 0x50
     const operandB = 0x35
     const zeroPageOffset = 0xff
@@ -624,6 +624,177 @@ describe('CPU Instructions', () => {
 
     cpu.putMemoryValue((zeroPageOffset + xIndex) & 0xff, operandB)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x85)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+  })
+
+  test('Emulate the ADC instruction for Absolute.', () => {
+    const operandA = 0x12
+    const operandB = 0x56
+    const address = 0x789a
+    const instruction = [0x6d, address]
+
+    cpu.setRegister(CPU_REGISTERS.P, 0x00)
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.putMemoryValue(address, operandB)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x68)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
+  })
+
+  test('Emulate the ADC instruction for Absolute with carry in, carry out and overflow.', () => {
+    const operandA = 0x90
+    const operandB = 0x83
+    const address = 0xabcd
+    const instruction = [0x6d, address]
+
+    cpu.setRegister(CPU_REGISTERS.P, 0x01)
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.putMemoryValue(address, operandB)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x14)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+  })
+
+  test('Emulate the ADC instruction for Absolute without carry out but overflow.', () => {
+    const operandA = 0x50
+    const operandB = 0x35
+    const address = 0xffaa
+    const instruction = [0x6d, address]
+
+    cpu.putMemoryValue(address, operandB)
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x85)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+  })
+
+  test('Emulate the ADC instruction for Absolute,X.', () => {
+    const operandA = 0x12
+    const operandB = 0x56
+    const xIndex = 0x20
+    const address = 0x7810
+    const instruction = [0x7d, address]
+
+    cpu.setRegister(CPU_REGISTERS.P, 0x00)
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.putMemoryValue(address + xIndex, operandB)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x68)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
+  })
+
+  test('Emulate the ADC instruction for Absolute,X with carry in, carry out and overflow.', () => {
+    const operandA = 0x90
+    const operandB = 0x83
+    const xIndex = 0x20
+    const address = 0xabcd
+    const instruction = [0x7d, address]
+
+    cpu.setRegister(CPU_REGISTERS.P, 0x01)
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.putMemoryValue(address + xIndex, operandB)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x14)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+  })
+
+  test('Emulate the ADC instruction for Absolute,X without carry out but overflow.', () => {
+    const operandA = 0x50
+    const operandB = 0x35
+    const xIndex = 0x70
+    const address = 0xffaa
+    const instruction = [0x7d, address]
+
+    cpu.putMemoryValue(address + xIndex, operandB)
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x85)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+  })
+
+  test('Emulate the ADC instruction for Absolute,Y.', () => {
+    const operandA = 0x12
+    const operandB = 0x56
+    const yIndex = 0x20
+    const address = 0x7810
+    const instruction = [0x79, address]
+
+    cpu.setRegister(CPU_REGISTERS.P, 0x00)
+    cpu.setRegister(CPU_REGISTERS.Y, yIndex)
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.putMemoryValue(address + yIndex, operandB)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x68)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
+  })
+
+  test('Emulate the ADC instruction for Absolute,Y with carry in, carry out and overflow.', () => {
+    const operandA = 0x90
+    const operandB = 0x83
+    const yIndex = 0x20
+    const address = 0xabcd
+    const instruction = [0x79, address]
+
+    cpu.setRegister(CPU_REGISTERS.P, 0x01)
+    cpu.setRegister(CPU_REGISTERS.Y, yIndex)
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.putMemoryValue(address + yIndex, operandB)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x14)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+  })
+
+  test('Emulate the ADC instruction for Absolute,Y without carry out but overflow.', () => {
+    const operandA = 0x50
+    const operandB = 0x35
+    const yIndex = 0x70
+    const address = 0xffaa
+    const instruction = [0x79, address]
+
+    cpu.putMemoryValue(address + yIndex, operandB)
+    cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
