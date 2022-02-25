@@ -804,4 +804,46 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
   })
+
+  test('Emulate the ADC instruction for IndexedIndirect without carry out but overflow.', () => {
+    const operandA = 0x50
+    const operandB = 0x35
+    const xIndex = 0x10
+    const address = 0xefa0
+    const offsetZeroPage = 0xab
+    const instruction = [0x61, offsetZeroPage]
+
+    cpu.putMemoryValue(address, operandB)
+    cpu.putMemoryValue(offsetZeroPage + xIndex, address, CPU_DATA_SIZE.Word)
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x85)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+  })
+
+  test('Emulate the ADC instruction for IndirectIndexed without carry out but overflow.', () => {
+    const operandA = 0x50
+    const operandB = 0x35
+    const yIndex = 0x10
+    const address = 0xefa0
+    const offsetZeroPage = 0xab
+    const instruction = [0x71, offsetZeroPage]
+
+    cpu.putMemoryValue(address + yIndex, operandB)
+    cpu.putMemoryValue(offsetZeroPage, address, CPU_DATA_SIZE.Word)
+    cpu.setRegister(CPU_REGISTERS.Y, yIndex)
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x85)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+  })
 })
