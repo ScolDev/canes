@@ -1,7 +1,6 @@
 import CPU_ADDRESSING_MODES from '../cpu-consts/cpu-addressing-modes'
 
 export default (cpu, cpuALU, cpuInstructions) => {
-  const opcodes = [0x29, 0x25, 0x35, 0x2d, 0x3d, 0x39, 0x21, 0x31]
   const addressingModes = {
     0x29: CPU_ADDRESSING_MODES.Immediate,
     0x25: CPU_ADDRESSING_MODES.ZeroPage,
@@ -27,7 +26,6 @@ export default (cpu, cpuALU, cpuInstructions) => {
   }
 
   return {
-    opcodes,
     execute
   }
 }

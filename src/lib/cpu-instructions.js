@@ -34,13 +34,9 @@ export default (cpu, cpuALU) => {
 
   const decodeAndExecute = (instruction) => {
     const [opcode, operand] = instruction
+    const decodedInstruction = InstructionsTable[opcode]
 
-    if (_and.opcodes.includes(opcode)) {
-      return _and.execute(opcode, operand)
-    }
-    if (_adc.opcodes.includes(opcode)) {
-      return _adc.execute(opcode, operand)
-    }
+    decodedInstruction.execute(opcode, operand)
   }
 
   const execute = (instruction) => {
@@ -55,8 +51,27 @@ export default (cpu, cpuALU) => {
     execute
   }
 
-  const _and = And(cpu, cpuALU, cpuInstructions)
-  const _adc = Adc(cpu, cpuALU, cpuInstructions)
+  const and = And(cpu, cpuALU, cpuInstructions)
+  const adc = Adc(cpu, cpuALU, cpuInstructions)
+
+  const InstructionsTable = {
+    0x29: and,
+    0x25: and,
+    0x35: and,
+    0x2d: and,
+    0x3d: and,
+    0x39: and,
+    0x21: and,
+    0x31: and,
+    0x69: adc,
+    0x65: adc,
+    0x75: adc,
+    0x6d: adc,
+    0x7d: adc,
+    0x79: adc,
+    0x61: adc,
+    0x71: adc
+  }
 
   return cpuInstructions
 }
