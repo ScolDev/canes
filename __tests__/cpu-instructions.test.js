@@ -530,4 +530,43 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
   })
+
+  test('Emulate the ASL instruction for Accumulator addressing mode.', () => {
+    const operand = 0x12
+    const instruction = [0x0a]
+
+    cpu.setRegister(CPU_REGISTERS.A, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x24)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
+
+  test('Emulate the ASL instruction for Accumulator addressing mode with Carry and Zero flags set on.', () => {
+    const operand = 0x80
+    const instruction = [0x0a]
+
+    cpu.setRegister(CPU_REGISTERS.A, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
+
+  test('Emulate the ASL instruction for Accumulator addressing mode with Negative flag set on.', () => {
+    const operand = 0x5a
+    const instruction = [0x0a]
+
+    cpu.setRegister(CPU_REGISTERS.A, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0xb4)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+  })
 })

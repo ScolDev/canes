@@ -1,6 +1,6 @@
 export default (cpu) => {
-  const setFlag = (flag) => {
-    const byteMaskOn = 0x01 << flag
+  const setFlag = (flag, bitValue = 0x01) => {
+    const byteMaskOn = bitValue << flag
     cpu.REG.P = cpu.REG.P | byteMaskOn
   }
 

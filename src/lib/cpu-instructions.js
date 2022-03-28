@@ -2,6 +2,7 @@
 import CPU_FLAGS from './cpu-consts/cpu-flags'
 import And from './cpu-instructions/and'
 import Adc from './cpu-instructions/adc'
+import Asl from './cpu-instructions/asl'
 
 export default (cpu, cpuALU) => {
   const updateCarryFlag = (result) => {
@@ -53,6 +54,7 @@ export default (cpu, cpuALU) => {
 
   const and = And(cpu, cpuALU, cpuInstructions)
   const adc = Adc(cpu, cpuALU, cpuInstructions)
+  const asl = Asl(cpu, cpuALU, cpuInstructions)
 
   const InstructionsTable = {
     0x29: and,
@@ -70,7 +72,8 @@ export default (cpu, cpuALU) => {
     0x7d: adc,
     0x79: adc,
     0x61: adc,
-    0x71: adc
+    0x71: adc,
+    0x0a: asl
   }
 
   return cpuInstructions
