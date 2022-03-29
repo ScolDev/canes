@@ -73,7 +73,8 @@ export default (cpu, cpuALU) => {
     0x79: adc,
     0x61: adc,
     0x71: adc,
-    0x0a: asl
+    0x0a: asl,
+    0x06: asl
   }
 
   return cpuInstructions

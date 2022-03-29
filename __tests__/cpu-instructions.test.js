@@ -569,4 +569,18 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
   })
+
+  test('Emulate the ASL instruction for ZeroPage addressing mode.', () => {
+    const address = 0x4a
+    const operandValue = 0x81
+    const instruction = [0x06, address]
+
+    cpu.putMemoryValue(address, operandValue)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(address)).toBe(0x02)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
 })

@@ -27,6 +27,10 @@ export default (instructions) => {
     return AddressingModes.get(addressingMode, operand)
   }
 
+  const setMemoryValueFromAddressingMode = (addressingMode, value, operand) => {
+    AddressingModes.set(addressingMode, value, operand)
+  }
+
   const getMemoryValue = (memoryAddress, dataSize) => {
     memoryAddress &= 0xffff
 
@@ -57,7 +61,8 @@ export default (instructions) => {
     setRegister,
     getMemoryValue,
     putMemoryValue,
-    getMemoryValueFromAddressingMode
+    getMemoryValueFromAddressingMode,
+    setMemoryValueFromAddressingMode
   }
 
   const cpuALU = CPU_ALU(cpuApi)
