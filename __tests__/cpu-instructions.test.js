@@ -583,4 +583,84 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
+
+  test('Emulate the ASL instruction for ZeroPage,X addressing mode.', () => {
+    const address = 0x54
+    const xIndex = 0x20
+    const operandValue = 0x23
+    const instruction = [0x16, address]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.putMemoryValue(address + xIndex, operandValue)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(address + xIndex)).toBe(0x46)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
+
+  test('Emulate the ASL instruction for Absolute addressing mode.', () => {
+    const address = 0x348a
+    const operandValue = 0x9f
+    const instruction = [0x0e, address]
+
+    cpu.putMemoryValue(address, operandValue)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(address)).toBe(0x3e)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
+
+  test('Emulate the ASL instruction for Absolute,X addressing mode.', () => {
+    const address = 0x92cf
+    const operandValue = 0x00
+    const instruction = [0x1e, address]
+
+    cpu.putMemoryValue(address, operandValue)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(address)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
+
+  test('Emulate the BCC instruction for Relative addressing mode.', () => {
+    const address = 0x4e
+    const pcAddress = 0x801f
+    const instruction = [0x90, address]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x806f)
+  })
+
+  test('Emulate the BCC instruction for Relative addressing mode with negative offset.', () => {
+    const address = 0xa0
+    const pcAddress = 0x801f
+    const instruction = [0x90, address]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x7fc1)
+  })
+
+  test('Emulate the BCC instruction for Relative addressing mode with CarryFlag on.', () => {
+    const address = 0xa0
+    const pcAddress = 0x801f
+    const instruction = [0x90, address]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 1)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x8021)
+  })
 })

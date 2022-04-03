@@ -4,7 +4,10 @@ import CPU_FLAGS from '../cpu-consts/cpu-flags'
 export default (cpu, cpuALU, cpuInstructions) => {
   const addressingModes = {
     0x0a: CPU_ADDRESSING_MODES.Acumulator,
-    0x06: CPU_ADDRESSING_MODES.ZeroPage
+    0x06: CPU_ADDRESSING_MODES.ZeroPage,
+    0x16: CPU_ADDRESSING_MODES.ZeroPageX,
+    0x0e: CPU_ADDRESSING_MODES.Absolute,
+    0x1e: CPU_ADDRESSING_MODES.AbsoluteX
   }
 
   const execute = (opcode, operand) => {

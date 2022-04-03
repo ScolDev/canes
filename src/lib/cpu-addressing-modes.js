@@ -26,6 +26,10 @@ export default (cpu, cpuALU) => {
     get: (operand) => {
       const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.REG.X + operand) & 0xff)
       return cpu.getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
+    },
+    set: (value, operand) => {
+      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.REG.X + operand) & 0xff)
+      return cpu.putMemoryValue(memoryAddress, value)
     }
   }
 
@@ -41,11 +45,13 @@ export default (cpu, cpuALU) => {
   }
 
   const aboslute = {
-    get: (operand) => cpu.getMemoryValue(operand & 0xffff)
+    get: (operand) => cpu.getMemoryValue(operand & 0xffff),
+    set: (value, operand) => cpu.putMemoryValue(operand & 0xffff, value)
   }
 
   const absoluteX = {
-    get: (operand) => cpu.getMemoryValue((operand + cpu.REG.X) & 0xffff)
+    get: (operand) => cpu.getMemoryValue((operand + cpu.REG.X) & 0xffff),
+    set: (value, operand) => cpu.putMemoryValue((operand + cpu.REG.X) & 0xffff, value)
   }
 
   const absoluteY = {
