@@ -3,10 +3,10 @@ import CPU_REGISTERS from '../cpu-consts/cpu-registers'
 
 export default (cpu, cpuALU, cpuInstructions) => {
   const execute = (opcode, operand) => {
-    const carryFlag = cpuALU.getFlag(CPU_FLAGS.CarryFlag)
+    const zeroFlag = cpuALU.getFlag(CPU_FLAGS.ZeroFlag)
     let nextPCAddress = cpu.REG.PC + 2
 
-    if (carryFlag) {
+    if (zeroFlag) {
       nextPCAddress += cpuALU.getSignedByte(operand)
     }
 

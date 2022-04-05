@@ -699,4 +699,40 @@ describe('CPU Instructions', () => {
 
     expect(cpu.REG.PC).toBe(0x1003)
   })
+
+  test('Emulate the BEQ instruction for Relative addressing mode.', () => {
+    const address = 0x24
+    const pcAddress = 0x902a
+    const instruction = [0xf0, address]
+
+    cpuALU.setFlag(CPU_FLAGS.ZeroFlag, 1)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x9050)
+  })
+
+  test('Emulate the BEQ instruction for Relative addressing mode with negative offset.', () => {
+    const address = 0xd2
+    const pcAddress = 0x0012
+    const instruction = [0xf0, address]
+
+    cpuALU.setFlag(CPU_FLAGS.ZeroFlag, 1)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0xffe6)
+  })
+
+  test('Emulate the BEQ instruction for Relative addressing mode with ZeroFlag clear.', () => {
+    const address = 0xba
+    const pcAddress = 0xa021
+    const instruction = [0xf0, address]
+
+    cpuALU.setFlag(CPU_FLAGS.ZeroFlag, 0)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0xa023)
+  })
 })
