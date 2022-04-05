@@ -652,7 +652,7 @@ describe('CPU Instructions', () => {
     expect(cpu.REG.PC).toBe(0x7fc1)
   })
 
-  test('Emulate the BCC instruction for Relative addressing mode with CarryFlag on.', () => {
+  test('Emulate the BCC instruction for Relative addressing mode with CarryFlag set.', () => {
     const address = 0xa0
     const pcAddress = 0x801f
     const instruction = [0x90, address]
@@ -662,5 +662,41 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.PC).toBe(0x8021)
+  })
+
+  test('Emulate the BCS instruction for Relative addressing mode.', () => {
+    const address = 0x72
+    const pcAddress = 0x123f
+    const instruction = [0xb0, address]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 1)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x12b3)
+  })
+
+  test('Emulate the BCS instruction for Relative addressing mode with negative offset.', () => {
+    const address = 0xc8
+    const pcAddress = 0x34a2
+    const instruction = [0xb0, address]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 1)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x346c)
+  })
+
+  test('Emulate the BCS instruction for Relative addressing mode with CarryFlag clear.', () => {
+    const address = 0x23
+    const pcAddress = 0x1001
+    const instruction = [0xb0, address]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x1003)
   })
 })

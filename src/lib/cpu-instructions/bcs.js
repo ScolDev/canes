@@ -7,7 +7,7 @@ export default (cpu, cpuALU, cpuInstructions) => {
     const carryFlag = cpuALU.getFlag(CPU_FLAGS.CarryFlag)
     let nextPCAddress = cpu.REG.PC + 2
 
-    if (!carryFlag) {
+    if (carryFlag) {
       nextPCAddress += cpuALU.getSignedByte(operand)
     }
 

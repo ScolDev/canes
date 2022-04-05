@@ -4,6 +4,7 @@ import And from './cpu-instructions/and'
 import Adc from './cpu-instructions/adc'
 import Asl from './cpu-instructions/asl'
 import Bcc from './cpu-instructions/bcc'
+import Bcs from './cpu-instructions/bcs'
 
 export default (cpu, cpuALU) => {
   const updateCarryFlag = (result) => {
@@ -57,6 +58,7 @@ export default (cpu, cpuALU) => {
   const adc = Adc(cpu, cpuALU, cpuInstructions)
   const asl = Asl(cpu, cpuALU, cpuInstructions)
   const bcc = Bcc(cpu, cpuALU, cpuInstructions)
+  const bcs = Bcs(cpu, cpuALU, cpuInstructions)
 
   const InstructionsTable = {
     0x29: and,
@@ -80,7 +82,8 @@ export default (cpu, cpuALU) => {
     0x16: asl,
     0x0e: asl,
     0x1e: asl,
-    0x90: bcc
+    0x90: bcc,
+    0xb0: bcs
   }
 
   return cpuInstructions
