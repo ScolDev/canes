@@ -735,4 +735,64 @@ describe('CPU Instructions', () => {
 
     expect(cpu.REG.PC).toBe(0xa023)
   })
+
+  test('Emulate the BIT instruction for ZeroPage Addressing mode.', () => {
+    const operand = 0b10010001
+    const bitMask = 0b10000001
+    const address = 0x47
+    const instruction = [0x24, address]
+
+    cpu.putMemoryValue(address, operand)
+    cpu.setRegister(CPU_REGISTERS.A, bitMask)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+  })
+
+  test('Emulate the BIT instruction for ZeroPage Addressing mode and result zero.', () => {
+    const operand = 0b00010000
+    const bitMask = 0b10000001
+    const address = 0x12
+    const instruction = [0x24, address]
+
+    cpu.putMemoryValue(address, operand)
+    cpu.setRegister(CPU_REGISTERS.A, bitMask)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
+
+  test('Emulate the BIT instruction for Absolute Addressing mode.', () => {
+    const operand = 0b10001011
+    const bitMask = 0b00001011
+    const address = 0xa712
+    const instruction = [0x2c, address]
+
+    cpu.putMemoryValue(address, operand)
+    cpu.setRegister(CPU_REGISTERS.A, bitMask)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+  })
+
+  test('Emulate the BIT instruction for Absolute Addressing mode and result zero.', () => {
+    const operand = 0b01010010
+    const bitMask = 0b10001001
+    const address = 0x91a4
+    const instruction = [0x2c, address]
+
+    cpu.putMemoryValue(address, operand)
+    cpu.setRegister(CPU_REGISTERS.A, bitMask)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
+  })
 })
