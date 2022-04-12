@@ -7,6 +7,9 @@ import Bcc from './cpu-instructions/bcc'
 import Bcs from './cpu-instructions/bcs'
 import Beq from './cpu-instructions/beq'
 import Bit from './cpu-instructions/bit'
+import Bmi from './cpu-instructions/bmi'
+import Bne from './cpu-instructions/bne'
+import Bpl from './cpu-instructions/bpl'
 
 export default (cpu, cpuALU) => {
   const updateCarryFlag = (result) => {
@@ -63,6 +66,9 @@ export default (cpu, cpuALU) => {
   const bcs = Bcs(cpu, cpuALU, cpuInstructions)
   const beq = Beq(cpu, cpuALU, cpuInstructions)
   const bit = Bit(cpu, cpuALU, cpuInstructions)
+  const bmi = Bmi(cpu, cpuALU, cpuInstructions)
+  const bne = Bne(cpu, cpuALU, cpuInstructions)
+  const bpl = Bpl(cpu, cpuALU, cpuInstructions)
 
   const InstructionsTable = {
     0x29: and,
@@ -90,7 +96,10 @@ export default (cpu, cpuALU) => {
     0xb0: bcs,
     0xf0: beq,
     0x24: bit,
-    0x2c: bit
+    0x2c: bit,
+    0x30: bmi,
+    0xd0: bne,
+    0x10: bpl
   }
 
   return cpuInstructions

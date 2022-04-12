@@ -795,4 +795,112 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
+
+  test('Emulate the BMI instruction for Relative addressing mode.', () => {
+    const address = 0x70
+    const pcAddress = 0x7a10
+    const instruction = [0x30, address]
+
+    cpuALU.setFlag(CPU_FLAGS.NegativeFlag, 1)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x7a82)
+  })
+
+  test('Emulate the BMI instruction for Relative addressing mode with negative offset.', () => {
+    const address = 0xa2
+    const pcAddress = 0x39a9
+    const instruction = [0x30, address]
+
+    cpuALU.setFlag(CPU_FLAGS.NegativeFlag, 1)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x394d)
+  })
+
+  test('Emulate the BMI instruction for Relative addressing mode with NegativeFlag clear.', () => {
+    const address = 0x1a
+    const pcAddress = 0x819a
+    const instruction = [0x30, address]
+
+    cpuALU.setFlag(CPU_FLAGS.NegativeFlag, 0)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x819c)
+  })
+
+  test('Emulate the BNE instruction for Relative addressing mode.', () => {
+    const address = 0x3f
+    const pcAddress = 0xa001
+    const instruction = [0xd0, address]
+
+    cpuALU.setFlag(CPU_FLAGS.ZeroFlag, 0)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0xa042)
+  })
+
+  test('Emulate the BNE instruction for Relative addressing mode with negative offset.', () => {
+    const address = 0xda
+    const pcAddress = 0x8765
+    const instruction = [0xd0, address]
+
+    cpuALU.setFlag(CPU_FLAGS.ZeroFlag, 0)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x8741)
+  })
+
+  test('Emulate the BNE instruction for Relative addressing mode with ZeroFlag set.', () => {
+    const address = 0x45
+    const pcAddress = 0x3471
+    const instruction = [0xd0, address]
+
+    cpuALU.setFlag(CPU_FLAGS.ZeroFlag, 1)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x3473)
+  })
+
+  test('Emulate the BPL instruction for Relative addressing mode.', () => {
+    const address = 0x10
+    const pcAddress = 0xe020
+    const instruction = [0x10, address]
+
+    cpuALU.setFlag(CPU_FLAGS.NegativeFlag, 0)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0xe032)
+  })
+
+  test('Emulate the BPL instruction for Relative addressing mode with negative offset.', () => {
+    const address = 0xaf
+    const pcAddress = 0x9004
+    const instruction = [0x10, address]
+
+    cpuALU.setFlag(CPU_FLAGS.NegativeFlag, 0)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x8fb5)
+  })
+
+  test('Emulate the BPL instruction for Relative addressing mode with NegativeFlag set.', () => {
+    const address = 0x30
+    const pcAddress = 0x9020
+    const instruction = [0x10, address]
+
+    cpuALU.setFlag(CPU_FLAGS.NegativeFlag, 1)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x9022)
+  })
 })
