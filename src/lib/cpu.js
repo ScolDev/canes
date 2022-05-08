@@ -31,7 +31,7 @@ export default (instructions) => {
     AddressingModes.set(addressingMode, value, operand)
   }
 
-  const getMemoryValue = (memoryAddress, dataSize) => {
+  const getMemoryValue = (memoryAddress, dataSize = CPU_DATA_SIZE.Byte) => {
     memoryAddress &= 0xffff
 
     if (dataSize === CPU_DATA_SIZE.Byte) {

@@ -1,4 +1,4 @@
-import CPU_MEMORY_MAP from './cpu-consts/cpu-mempry-map'
+import CPU_MEMORY_MAP from './cpu-consts/cpu-memory-map'
 import CPU_DATA_SIZE from './cpu-consts/cpu-data-size'
 
 export default (cpu, cpuALU) => {

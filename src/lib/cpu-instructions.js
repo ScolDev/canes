@@ -10,6 +10,7 @@ import Bit from './cpu-instructions/bit'
 import Bmi from './cpu-instructions/bmi'
 import Bne from './cpu-instructions/bne'
 import Bpl from './cpu-instructions/bpl'
+import Brk from './cpu-instructions/brk'
 
 export default (cpu, cpuALU) => {
   const updateCarryFlag = (result) => {
@@ -69,6 +70,7 @@ export default (cpu, cpuALU) => {
   const bmi = Bmi(cpu, cpuALU, cpuInstructions)
   const bne = Bne(cpu, cpuALU, cpuInstructions)
   const bpl = Bpl(cpu, cpuALU, cpuInstructions)
+  const brk = Brk(cpu, cpuALU, cpuInstructions)
 
   const InstructionsTable = {
     0x29: and,
@@ -99,7 +101,8 @@ export default (cpu, cpuALU) => {
     0x2c: bit,
     0x30: bmi,
     0xd0: bne,
-    0x10: bpl
+    0x10: bpl,
+    0x00: brk
   }
 
   return cpuInstructions

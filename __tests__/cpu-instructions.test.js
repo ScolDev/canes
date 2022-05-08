@@ -3,6 +3,7 @@ import CPU from '../src/lib/cpu'
 import CPU_REGISTERS from '../src/lib/cpu-consts/cpu-registers'
 import CPU_FLAGS from '../src/lib/cpu-consts/cpu-flags'
 import CPU_DATA_SIZE from '../src/lib/cpu-consts/cpu-data-size'
+import CPU_MEMORY_MAP from '../src/lib/cpu-consts/cpu-memory-map'
 import CPU_ALU from '../src/lib/cpu-alu'
 
 describe('CPU Instructions', () => {
@@ -902,5 +903,28 @@ describe('CPU Instructions', () => {
     cpu.execute(instruction)
 
     expect(cpu.REG.PC).toBe(0x9022)
+  })
+
+  test('Emulate the BRK instruction.', () => {
+    const pStatus = 0b10100011
+    const sPointer = 0xff
+    const pcAddress = 0x4023
+    const irqInterruptVector = 0x2a3f
+    const instruction = [0x00, 0xff]
+
+    cpu.setRegister(CPU_REGISTERS.P, pStatus)
+    cpu.setRegister(CPU_REGISTERS.SP, sPointer)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.putMemoryValue(CPU_MEMORY_MAP.IRQ_Vector, irqInterruptVector, CPU_DATA_SIZE.Word)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.SP).toBe(0xfd)
+    expect(cpu.REG.PC).toBe(irqInterruptVector)
+    expect(cpuALU.getFlag(CPU_FLAGS.BreakCommand)).toBe(0x1)
+
+    expect(cpu.getMemoryValue(0x01fd)).toBe(0b10110011)
+    expect(cpu.getMemoryValue(0x1ff)).toBe(0x25)
+    expect(cpu.getMemoryValue(0x1fe)).toBe(0x40)
   })
 })
