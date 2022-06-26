@@ -927,4 +927,40 @@ describe('CPU Instructions', () => {
     expect(cpu.getMemoryValue(0x1ff)).toBe(0x25)
     expect(cpu.getMemoryValue(0x1fe)).toBe(0x40)
   })
+
+  test('Emulate the BVC instruction for Relative addressing mode.', () => {
+    const address = 0x34
+    const pcAddress = 0x629b
+    const instruction = [0x50, address]
+
+    cpuALU.setFlag(CPU_FLAGS.OverflowFlag, 0)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x62d1)
+  })
+
+  test('Emulate the BVC instruction for Relative addressing mode with negative offset.', () => {
+    const address = 0xe1
+    const pcAddress = 0x1035
+    const instruction = [0x50, address]
+
+    cpuALU.setFlag(CPU_FLAGS.OverflowFlag, 0)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x1018)
+  })
+
+  test('Emulate the BVC instruction for Relative addressing mode with OverflowFlag set.', () => {
+    const address = 0x38
+    const pcAddress = 0xc010
+    const instruction = [0x50, address]
+
+    cpuALU.setFlag(CPU_FLAGS.OverflowFlag, 1)
+    cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0xc012)
+  })
 })
