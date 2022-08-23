@@ -12,6 +12,7 @@ import Bne from './cpu-instructions/bne'
 import Bpl from './cpu-instructions/bpl'
 import Brk from './cpu-instructions/brk'
 import Bvc from './cpu-instructions/bvc'
+import Bvs from './cpu-instructions/bvs'
 
 export default (cpu, cpuALU) => {
   const updateCarryFlag = (result) => {
@@ -73,6 +74,7 @@ export default (cpu, cpuALU) => {
   const bpl = Bpl(cpu, cpuALU, cpuInstructions)
   const brk = Brk(cpu, cpuALU, cpuInstructions)
   const bvc = Bvc(cpu, cpuALU, cpuInstructions)
+  const bvs = Bvs(cpu, cpuALU, cpuInstructions)
 
   const InstructionsTable = {
     0x29: and,
@@ -105,7 +107,8 @@ export default (cpu, cpuALU) => {
     0xd0: bne,
     0x10: bpl,
     0x00: brk,
-    0x50: bvc
+    0x50: bvc,
+    0x70: bvs
   }
 
   return cpuInstructions
