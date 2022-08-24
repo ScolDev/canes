@@ -1,18 +1,6 @@
 
 import CPU_FLAGS from './cpu-consts/cpu-flags'
-import And from './cpu-instructions/and'
-import Adc from './cpu-instructions/adc'
-import Asl from './cpu-instructions/asl'
-import Bcc from './cpu-instructions/bcc'
-import Bcs from './cpu-instructions/bcs'
-import Beq from './cpu-instructions/beq'
-import Bit from './cpu-instructions/bit'
-import Bmi from './cpu-instructions/bmi'
-import Bne from './cpu-instructions/bne'
-import Bpl from './cpu-instructions/bpl'
-import Brk from './cpu-instructions/brk'
-import Bvc from './cpu-instructions/bvc'
-import Bvs from './cpu-instructions/bvs'
+import InstructionsTable from './cpu-instructions/instructions-table'
 
 export default (cpu, cpuALU) => {
   const updateCarryFlag = (result) => {
@@ -27,16 +15,6 @@ export default (cpu, cpuALU) => {
     }
   }
 
-  const updateOverflowFlag = (result, operandA, operandB) => {
-    const operandABit7 = operandA >> 7
-    const operandBBit7 = operandB >> 7
-    const resultBit7 = (result & 0xff) >> 7
-
-    if ((operandABit7 === operandBBit7) && (resultBit7 !== operandABit7)) {
-      cpuALU.setFlag(CPU_FLAGS.OverflowFlag)
-    }
-  }
-
   const updateNegativeFlag = (result) => {
     if (cpuALU.getBitValue(0x07, result) === 0x01) {
       cpuALU.setFlag(CPU_FLAGS.NegativeFlag)
@@ -45,7 +23,7 @@ export default (cpu, cpuALU) => {
 
   const decodeAndExecute = (instruction) => {
     const [opcode, operand] = instruction
-    const decodedInstruction = InstructionsTable[opcode]
+    const decodedInstruction = instructionsTable[opcode]
 
     decodedInstruction.execute(opcode, operand)
   }
@@ -57,59 +35,11 @@ export default (cpu, cpuALU) => {
   const cpuInstructions = {
     updateCarryFlag,
     updateZeroFlag,
-    updateOverflowFlag,
     updateNegativeFlag,
     execute
   }
 
-  const and = And(cpu, cpuALU, cpuInstructions)
-  const adc = Adc(cpu, cpuALU, cpuInstructions)
-  const asl = Asl(cpu, cpuALU, cpuInstructions)
-  const bcc = Bcc(cpu, cpuALU, cpuInstructions)
-  const bcs = Bcs(cpu, cpuALU, cpuInstructions)
-  const beq = Beq(cpu, cpuALU, cpuInstructions)
-  const bit = Bit(cpu, cpuALU, cpuInstructions)
-  const bmi = Bmi(cpu, cpuALU, cpuInstructions)
-  const bne = Bne(cpu, cpuALU, cpuInstructions)
-  const bpl = Bpl(cpu, cpuALU, cpuInstructions)
-  const brk = Brk(cpu, cpuALU, cpuInstructions)
-  const bvc = Bvc(cpu, cpuALU, cpuInstructions)
-  const bvs = Bvs(cpu, cpuALU, cpuInstructions)
-
-  const InstructionsTable = {
-    0x29: and,
-    0x25: and,
-    0x35: and,
-    0x2d: and,
-    0x3d: and,
-    0x39: and,
-    0x21: and,
-    0x31: and,
-    0x69: adc,
-    0x65: adc,
-    0x75: adc,
-    0x6d: adc,
-    0x7d: adc,
-    0x79: adc,
-    0x61: adc,
-    0x71: adc,
-    0x0a: asl,
-    0x06: asl,
-    0x16: asl,
-    0x0e: asl,
-    0x1e: asl,
-    0x90: bcc,
-    0xb0: bcs,
-    0xf0: beq,
-    0x24: bit,
-    0x2c: bit,
-    0x30: bmi,
-    0xd0: bne,
-    0x10: bpl,
-    0x00: brk,
-    0x50: bvc,
-    0x70: bvs
-  }
+  const instructionsTable = InstructionsTable(cpu, cpuALU, cpuInstructions)
 
   return cpuInstructions
 }
