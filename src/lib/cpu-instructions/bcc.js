@@ -1,7 +1,7 @@
 import CPU_FLAGS from '../cpu-consts/cpu-flags'
 import CPU_REGISTERS from '../cpu-consts/cpu-registers'
 
-export default (cpu, cpuALU, cpuInstructions) => {
+export default (cpu, cpuALU) => {
   const execute = (opcode, operand) => {
     const carryFlag = cpuALU.getFlag(CPU_FLAGS.CarryFlag)
     let nextPCAddress = cpu.REG.PC + 2

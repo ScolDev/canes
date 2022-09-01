@@ -1,7 +1,7 @@
 import CPU_ADDRESSING_MODES from '../cpu-consts/cpu-addressing-modes'
 import CPU_FLAGS from '../cpu-consts/cpu-flags'
 
-export default (cpu, cpuALU, cpuInstructions) => {
+export default (cpu, cpuALU) => {
   const addressingModes = {
     0x0a: CPU_ADDRESSING_MODES.Acumulator,
     0x06: CPU_ADDRESSING_MODES.ZeroPage,

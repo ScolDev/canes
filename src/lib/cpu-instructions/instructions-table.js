@@ -12,20 +12,20 @@ import Brk from './brk'
 import Bvc from './bvc'
 import Bvs from './bvs'
 
-export default (cpu, cpuALU, cpuInstructions) => {
-  const and = And(cpu, cpuALU, cpuInstructions)
-  const adc = Adc(cpu, cpuALU, cpuInstructions)
-  const asl = Asl(cpu, cpuALU, cpuInstructions)
-  const bcc = Bcc(cpu, cpuALU, cpuInstructions)
-  const bcs = Bcs(cpu, cpuALU, cpuInstructions)
-  const beq = Beq(cpu, cpuALU, cpuInstructions)
-  const bit = Bit(cpu, cpuALU, cpuInstructions)
-  const bmi = Bmi(cpu, cpuALU, cpuInstructions)
-  const bne = Bne(cpu, cpuALU, cpuInstructions)
-  const bpl = Bpl(cpu, cpuALU, cpuInstructions)
-  const brk = Brk(cpu, cpuALU, cpuInstructions)
-  const bvc = Bvc(cpu, cpuALU, cpuInstructions)
-  const bvs = Bvs(cpu, cpuALU, cpuInstructions)
+export default (cpu, cpuALU) => {
+  const and = And(cpu, cpuALU)
+  const adc = Adc(cpu, cpuALU)
+  const asl = Asl(cpu, cpuALU)
+  const bcc = Bcc(cpu, cpuALU)
+  const bcs = Bcs(cpu, cpuALU)
+  const beq = Beq(cpu, cpuALU)
+  const bit = Bit(cpu, cpuALU)
+  const bmi = Bmi(cpu, cpuALU)
+  const bne = Bne(cpu, cpuALU)
+  const bpl = Bpl(cpu, cpuALU)
+  const brk = Brk(cpu, cpuALU)
+  const bvc = Bvc(cpu, cpuALU)
+  const bvs = Bvs(cpu, cpuALU)
 
   return {
     0x69: adc,

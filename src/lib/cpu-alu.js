@@ -1,3 +1,5 @@
+import CPU_FLAGS from './cpu-consts/cpu-flags'
+
 export default (cpu) => {
   const setFlag = (flag, bitValue = 0x01) => {
     const byteMaskOn = bitValue << flag
@@ -28,11 +30,43 @@ export default (cpu) => {
     return value
   }
 
+  const updateCarryFlag = (result) => {
+    if (result > 0xff) {
+      setFlag(CPU_FLAGS.CarryFlag)
+    }
+  }
+
+  const updateZeroFlag = (result) => {
+    if ((result & 0xff) === 0x00) {
+      setFlag(CPU_FLAGS.ZeroFlag)
+    }
+  }
+
+  const updateOverflowFlag = (result, operandA, operandB) => {
+    const operandABit7 = operandA >> 7
+    const operandBBit7 = operandB >> 7
+    const resultBit7 = (result & 0xff) >> 7
+
+    if ((operandABit7 === operandBBit7) && (resultBit7 !== operandABit7)) {
+      setFlag(CPU_FLAGS.OverflowFlag)
+    }
+  }
+
+  const updateNegativeFlag = (result) => {
+    if (getBitValue(0x07, result) === 0x01) {
+      setFlag(CPU_FLAGS.NegativeFlag)
+    }
+  }
+
   return {
     getFlag,
     setFlag,
     clearFlag,
     getBitValue,
-    getSignedByte
+    getSignedByte,
+    updateCarryFlag,
+    updateZeroFlag,
+    updateOverflowFlag,
+    updateNegativeFlag
   }
 }

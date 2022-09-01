@@ -1,6 +1,6 @@
 import CPU_ADDRESSING_MODES from '../cpu-consts/cpu-addressing-modes'
 
-export default (cpu, cpuALU, cpuInstructions) => {
+export default (cpu, cpuALU) => {
   const addressingModes = {
     0x29: CPU_ADDRESSING_MODES.Immediate,
     0x25: CPU_ADDRESSING_MODES.ZeroPage,
@@ -21,8 +21,8 @@ export default (cpu, cpuALU, cpuInstructions) => {
   }
 
   const updateStatus = (result) => {
-    cpuInstructions.updateZeroFlag(result)
-    cpuInstructions.updateNegativeFlag(result)
+    cpuALU.updateZeroFlag(result)
+    cpuALU.updateNegativeFlag(result)
   }
 
   return {
