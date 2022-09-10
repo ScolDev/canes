@@ -6,7 +6,9 @@
   "scripts": {
     "start": "webpack serve",
     "build": "cross-env NODE_ENV=production webpack",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "husky install",
+    "pre-commit": "npx standard --fix && git add . && npm t"
   },
   "standard": {
     "env": [
@@ -37,6 +39,7 @@
     "standard": "^16.0.3",
     "webpack": "^5.44.0",
     "webpack-cli": "^4.7.2",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^3.11.2",
+    "husky": "^8.0.0"
   }
 }
