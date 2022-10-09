@@ -11,6 +11,10 @@ import Bpl from './bpl'
 import Brk from './brk'
 import Bvc from './bvc'
 import Bvs from './bvs'
+import Clc from './clc'
+import Cld from './cld'
+import Cli from './cli'
+import Clv from './clv'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -26,6 +30,10 @@ export default (cpu, cpuALU) => {
   const brk = Brk(cpu, cpuALU)
   const bvc = Bvc(cpu, cpuALU)
   const bvs = Bvs(cpu, cpuALU)
+  const clc = Clc(cpuALU)
+  const cld = Cld()
+  const cli = Cli(cpuALU)
+  const clv = Clv(cpuALU)
 
   return {
     0x69: adc,
@@ -59,6 +67,10 @@ export default (cpu, cpuALU) => {
     0x10: bpl,
     0x00: brk,
     0x50: bvc,
-    0x70: bvs
+    0x70: bvs,
+    0x18: clc,
+    0xd8: cld,
+    0x58: cli,
+    0xb8: clv
   }
 }

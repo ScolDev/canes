@@ -999,4 +999,56 @@ describe('CPU Instructions', () => {
 
     expect(cpu.REG.PC).toBe(0xa003)
   })
+
+  test('Emulate the CLC instruction for Implied addressing mode', () => {
+    const instruction = [0x18]
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag)
+    cpuALU.setFlag(CPU_FLAGS.NegativeFlag)
+    cpuALU.setFlag(CPU_FLAGS.ZeroFlag)
+
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+  })
+
+  test('Emulate the CLD instruction for Implied addressing mode', () => {
+    const instruction = [0xd8]
+    cpuALU.setFlag(CPU_FLAGS.DecimalModeFlag)
+    cpuALU.setFlag(CPU_FLAGS.NegativeFlag)
+    cpuALU.setFlag(CPU_FLAGS.OverflowFlag)
+
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.DecimalModeFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x01)
+  })
+
+  test('Emulate the CLI instruction for Implied addressing mode', () => {
+    const instruction = [0x58]
+    cpuALU.setFlag(CPU_FLAGS.InterruptDisable)
+    cpuALU.setFlag(CPU_FLAGS.BreakCommand)
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag)
+
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.InterruptDisable)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.BreakCommand)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+  })
+
+  test('Emulate the CLV instruction for Implied addressing mode', () => {
+    const instruction = [0xb8]
+    cpuALU.setFlag(CPU_FLAGS.OverflowFlag)
+    cpuALU.setFlag(CPU_FLAGS.ZeroFlag)
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag)
+
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+  })
 })
