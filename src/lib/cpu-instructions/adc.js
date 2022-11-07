@@ -27,7 +27,9 @@ export default (cpu, cpuALU) => {
   }
 
   const updateStatus = (result, operandA, operandB) => {
-    cpuALU.updateCarryFlag(result)
+    const carryFlag = result > 0xff ? 1 : 0
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, carryFlag)
     cpuALU.updateZeroFlag(result)
     cpuALU.updateNegativeFlag(result)
     cpuALU.updateOverflowFlag(result, operandA, operandB)

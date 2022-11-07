@@ -30,12 +30,6 @@ export default (cpu) => {
     return value
   }
 
-  const updateCarryFlag = (result) => {
-    if (result > 0xff) {
-      setFlag(CPU_FLAGS.CarryFlag)
-    }
-  }
-
   const updateZeroFlag = (result) => {
     if ((result & 0xff) === 0x00) {
       setFlag(CPU_FLAGS.ZeroFlag)
@@ -64,7 +58,6 @@ export default (cpu) => {
     clearFlag,
     getBitValue,
     getSignedByte,
-    updateCarryFlag,
     updateZeroFlag,
     updateOverflowFlag,
     updateNegativeFlag
