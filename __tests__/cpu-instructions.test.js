@@ -1062,7 +1062,7 @@ describe('CPU Instructions', () => {
 
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
-    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
 
   test('Emulate the CMP instruction for Immediate addressing mode with Zero fnd Carry lag set', () => {
@@ -1079,15 +1079,15 @@ describe('CPU Instructions', () => {
   })
 
   test('Emulate the CMP instruction for Immediate addressing mode with Negative flag set and Carry flag clear after restul', () => {
-    const operandA = 0x10
-    const operandB = 0xaf
+    const operandA = 0xa0
+    const operandB = 0x12
     const instruction = [0xc9, operandB]
     cpu.setRegister(CPU_REGISTERS.A, operandA)
 
     cpu.execute(instruction)
 
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
-    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
 })
