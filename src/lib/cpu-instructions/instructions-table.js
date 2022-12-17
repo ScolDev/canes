@@ -74,6 +74,13 @@ export default (cpu, cpuALU) => {
     0xd8: cld,
     0x58: cli,
     0xb8: clv,
-    0xc9: cmp
+    0xc9: cmp,
+    0xc5: cmp,
+    0xd5: cmp,
+    0xcd: cmp,
+    0xdd: cmp,
+    0xd9: cmp,
+    0xc1: cmp,
+    0xd1: cmp
   }
 }
