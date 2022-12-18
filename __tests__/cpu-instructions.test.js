@@ -1430,7 +1430,7 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
 
-  test('Emulate the CMP instruction for Absolute, X addressing mode with Negative flag set and Carry flag clear after restul', () => {
+  test('Emulate the CMP instruction for IndirectIndexed addressing mode with Negative flag set and Carry flag clear after restul', () => {
     const operandA = 0x2a
     const operandB = 0x77
     const yIndex = 0x30
