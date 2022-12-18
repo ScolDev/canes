@@ -16,6 +16,7 @@ import Cld from './cld'
 import Cli from './cli'
 import Clv from './clv'
 import Cmp from './cmp'
+import Cpx from './cpx'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -36,6 +37,7 @@ export default (cpu, cpuALU) => {
   const cli = Cli(cpuALU)
   const clv = Clv(cpuALU)
   const cmp = Cmp(cpu, cpuALU)
+  const cpx = Cpx(cpu, cpuALU)
 
   return {
     0x69: adc,
@@ -81,6 +83,9 @@ export default (cpu, cpuALU) => {
     0xdd: cmp,
     0xd9: cmp,
     0xc1: cmp,
-    0xd1: cmp
+    0xd1: cmp,
+    0xe0: cpx,
+    0xe4: cpx,
+    0xec: cpx
   }
 }
