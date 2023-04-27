@@ -1079,7 +1079,7 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
 
-  test('Emulate the CMP instruction for Immediate addressing mode with Negative flag set and Carry flag clear after restul', () => {
+  test('Emulate the CMP instruction for Immediate addressing mode with Negative flag set and Carry flag clear after result', () => {
     const operandA = 0xa0
     const operandB = 0x12
     const instruction = [0xc9, operandB]
@@ -1122,7 +1122,7 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
 
-  test('Emulate the CMP instruction for ZeroPage addressing mode with Negative flag set and Carry flag clear after restul', () => {
+  test('Emulate the CMP instruction for ZeroPage addressing mode with Negative flag set and Carry flag clear after result', () => {
     const operandA = 0x48
     const operandB = 0xc3
     const zeroPageOffset = 0x82
@@ -1171,7 +1171,7 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
 
-  test('Emulate the CMP instruction for ZeroPage, X addressing mode with Negative flag set and Carry flag clear after restul', () => {
+  test('Emulate the CMP instruction for ZeroPage, X addressing mode with Negative flag set and Carry flag clear after result', () => {
     const operandA = 0x22
     const operandB = 0x88
     const xIndex = 0x71
@@ -1218,7 +1218,7 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
 
-  test('Emulate the CMP instruction for Absolute addressing mode with Negative flag set and Carry flag clear after restul', () => {
+  test('Emulate the CMP instruction for Absolute addressing mode with Negative flag set and Carry flag clear after result', () => {
     const operandA = 0x17
     const operandB = 0x61
     const memoryAddress = 0xe101
@@ -1267,7 +1267,7 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
 
-  test('Emulate the CMP instruction for Absolute, X addressing mode with Negative flag set and Carry flag clear after restul', () => {
+  test('Emulate the CMP instruction for Absolute, X addressing mode with Negative flag set and Carry flag clear after result', () => {
     const operandA = 0x10
     const operandB = 0x58
     const xIndex = 0xa1
@@ -1318,7 +1318,7 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
 
-  test('Emulate the CMP instruction for Absolute, Y addressing mode with Negative flag set and Carry flag clear after restul', () => {
+  test('Emulate the CMP instruction for Absolute, Y addressing mode with Negative flag set and Carry flag clear after result', () => {
     const operandA = 0x3a
     const operandB = 0x4f
     const yIndex = 0xb1
@@ -1373,7 +1373,7 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
 
-  test('Emulate the CMP instruction for IndexedIndirect addressing mode with Negative flag set and Carry flag clear after restul', () => {
+  test('Emulate the CMP instruction for IndexedIndirect addressing mode with Negative flag set and Carry flag clear after result', () => {
     const operandA = 0x16
     const operandB = 0x59
     const xIndex = 0x19
@@ -1430,7 +1430,7 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
 
-  test('Emulate the CMP instruction for IndirectIndexed addressing mode with Negative flag set and Carry flag clear after restul', () => {
+  test('Emulate the CMP instruction for IndirectIndexed addressing mode with Negative flag set and Carry flag clear after result', () => {
     const operandA = 0x2a
     const operandB = 0x77
     const yIndex = 0x30
@@ -1475,7 +1475,7 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
 
-  test('Emulate the CPX instruction for Immediate addressing mode with Negative flag set and Carry flag clear after restul', () => {
+  test('Emulate the CPX instruction for Immediate addressing mode with Negative flag set and Carry flag clear after result', () => {
     const operandA = 0xc1
     const operandB = 0x10
     const instruction = [0xe0, operandB]
@@ -1518,7 +1518,7 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
 
-  test('Emulate the CPX instruction for ZeroPage addressing mode with Negative flag set and Carry flag clear after restul', () => {
+  test('Emulate the CPX instruction for ZeroPage addressing mode with Negative flag set and Carry flag clear after result', () => {
     const operandA = 0x23
     const operandB = 0x91
     const zeroPageOffset = 0xc0
@@ -1563,7 +1563,7 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
 
-  test('Emulate the CPX instruction for Absolute addressing mode with Negative flag set and Carry flag clear after restul', () => {
+  test('Emulate the CPX instruction for Absolute addressing mode with Negative flag set and Carry flag clear after result', () => {
     const operandA = 0x20
     const operandB = 0x7a
     const memoryAddress = 0x1010
@@ -1571,6 +1571,135 @@ describe('CPU Instructions', () => {
 
     cpu.putMemoryValue(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.X, operandA)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the CPY instruction for Immediate addressing mode', () => {
+    const operandA = 0xb2
+    const operandB = 0x41
+    const instruction = [0xc0, operandB]
+    cpu.setRegister(CPU_REGISTERS.Y, operandA)
+
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the CPY instruction for Immediate addressing mode with Zero and Carry lag set', () => {
+    const operandA = 0x55
+    const operandB = 0x55
+    const instruction = [0xc0, operandB]
+    cpu.setRegister(CPU_REGISTERS.Y, operandA)
+
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the CPY instruction for Immediate addressing mode with Negative flag set and Carry flag clear after result', () => {
+    const operandA = 0xba
+    const operandB = 0x23
+    const instruction = [0xc0, operandB]
+    cpu.setRegister(CPU_REGISTERS.Y, operandA)
+
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the CPY instruction for ZeroPage addressing mode', () => {
+    const operandA = 0x5a
+    const operandB = 0x12
+    const zeroPageOffset = 0xb0
+    const instruction = [0xc4, zeroPageOffset]
+
+    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setRegister(CPU_REGISTERS.Y, operandA)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the CPY instruction for ZeroPage addressing mode with Zero and Carry lag set', () => {
+    const operandA = 0xcd
+    const operandB = 0xcd
+    const zeroPageOffset = 0x49
+    const instruction = [0xc4, zeroPageOffset]
+
+    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setRegister(CPU_REGISTERS.Y, operandA)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the CPY instruction for ZeroPage addressing mode with Negative flag set and Carry flag clear after result', () => {
+    const operandA = 0x34
+    const operandB = 0xa7
+    const zeroPageOffset = 0x72
+    const instruction = [0xc4, zeroPageOffset]
+
+    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setRegister(CPU_REGISTERS.Y, operandA)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the CPY instruction for Absolute addressing mode', () => {
+    const operandA = 0x8f
+    const operandB = 0x4a
+    const memoryAddress = 0x6a9a
+    const instruction = [0xcc, memoryAddress]
+
+    cpu.putMemoryValue(memoryAddress, operandB)
+    cpu.setRegister(CPU_REGISTERS.Y, operandA)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the CPY instruction for Absolute addressing mode with Zero and Carry lag set', () => {
+    const operandA = 0x8a
+    const operandB = 0x8a
+    const memoryAddress = 0x1010
+    const instruction = [0xcc, memoryAddress]
+
+    cpu.putMemoryValue(memoryAddress, operandB)
+    cpu.setRegister(CPU_REGISTERS.Y, operandA)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the CPY instruction for Absolute addressing mode with Negative flag set and Carry flag clear after result', () => {
+    const operandA = 0x32
+    const operandB = 0x94
+    const memoryAddress = 0x2394
+    const instruction = [0xcc, memoryAddress]
+
+    cpu.putMemoryValue(memoryAddress, operandB)
+    cpu.setRegister(CPU_REGISTERS.Y, operandA)
     cpu.execute(instruction)
 
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
