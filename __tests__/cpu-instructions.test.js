@@ -1874,4 +1874,28 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
+
+  test('Emulate the DEX instruction for Implied addressing mode', () => {
+    const operand = 0xa0
+    const instruction = [0xca]
+
+    cpu.setRegister(CPU_REGISTERS.X, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.X).toBe(0x9f)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the DEY instruction for Implied addressing mode', () => {
+    const operand = 0x01
+    const instruction = [0x88]
+
+    cpu.setRegister(CPU_REGISTERS.Y, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.X).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
 })

@@ -19,6 +19,8 @@ import Cmp from './cmp'
 import Cpx from './cpx'
 import Cpy from './cpy'
 import Dec from './dec'
+import Dex from './dex'
+import Dey from './dey'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -42,6 +44,8 @@ export default (cpu, cpuALU) => {
   const cpx = Cpx(cpu, cpuALU)
   const cpy = Cpy(cpu, cpuALU)
   const dec = Dec(cpu, cpuALU)
+  const dex = Dex(cpu, cpuALU)
+  const dey = Dey(cpu, cpuALU)
 
   return {
     0x69: adc,
@@ -97,6 +101,8 @@ export default (cpu, cpuALU) => {
     0xc6: dec,
     0xd6: dec,
     0xce: dec,
-    0xde: dec
+    0xde: dec,
+    0xca: dex,
+    0x88: dey
   }
 }
