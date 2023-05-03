@@ -21,6 +21,7 @@ import Cpy from './cpy'
 import Dec from './dec'
 import Dex from './dex'
 import Dey from './dey'
+import Eor from './eor'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -46,6 +47,7 @@ export default (cpu, cpuALU) => {
   const dec = Dec(cpu, cpuALU)
   const dex = Dex(cpu, cpuALU)
   const dey = Dey(cpu, cpuALU)
+  const eor = Eor(cpu, cpuALU)
 
   return {
     0x69: adc,
@@ -103,6 +105,7 @@ export default (cpu, cpuALU) => {
     0xce: dec,
     0xde: dec,
     0xca: dex,
-    0x88: dey
+    0x88: dey,
+    0x49: eor
   }
 }

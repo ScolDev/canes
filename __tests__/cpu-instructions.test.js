@@ -1898,4 +1898,30 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
+
+  test('Emulate the EOR instruction for Immediate addressing mode with ZeroFlag set', () => {
+    const operandA = 0x7a
+    const operandB = 0x7a
+    const instruction = [0x49, operandB]
+
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the EOR instruction for Immediate addressing mode with NegativeFlag set', () => {
+    const operandA = 0b10001010
+    const operandB = 0b01001010
+    const instruction = [0x49, operandB]
+
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0b11000000)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
 })
