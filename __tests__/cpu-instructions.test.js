@@ -1924,4 +1924,130 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
+
+  test('Emulate the EOR instruction for ZeroPage', () => {
+    const operand = 0xc4
+    const zeroPageOffset = 0x8a
+    const acummulator = 0xd2
+    const instruction = [0x45, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.A, acummulator)
+    cpu.putMemoryValue(zeroPageOffset, operand)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x16)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the EOR instruction for ZeroPageX', () => {
+    const operand = 0x7a
+    const zeroPageOffset = 0x45
+    const xIndex = 0x2a
+    const acummulator = 0xf0
+    const instruction = [0x55, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, acummulator)
+    cpu.putMemoryValue(zeroPageOffset + xIndex, operand)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x8a)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the EOR instruction for Absolute', () => {
+    const operand = 0x9f
+    const memoryAddress = 0x47fa
+    const acummulator = 0xc1
+    const instruction = [0x4d, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.A, acummulator)
+    cpu.putMemoryValue(memoryAddress, operand)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x5e)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the EOR instruction for AbsoluteX', () => {
+    const operand = 0x91
+    const memoryAddress = 0x3030
+    const xIndex = 0x10
+    const acummulator = 0x91
+    const instruction = [0x5d, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.A, acummulator)
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.putMemoryValue(memoryAddress + xIndex, operand)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the EOR instruction for AbsoluteY', () => {
+    const operand = 0x12
+    const memoryAddress = 0x12fa
+    const yIndex = 0xcc
+    const acummulator = 0xda
+    const instruction = [0x59, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.A, acummulator)
+    cpu.setRegister(CPU_REGISTERS.Y, yIndex)
+    cpu.putMemoryValue(memoryAddress + yIndex, operand)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0xc8)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the EOR instruction for IndexedIndirect', () => {
+    const operand = 0xa0
+    const xIndex = 0x3f
+    const zeroPageOffset = 0x10
+    const memoryAddress = 0x1cd0
+    const acummulator = 0x0a
+    const instruction = [0x41, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, acummulator)
+    cpu.putMemoryValue(memoryAddress, operand)
+    cpu.putMemoryValue(zeroPageOffset + xIndex, memoryAddress, CPU_DATA_SIZE.Word)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0xaa)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the EOR instruction for IndirectIndexed', () => {
+    const operand = 0xcc
+    const yIndex = 0x7f
+    const zeroPageOffset = 0xda
+    const memoryAddress = 0x2a04
+    const acummulator = 0xd0
+    const instruction = [0x51, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.Y, yIndex)
+    cpu.setRegister(CPU_REGISTERS.A, acummulator)
+    cpu.putMemoryValue(memoryAddress + yIndex, operand)
+    cpu.putMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x1c)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
 })

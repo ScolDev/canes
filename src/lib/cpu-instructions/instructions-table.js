@@ -106,6 +106,13 @@ export default (cpu, cpuALU) => {
     0xde: dec,
     0xca: dex,
     0x88: dey,
-    0x49: eor
+    0x49: eor,
+    0x45: eor,
+    0x55: eor,
+    0x4d: eor,
+    0x5d: eor,
+    0x59: eor,
+    0x41: eor,
+    0x51: eor
   }
 }

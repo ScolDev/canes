@@ -3,7 +3,14 @@ import CPU_REGISTERS from '../cpu-consts/cpu-registers'
 
 export default (cpu, cpuALU) => {
   const addressingModes = {
-    0x49: CPU_ADDRESSING_MODES.Immediate
+    0x49: CPU_ADDRESSING_MODES.Immediate,
+    0x45: CPU_ADDRESSING_MODES.ZeroPage,
+    0x55: CPU_ADDRESSING_MODES.ZeroPageX,
+    0x4d: CPU_ADDRESSING_MODES.Absolute,
+    0x5d: CPU_ADDRESSING_MODES.AbsoluteX,
+    0x59: CPU_ADDRESSING_MODES.AbsoluteY,
+    0x41: CPU_ADDRESSING_MODES.IndexedIndirect,
+    0x51: CPU_ADDRESSING_MODES.IndirectIndexed
   }
 
   const execute = (opcode, operand) => {
