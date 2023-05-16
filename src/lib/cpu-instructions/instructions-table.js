@@ -22,6 +22,9 @@ import Dec from './dec'
 import Dex from './dex'
 import Dey from './dey'
 import Eor from './eor'
+import Inc from './inc'
+import Inx from './inx'
+import Iny from './iny'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -48,6 +51,9 @@ export default (cpu, cpuALU) => {
   const dex = Dex(cpu, cpuALU)
   const dey = Dey(cpu, cpuALU)
   const eor = Eor(cpu, cpuALU)
+  const inc = Inc(cpu, cpuALU)
+  const inx = Inx(cpu, cpuALU)
+  const iny = Iny(cpu, cpuALU)
 
   return {
     0x69: adc,
@@ -113,6 +119,12 @@ export default (cpu, cpuALU) => {
     0x5d: eor,
     0x59: eor,
     0x41: eor,
-    0x51: eor
+    0x51: eor,
+    0xe6: inc,
+    0xf6: inc,
+    0xee: inc,
+    0xfe: inc,
+    0xe8: inx,
+    0xc8: iny
   }
 }

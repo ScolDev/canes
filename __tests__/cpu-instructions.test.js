@@ -1748,7 +1748,7 @@ describe('CPU Instructions', () => {
 
   test('Emulate the DEC instruction for ZeroPageX addressing mode', () => {
     const operand = 0x74
-    const xIndex = 30
+    const xIndex = 0x30
     const zeroPageOffset = 0x74
     const instruction = [0xd6, zeroPageOffset]
 
@@ -1763,7 +1763,7 @@ describe('CPU Instructions', () => {
 
   test('Emulate the DEC instruction for ZeroPageX addressing mode with Zero flag set and Negative flag clear', () => {
     const operand = 0x01
-    const xIndex = 10
+    const xIndex = 0x10
     const zeroPageOffset = 0x59
     const instruction = [0xd6, zeroPageOffset]
 
@@ -1832,7 +1832,7 @@ describe('CPU Instructions', () => {
 
   test('Emulate the DEC instruction for AbsoluteX addressing mode', () => {
     const operand = 0x42
-    const xIndex = 42
+    const xIndex = 0x42
     const memoryAddress = 0x7423
     const instruction = [0xde, memoryAddress]
 
@@ -1847,7 +1847,7 @@ describe('CPU Instructions', () => {
 
   test('Emulate the DEC instruction for AbsoluteX addressing mode with Zero flag set and Negative flag clear', () => {
     const operand = 0x01
-    const xIndex = 53
+    const xIndex = 0x53
     const memoryAddress = 0x72ac
     const instruction = [0xde, memoryAddress]
 
@@ -2048,6 +2048,198 @@ describe('CPU Instructions', () => {
 
     expect(cpu.REG.A).toBe(0x1c)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the INC instruction for ZeroPage addressing mode', () => {
+    const operand = 0x62
+    const zeroPageOffset = 0x60
+    const instruction = [0xe6, zeroPageOffset]
+
+    cpu.putMemoryValue(zeroPageOffset, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0x63)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the INC instruction for ZeroPage addressing mode with Zero flag set and Negative flag clear', () => {
+    const operand = 0xff
+    const zeroPageOffset = 0xd0
+    const instruction = [0xe6, zeroPageOffset]
+
+    cpu.putMemoryValue(zeroPageOffset, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the INC instruction for ZeroPage addressing mode with Zero flag clear and Negative flag set', () => {
+    const operand = 0xfa
+    const zeroPageOffset = 0x39
+    const instruction = [0xe6, zeroPageOffset]
+
+    cpu.putMemoryValue(zeroPageOffset, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0xfb)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the INC instruction for ZeroPageX addressing mode', () => {
+    const operand = 0x8a
+    const xIndex = 0x24
+    const zeroPageOffset = 0xa0
+    const instruction = [0xf6, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(zeroPageOffset + xIndex)).toBe(0x8b)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the INC instruction for ZeroPageX addressing mode with Zero flag set and Negative flag clear', () => {
+    const operand = 0xff
+    const xIndex = 0x1a
+    const zeroPageOffset = 0x7a
+    const instruction = [0xf6, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(zeroPageOffset + xIndex)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the INC instruction for ZeroPageX addressing mode with Zero flag clear and Negative flag set', () => {
+    const operand = 0xd0
+    const xIndex = 0x20
+    const zeroPageOffset = 0x20
+    const instruction = [0xf6, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(zeroPageOffset + xIndex)).toBe(0xd1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the INC instruction for Absolute addressing mode', () => {
+    const operand = 0x8f
+    const memoryAddress = 0x482c
+    const instruction = [0xee, memoryAddress]
+
+    cpu.putMemoryValue(memoryAddress, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress)).toBe(0x90)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the INC instruction for Absolute addressing mode with Zero flag set and Negative flag clear', () => {
+    const operand = 0xff
+    const memoryAddress = 0xff00
+    const instruction = [0xee, memoryAddress]
+
+    cpu.putMemoryValue(memoryAddress, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the INC instruction for Absolute addressing mode with Zero flag clear and Negative flag set', () => {
+    const operand = 0xd0
+    const memoryAddress = 0xbbaa
+    const instruction = [0xee, memoryAddress]
+
+    cpu.putMemoryValue(memoryAddress, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress)).toBe(0xd1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the INC instruction for AbsoluteX addressing mode', () => {
+    const operand = 0x3a
+    const xIndex = 0x5a
+    const memoryAddress = 0x7423
+    const instruction = [0xfe, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(0x3b)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the INC instruction for AbsoluteX addressing mode with Zero flag set and Negative flag clear', () => {
+    const operand = 0xff
+    const xIndex = 0x12
+    const memoryAddress = 0xcc12
+    const instruction = [0xfe, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the INC instruction for AbsoluteX addressing mode with Zero flag clear and Negative flag set', () => {
+    const operand = 0xa8
+    const xIndex = 0x32
+    const memoryAddress = 0xda01
+    const instruction = [0xfe, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(0xa9)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the INX instruction for Implied addressing mode', () => {
+    const operand = 0xe7
+    const instruction = [0xe8]
+
+    cpu.setRegister(CPU_REGISTERS.X, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.X).toBe(0xe8)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the INY instruction for Implied addressing mode', () => {
+    const operand = 0x0ff
+    const instruction = [0xc8]
+
+    cpu.setRegister(CPU_REGISTERS.Y, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.X).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
 })
