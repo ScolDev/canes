@@ -18,7 +18,7 @@ export default (cpu, cpuALU) => {
     },
     set: (value, operand) => {
       const memoryAddress = CPU_MEMORY_MAP.ZeroPage + (operand & 0xff)
-      cpu.putMemoryValue(memoryAddress, value)
+      cpu.setMemoryValue(memoryAddress, value)
     }
   }
 
@@ -29,7 +29,7 @@ export default (cpu, cpuALU) => {
     },
     set: (value, operand) => {
       const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.REG.X + operand) & 0xff)
-      return cpu.putMemoryValue(memoryAddress, value)
+      return cpu.setMemoryValue(memoryAddress, value)
     }
   }
 
@@ -46,17 +46,17 @@ export default (cpu, cpuALU) => {
 
   const aboslute = {
     get: (operand) => cpu.getMemoryValue(operand & 0xffff),
-    set: (value, operand) => cpu.putMemoryValue(operand & 0xffff, value)
+    set: (value, operand) => cpu.setMemoryValue(operand & 0xffff, value)
   }
 
   const absoluteX = {
     get: (operand) => cpu.getMemoryValue((operand + cpu.REG.X) & 0xffff),
-    set: (value, operand) => cpu.putMemoryValue((operand + cpu.REG.X) & 0xffff, value)
+    set: (value, operand) => cpu.setMemoryValue((operand + cpu.REG.X) & 0xffff, value)
   }
 
   const absoluteY = {
     get: (operand) => cpu.getMemoryValue((operand + cpu.REG.Y) & 0xffff),
-    set: (value, operand) => cpu.putMemoryValue((operand + cpu.REG.Y) & 0xffff, value)
+    set: (value, operand) => cpu.setMemoryValue((operand + cpu.REG.Y) & 0xffff, value)
   }
 
   const indirect = {
@@ -78,7 +78,7 @@ export default (cpu, cpuALU) => {
       const memoryAddress = cpu.getMemoryValue(zeroPageOffset) +
                   (cpu.getMemoryValue((zeroPageOffset + 1) & 0xff) << 8)
 
-      cpu.putMemoryValue(memoryAddress, value)
+      cpu.setMemoryValue(memoryAddress, value)
     }
   }
 
@@ -91,7 +91,7 @@ export default (cpu, cpuALU) => {
     set: (value, operand) => {
       const memoryAddress = cpu.getMemoryValue(operand) +
                   (cpu.getMemoryValue((operand + 1) & 0xff) << 8)
-      cpu.putMemoryValue(memoryAddress + cpu.REG.Y, value)
+      cpu.setMemoryValue(memoryAddress + cpu.REG.Y, value)
     }
   }
 

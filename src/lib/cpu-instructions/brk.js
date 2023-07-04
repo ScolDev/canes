@@ -10,9 +10,9 @@ export default (cpu, cpuALU) => {
 
     cpuALU.setFlag(CPU_FLAGS.BreakCommand)
 
-    cpu.putMemoryValue(CPU_MEMORY_MAP.Stack + cpu.REG.SP, pcl)
-    cpu.putMemoryValue(CPU_MEMORY_MAP.Stack + (--cpu.REG.SP), pch)
-    cpu.putMemoryValue(CPU_MEMORY_MAP.Stack + (--cpu.REG.SP), cpu.REG.P)
+    cpu.setMemoryValue(CPU_MEMORY_MAP.Stack + cpu.REG.SP, pcl)
+    cpu.setMemoryValue(CPU_MEMORY_MAP.Stack + (--cpu.REG.SP), pch)
+    cpu.setMemoryValue(CPU_MEMORY_MAP.Stack + (--cpu.REG.SP), cpu.REG.P)
 
     cpu.REG.PC = irqInterruptVector
   }

@@ -49,7 +49,7 @@ export default (instructions) => {
     return MEM[memoryAddress] + (MEM[memoryAddress + 1] << 8)
   }
 
-  const putMemoryValue = (memoryAddress, memoryValue, dataSize = CPU_DATA_SIZE.Byte) => {
+  const setMemoryValue = (memoryAddress, memoryValue, dataSize = CPU_DATA_SIZE.Byte) => {
     memoryAddress &= 0xffff
     MEM[memoryAddress] = memoryValue & 0xff
 
@@ -66,11 +66,11 @@ export default (instructions) => {
     MEM,
     REG,
     execute,
-    setRegister,
     getMemoryValue,
-    putMemoryValue,
     getAddressFromAddressingMode,
     getMemoryValueFromAddressingMode,
+    setRegister,
+    setMemoryValue,
     setMemoryValueFromAddressingMode
   }
 

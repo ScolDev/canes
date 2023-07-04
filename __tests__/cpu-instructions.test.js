@@ -41,7 +41,7 @@ describe('CPU Instructions', () => {
     const instruction = [0x25, address]
 
     cpu.setRegister(CPU_REGISTERS.A, 0x2d)
-    cpu.putMemoryValue(address, memoryValue)
+    cpu.setMemoryValue(address, memoryValue)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x28)
@@ -56,7 +56,7 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.A, 0x9a)
     cpu.setRegister(CPU_REGISTERS.X, 0x10)
-    cpu.putMemoryValue(address + cpu.REG.X, memoryValue)
+    cpu.setMemoryValue(address + cpu.REG.X, memoryValue)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x8a)
@@ -71,7 +71,7 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.A, 0x00)
     cpu.setRegister(CPU_REGISTERS.X, 0x10)
-    cpu.putMemoryValue(address + cpu.REG.X, memoryValue)
+    cpu.setMemoryValue(address + cpu.REG.X, memoryValue)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x00)
@@ -85,7 +85,7 @@ describe('CPU Instructions', () => {
     const instruction = [0x2d, address]
 
     cpu.setRegister(CPU_REGISTERS.A, 0x46)
-    cpu.putMemoryValue(address, memoryValue)
+    cpu.setMemoryValue(address, memoryValue)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x00)
@@ -100,7 +100,7 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.A, 0xd3)
     cpu.setRegister(CPU_REGISTERS.X, 0x3f)
-    cpu.putMemoryValue((address + cpu.REG.X) & 0xffff, memoryValue)
+    cpu.setMemoryValue((address + cpu.REG.X) & 0xffff, memoryValue)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x91)
@@ -115,7 +115,7 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.A, 0xd3)
     cpu.setRegister(CPU_REGISTERS.Y, 0x3f)
-    cpu.putMemoryValue((address + cpu.REG.Y) & 0xffff, memoryValue)
+    cpu.setMemoryValue((address + cpu.REG.Y) & 0xffff, memoryValue)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x91)
@@ -132,8 +132,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, 0x92)
     cpu.setRegister(CPU_REGISTERS.X, 0x14)
 
-    cpu.putMemoryValue(address, memoryValue)
-    cpu.putMemoryValue((operand + cpu.REG.X) & 0xff, address, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(address, memoryValue)
+    cpu.setMemoryValue((operand + cpu.REG.X) & 0xff, address, CPU_DATA_SIZE.Word)
 
     cpu.execute(instruction)
 
@@ -151,8 +151,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, 0x13)
     cpu.setRegister(CPU_REGISTERS.Y, 0x4a)
 
-    cpu.putMemoryValue(address + cpu.REG.Y, memoryValue)
-    cpu.putMemoryValue((operand) & 0xff, address, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(address + cpu.REG.Y, memoryValue)
+    cpu.setMemoryValue((operand) & 0xff, address, CPU_DATA_SIZE.Word)
 
     cpu.execute(instruction)
 
@@ -216,7 +216,7 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.P, 0x00)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setMemoryValue(zeroPageOffset, operandB)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x46)
@@ -234,7 +234,7 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.P, 0x01)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setMemoryValue(zeroPageOffset, operandB)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x14)
@@ -250,7 +250,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xff
     const instruction = [0x65, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setMemoryValue(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -271,7 +271,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, 0x00)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.putMemoryValue(zeroPageOffset + xIndex, operandB)
+    cpu.setMemoryValue(zeroPageOffset + xIndex, operandB)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x46)
@@ -291,7 +291,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, 0x01)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.putMemoryValue(zeroPageOffset + xIndex, operandB)
+    cpu.setMemoryValue(zeroPageOffset + xIndex, operandB)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x14)
@@ -308,7 +308,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xff
     const instruction = [0x75, zeroPageOffset]
 
-    cpu.putMemoryValue((zeroPageOffset + xIndex) & 0xff, operandB)
+    cpu.setMemoryValue((zeroPageOffset + xIndex) & 0xff, operandB)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
@@ -328,7 +328,7 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.P, 0x00)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.putMemoryValue(address, operandB)
+    cpu.setMemoryValue(address, operandB)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x68)
@@ -346,7 +346,7 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.P, 0x01)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.putMemoryValue(address, operandB)
+    cpu.setMemoryValue(address, operandB)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x14)
@@ -362,7 +362,7 @@ describe('CPU Instructions', () => {
     const address = 0xffaa
     const instruction = [0x6d, address]
 
-    cpu.putMemoryValue(address, operandB)
+    cpu.setMemoryValue(address, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -383,7 +383,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, 0x00)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.putMemoryValue(address + xIndex, operandB)
+    cpu.setMemoryValue(address + xIndex, operandB)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x68)
@@ -403,7 +403,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, 0x01)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.putMemoryValue(address + xIndex, operandB)
+    cpu.setMemoryValue(address + xIndex, operandB)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x14)
@@ -420,7 +420,7 @@ describe('CPU Instructions', () => {
     const address = 0xffaa
     const instruction = [0x7d, address]
 
-    cpu.putMemoryValue(address + xIndex, operandB)
+    cpu.setMemoryValue(address + xIndex, operandB)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
@@ -442,7 +442,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, 0x00)
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.putMemoryValue(address + yIndex, operandB)
+    cpu.setMemoryValue(address + yIndex, operandB)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x68)
@@ -462,7 +462,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, 0x01)
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.putMemoryValue(address + yIndex, operandB)
+    cpu.setMemoryValue(address + yIndex, operandB)
     cpu.execute(instruction)
 
     expect(cpu.REG.A).toBe(0x14)
@@ -479,7 +479,7 @@ describe('CPU Instructions', () => {
     const address = 0xffaa
     const instruction = [0x79, address]
 
-    cpu.putMemoryValue(address + yIndex, operandB)
+    cpu.setMemoryValue(address + yIndex, operandB)
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
@@ -499,8 +499,8 @@ describe('CPU Instructions', () => {
     const offsetZeroPage = 0xab
     const instruction = [0x61, offsetZeroPage]
 
-    cpu.putMemoryValue(address, operandB)
-    cpu.putMemoryValue(offsetZeroPage + xIndex, address, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(address, operandB)
+    cpu.setMemoryValue(offsetZeroPage + xIndex, address, CPU_DATA_SIZE.Word)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
@@ -520,8 +520,8 @@ describe('CPU Instructions', () => {
     const offsetZeroPage = 0xab
     const instruction = [0x71, offsetZeroPage]
 
-    cpu.putMemoryValue(address + yIndex, operandB)
-    cpu.putMemoryValue(offsetZeroPage, address, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(address + yIndex, operandB)
+    cpu.setMemoryValue(offsetZeroPage, address, CPU_DATA_SIZE.Word)
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
@@ -577,7 +577,7 @@ describe('CPU Instructions', () => {
     const operandValue = 0x81
     const instruction = [0x06, address]
 
-    cpu.putMemoryValue(address, operandValue)
+    cpu.setMemoryValue(address, operandValue)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(address)).toBe(0x02)
@@ -593,7 +593,7 @@ describe('CPU Instructions', () => {
     const instruction = [0x16, address]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.putMemoryValue(address + xIndex, operandValue)
+    cpu.setMemoryValue(address + xIndex, operandValue)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(address + xIndex)).toBe(0x46)
@@ -607,7 +607,7 @@ describe('CPU Instructions', () => {
     const operandValue = 0x9f
     const instruction = [0x0e, address]
 
-    cpu.putMemoryValue(address, operandValue)
+    cpu.setMemoryValue(address, operandValue)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(address)).toBe(0x3e)
@@ -621,7 +621,7 @@ describe('CPU Instructions', () => {
     const operandValue = 0x00
     const instruction = [0x1e, address]
 
-    cpu.putMemoryValue(address, operandValue)
+    cpu.setMemoryValue(address, operandValue)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(address)).toBe(0x00)
@@ -744,7 +744,7 @@ describe('CPU Instructions', () => {
     const address = 0x47
     const instruction = [0x24, address]
 
-    cpu.putMemoryValue(address, operand)
+    cpu.setMemoryValue(address, operand)
     cpu.setRegister(CPU_REGISTERS.A, bitMask)
     cpu.execute(instruction)
 
@@ -759,7 +759,7 @@ describe('CPU Instructions', () => {
     const address = 0x12
     const instruction = [0x24, address]
 
-    cpu.putMemoryValue(address, operand)
+    cpu.setMemoryValue(address, operand)
     cpu.setRegister(CPU_REGISTERS.A, bitMask)
     cpu.execute(instruction)
 
@@ -774,7 +774,7 @@ describe('CPU Instructions', () => {
     const address = 0xa712
     const instruction = [0x2c, address]
 
-    cpu.putMemoryValue(address, operand)
+    cpu.setMemoryValue(address, operand)
     cpu.setRegister(CPU_REGISTERS.A, bitMask)
     cpu.execute(instruction)
 
@@ -789,7 +789,7 @@ describe('CPU Instructions', () => {
     const address = 0x91a4
     const instruction = [0x2c, address]
 
-    cpu.putMemoryValue(address, operand)
+    cpu.setMemoryValue(address, operand)
     cpu.setRegister(CPU_REGISTERS.A, bitMask)
     cpu.execute(instruction)
 
@@ -916,7 +916,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, pStatus)
     cpu.setRegister(CPU_REGISTERS.SP, sPointer)
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
-    cpu.putMemoryValue(CPU_MEMORY_MAP.IRQ_Vector, irqInterruptVector, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(CPU_MEMORY_MAP.IRQ_Vector, irqInterruptVector, CPU_DATA_SIZE.Word)
 
     cpu.execute(instruction)
 
@@ -1098,7 +1098,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x2a
     const instruction = [0xc5, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setMemoryValue(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1113,7 +1113,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xa9
     const instruction = [0xc5, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setMemoryValue(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1128,7 +1128,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x82
     const instruction = [0xc5, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setMemoryValue(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1194,7 +1194,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x2212
     const instruction = [0xcd, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operandB)
+    cpu.setMemoryValue(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1209,7 +1209,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0xe101
     const instruction = [0xcd, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operandB)
+    cpu.setMemoryValue(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1224,7 +1224,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0xe101
     const instruction = [0xcd, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operandB)
+    cpu.setMemoryValue(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1344,7 +1344,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xc1, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.putMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
     cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndexedIndirect, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
@@ -1363,7 +1363,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xc1, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.putMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
     cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndexedIndirect, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
@@ -1382,7 +1382,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xc1, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.putMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
     cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndexedIndirect, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
@@ -1401,7 +1401,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xd1, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
-    cpu.putMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
     cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndirectIndexed, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
@@ -1420,7 +1420,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xd1, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, yIndex)
-    cpu.putMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
     cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndirectIndexed, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
@@ -1439,7 +1439,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xd1, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, yIndex)
-    cpu.putMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
     cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndirectIndexed, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
@@ -1494,7 +1494,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xa0
     const instruction = [0xe4, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setMemoryValue(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.X, operandA)
     cpu.execute(instruction)
 
@@ -1509,7 +1509,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x37
     const instruction = [0xe4, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setMemoryValue(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.X, operandA)
     cpu.execute(instruction)
 
@@ -1524,7 +1524,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xc0
     const instruction = [0xe4, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setMemoryValue(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.X, operandA)
     cpu.execute(instruction)
 
@@ -1539,7 +1539,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x48ac
     const instruction = [0xec, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operandB)
+    cpu.setMemoryValue(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.X, operandA)
     cpu.execute(instruction)
 
@@ -1554,7 +1554,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0xff10
     const instruction = [0xec, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operandB)
+    cpu.setMemoryValue(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.X, operandA)
     cpu.execute(instruction)
 
@@ -1569,7 +1569,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x1010
     const instruction = [0xec, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operandB)
+    cpu.setMemoryValue(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.X, operandA)
     cpu.execute(instruction)
 
@@ -1623,7 +1623,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xb0
     const instruction = [0xc4, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setMemoryValue(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.Y, operandA)
     cpu.execute(instruction)
 
@@ -1638,7 +1638,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x49
     const instruction = [0xc4, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setMemoryValue(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.Y, operandA)
     cpu.execute(instruction)
 
@@ -1653,7 +1653,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x72
     const instruction = [0xc4, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operandB)
+    cpu.setMemoryValue(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.Y, operandA)
     cpu.execute(instruction)
 
@@ -1668,7 +1668,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x6a9a
     const instruction = [0xcc, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operandB)
+    cpu.setMemoryValue(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.Y, operandA)
     cpu.execute(instruction)
 
@@ -1683,7 +1683,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x1010
     const instruction = [0xcc, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operandB)
+    cpu.setMemoryValue(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.Y, operandA)
     cpu.execute(instruction)
 
@@ -1698,7 +1698,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x2394
     const instruction = [0xcc, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operandB)
+    cpu.setMemoryValue(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.Y, operandA)
     cpu.execute(instruction)
 
@@ -1712,7 +1712,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x23
     const instruction = [0xc6, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operand)
+    cpu.setMemoryValue(zeroPageOffset, operand)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0x31)
@@ -1725,7 +1725,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xfa
     const instruction = [0xc6, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operand)
+    cpu.setMemoryValue(zeroPageOffset, operand)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0x00)
@@ -1738,7 +1738,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xd0
     const instruction = [0xc6, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operand)
+    cpu.setMemoryValue(zeroPageOffset, operand)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0xff)
@@ -1796,7 +1796,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x573d
     const instruction = [0xce, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operand)
+    cpu.setMemoryValue(memoryAddress, operand)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(memoryAddress)).toBe(0x7e)
@@ -1809,7 +1809,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x1235
     const instruction = [0xce, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operand)
+    cpu.setMemoryValue(memoryAddress, operand)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(memoryAddress)).toBe(0x00)
@@ -1822,7 +1822,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x734c
     const instruction = [0xce, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operand)
+    cpu.setMemoryValue(memoryAddress, operand)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(memoryAddress)).toBe(0xa8)
@@ -1932,7 +1932,7 @@ describe('CPU Instructions', () => {
     const instruction = [0x45, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.putMemoryValue(zeroPageOffset, operand)
+    cpu.setMemoryValue(zeroPageOffset, operand)
 
     cpu.execute(instruction)
 
@@ -1950,7 +1950,7 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.putMemoryValue(zeroPageOffset + xIndex, operand)
+    cpu.setMemoryValue(zeroPageOffset + xIndex, operand)
 
     cpu.execute(instruction)
 
@@ -1966,7 +1966,7 @@ describe('CPU Instructions', () => {
     const instruction = [0x4d, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.putMemoryValue(memoryAddress, operand)
+    cpu.setMemoryValue(memoryAddress, operand)
 
     cpu.execute(instruction)
 
@@ -1984,7 +1984,7 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.putMemoryValue(memoryAddress + xIndex, operand)
+    cpu.setMemoryValue(memoryAddress + xIndex, operand)
 
     cpu.execute(instruction)
 
@@ -2002,7 +2002,7 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
-    cpu.putMemoryValue(memoryAddress + yIndex, operand)
+    cpu.setMemoryValue(memoryAddress + yIndex, operand)
 
     cpu.execute(instruction)
 
@@ -2021,8 +2021,8 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.putMemoryValue(memoryAddress, operand)
-    cpu.putMemoryValue(zeroPageOffset + xIndex, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(memoryAddress, operand)
+    cpu.setMemoryValue(zeroPageOffset + xIndex, memoryAddress, CPU_DATA_SIZE.Word)
 
     cpu.execute(instruction)
 
@@ -2041,8 +2041,8 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.putMemoryValue(memoryAddress + yIndex, operand)
-    cpu.putMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(memoryAddress + yIndex, operand)
+    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
 
     cpu.execute(instruction)
 
@@ -2056,7 +2056,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x60
     const instruction = [0xe6, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operand)
+    cpu.setMemoryValue(zeroPageOffset, operand)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0x63)
@@ -2069,7 +2069,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xd0
     const instruction = [0xe6, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operand)
+    cpu.setMemoryValue(zeroPageOffset, operand)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0x00)
@@ -2082,7 +2082,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x39
     const instruction = [0xe6, zeroPageOffset]
 
-    cpu.putMemoryValue(zeroPageOffset, operand)
+    cpu.setMemoryValue(zeroPageOffset, operand)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0xfb)
@@ -2140,7 +2140,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x482c
     const instruction = [0xee, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operand)
+    cpu.setMemoryValue(memoryAddress, operand)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(memoryAddress)).toBe(0x90)
@@ -2153,7 +2153,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0xff00
     const instruction = [0xee, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operand)
+    cpu.setMemoryValue(memoryAddress, operand)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(memoryAddress)).toBe(0x00)
@@ -2166,7 +2166,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0xbbaa
     const instruction = [0xee, memoryAddress]
 
-    cpu.putMemoryValue(memoryAddress, operand)
+    cpu.setMemoryValue(memoryAddress, operand)
     cpu.execute(instruction)
 
     expect(cpu.getMemoryValue(memoryAddress)).toBe(0xd1)

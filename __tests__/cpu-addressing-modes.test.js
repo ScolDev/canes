@@ -31,7 +31,7 @@ describe('Test for CPU Addressing Modes', () => {
     const memoryValue = 0x78
     const zeroPageOffset = 0x10
     const memoryAddress = CPU_MEMORY_MAP.ZeroPage + zeroPageOffset
-    cpu.putMemoryValue(memoryAddress, memoryValue)
+    cpu.setMemoryValue(memoryAddress, memoryValue)
 
     const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPage, zeroPageOffset)
 
@@ -45,7 +45,7 @@ describe('Test for CPU Addressing Modes', () => {
     const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((zeroPageOffset + registerXValue) & 0xff)
 
     cpu.setRegister(CPU_REGISTERS.X, registerXValue)
-    cpu.putMemoryValue(memoryAddress, memoryValue)
+    cpu.setMemoryValue(memoryAddress, memoryValue)
 
     const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, zeroPageOffset)
 
@@ -59,7 +59,7 @@ describe('Test for CPU Addressing Modes', () => {
     const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((zeroPageOffset + registerYValue) & 0xff)
 
     cpu.setRegister(CPU_REGISTERS.Y, registerYValue)
-    cpu.putMemoryValue(memoryAddress, memoryValue)
+    cpu.setMemoryValue(memoryAddress, memoryValue)
 
     const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageY, zeroPageOffset)
 
@@ -82,7 +82,7 @@ describe('Test for CPU Addressing Modes', () => {
 
   test('should get data from Absolute addressing mode.', () => {
     const memoryAddress = 0xabcd
-    cpu.putMemoryValue(memoryAddress, 0x56)
+    cpu.setMemoryValue(memoryAddress, 0x56)
 
     const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.Absolute, memoryAddress)
     expect(value).toBe(0x56)
@@ -92,7 +92,7 @@ describe('Test for CPU Addressing Modes', () => {
     const memoryAddress = 0xff10
     cpu.setRegister(CPU_REGISTERS.X, 0xff)
 
-    cpu.putMemoryValue(memoryAddress + cpu.REG.X, 0x56)
+    cpu.setMemoryValue(memoryAddress + cpu.REG.X, 0x56)
     const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, memoryAddress)
 
     expect(value).toBe(0x56)
@@ -102,14 +102,14 @@ describe('Test for CPU Addressing Modes', () => {
     const memoryAddress = 0xff20
     cpu.setRegister(CPU_REGISTERS.Y, 0xff)
 
-    cpu.putMemoryValue(memoryAddress + cpu.REG.Y, 0x56)
+    cpu.setMemoryValue(memoryAddress + cpu.REG.Y, 0x56)
     const value = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteY, memoryAddress)
     expect(value).toBe(0x56)
   })
 
   test('should get data from Indirect addressing mode.', () => {
     const memoryAddress = 0xabcde
-    cpu.putMemoryValue(memoryAddress, 0x1234, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(memoryAddress, 0x1234, CPU_DATA_SIZE.Word)
 
     const LSB = cpu.getMemoryValue(memoryAddress, CPU_DATA_SIZE.Byte)
     const MSB = cpu.getMemoryValue(memoryAddress + 1, CPU_DATA_SIZE.Byte)
@@ -126,8 +126,8 @@ describe('Test for CPU Addressing Modes', () => {
     const zeroPageOffset = 0x10
 
     cpu.setRegister(CPU_REGISTERS.X, xRegistervalue)
-    cpu.putMemoryValue(memoryAddress, 0xab, CPU_DATA_SIZE.Byte)
-    cpu.putMemoryValue(zeroPageOffset + xRegistervalue, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(memoryAddress, 0xab, CPU_DATA_SIZE.Byte)
+    cpu.setMemoryValue(zeroPageOffset + xRegistervalue, memoryAddress, CPU_DATA_SIZE.Word)
 
     const LSB = cpu.getMemoryValue(zeroPageOffset + xRegistervalue, CPU_DATA_SIZE.Byte)
     const MSB = cpu.getMemoryValue(zeroPageOffset + xRegistervalue + 1, CPU_DATA_SIZE.Byte)
@@ -144,9 +144,9 @@ describe('Test for CPU Addressing Modes', () => {
     const zeroPageOffset = 0xff
 
     cpu.setRegister(CPU_REGISTERS.X, xRegistervalue)
-    cpu.putMemoryValue(memoryAddress, 0xcd, CPU_DATA_SIZE.Byte)
-    cpu.putMemoryValue(zeroPageOffset, 0x00, CPU_DATA_SIZE.Byte)
-    cpu.putMemoryValue((zeroPageOffset + 1) & 0xff, 0x80, CPU_DATA_SIZE.Byte)
+    cpu.setMemoryValue(memoryAddress, 0xcd, CPU_DATA_SIZE.Byte)
+    cpu.setMemoryValue(zeroPageOffset, 0x00, CPU_DATA_SIZE.Byte)
+    cpu.setMemoryValue((zeroPageOffset + 1) & 0xff, 0x80, CPU_DATA_SIZE.Byte)
 
     const memoryValue = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndexedIndirect, zeroPageOffset)
     expect(memoryValue).toBe(0xcd)
@@ -158,8 +158,8 @@ describe('Test for CPU Addressing Modes', () => {
     const zeroPageOffset = 0x10
 
     cpu.setRegister(CPU_REGISTERS.Y, yRegisterValue)
-    cpu.putMemoryValue(zeroPageOffset, zeroPagevalue, CPU_DATA_SIZE.Word)
-    cpu.putMemoryValue(zeroPagevalue + yRegisterValue, 0xab, CPU_DATA_SIZE.Byte)
+    cpu.setMemoryValue(zeroPageOffset, zeroPagevalue, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(zeroPagevalue + yRegisterValue, 0xab, CPU_DATA_SIZE.Byte)
 
     const memoryValue = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndirectIndexed, zeroPageOffset)
     expect(memoryValue).toBe(0xab)
@@ -171,9 +171,9 @@ describe('Test for CPU Addressing Modes', () => {
     const zeroPageOffset = 0xff
 
     cpu.setRegister(CPU_REGISTERS.Y, yRegisterValue)
-    cpu.putMemoryValue(zeroPageOffset, 0x00, CPU_DATA_SIZE.Byte)
-    cpu.putMemoryValue(0x00, 0x80, CPU_DATA_SIZE.Byte)
-    cpu.putMemoryValue(zeroPagevalue + yRegisterValue, 0xab, CPU_DATA_SIZE.Byte)
+    cpu.setMemoryValue(zeroPageOffset, 0x00, CPU_DATA_SIZE.Byte)
+    cpu.setMemoryValue(0x00, 0x80, CPU_DATA_SIZE.Byte)
+    cpu.setMemoryValue(zeroPagevalue + yRegisterValue, 0xab, CPU_DATA_SIZE.Byte)
 
     const memoryValue = cpu.getMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndirectIndexed, zeroPageOffset)
     expect(memoryValue).toBe(0xab)
