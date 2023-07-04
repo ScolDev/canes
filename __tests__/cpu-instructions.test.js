@@ -2242,4 +2242,13 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
+
+  test('Emulate the JMP instruction for Absolute addressing mode', () => {
+    const operand = 0x2030
+    const instruction = [0x4c, operand]
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x2030)
+  })
 })

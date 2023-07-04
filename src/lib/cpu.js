@@ -1,7 +1,9 @@
+import CpuAddressingModes from './cpu-addressing-modes'
+import CpuInstructions from './cpu-instructions'
+
+import CPU_ADDRESSING_MODES from './cpu-consts/cpu-addressing-modes'
 import CPU_REGISTERS from './cpu-consts/cpu-registers'
-import CPU_ADDRESSING_MODES from './cpu-addressing-modes'
 import CPU_DATA_SIZE from './cpu-consts/cpu-data-size'
-import CPU_INSTRUCTIONS from './cpu-instructions'
 import CPU_ALU from './cpu-alu'
 
 export default (instructions) => {
@@ -20,6 +22,12 @@ export default (instructions) => {
       REG.PC = value & 0xffff
     } else {
       REG[register] = value & 0xff
+    }
+  }
+
+  const getAddressFromAddressingMode = (addressingMode, operand) => {
+    if (addressingMode === CPU_ADDRESSING_MODES.Absolute) {
+      return operand
     }
   }
 
@@ -61,13 +69,14 @@ export default (instructions) => {
     setRegister,
     getMemoryValue,
     putMemoryValue,
+    getAddressFromAddressingMode,
     getMemoryValueFromAddressingMode,
     setMemoryValueFromAddressingMode
   }
 
   const cpuALU = CPU_ALU(cpuApi)
-  const Instructions = CPU_INSTRUCTIONS(cpuApi, cpuALU)
-  const AddressingModes = CPU_ADDRESSING_MODES(cpuApi, cpuALU)
+  const Instructions = CpuInstructions(cpuApi, cpuALU)
+  const AddressingModes = CpuAddressingModes(cpuApi, cpuALU)
 
   return cpuApi
 }
