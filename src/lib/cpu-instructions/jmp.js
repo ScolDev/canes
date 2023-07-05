@@ -1,4 +1,5 @@
 import CPU_ADDRESSING_MODES from '../cpu-consts/cpu-addressing-modes'
+import CPU_REGISTERS from '../cpu-consts/cpu-registers'
 
 export default (cpu) => {
   const addressingModes = {
@@ -9,7 +10,7 @@ export default (cpu) => {
     const addressingMode = addressingModes[opcode]
     const addressValue = cpu.getAddressFromAddressingMode(addressingMode, operand)
 
-    cpu.REG.PC = addressValue
+    cpu.setRegister(CPU_REGISTERS.PC, addressValue)
   }
 
   return {

@@ -1,4 +1,5 @@
 import CPU_FLAGS from '../cpu-consts/cpu-flags'
+import CPU_REGISTERS from '../cpu-consts/cpu-registers'
 import CPU_ADDRESSING_MODES from '../cpu-consts/cpu-addressing-modes'
 
 export default (cpu, cpuALU) => {
@@ -20,7 +21,7 @@ export default (cpu, cpuALU) => {
     const operandB = cpu.REG.A
 
     const result = cpu.REG.A + operandA + carryFlag
-    cpu.REG.A = result & 0xff
+    cpu.setRegister(CPU_REGISTERS.A, result & 0xff)
 
     updateStatus(result, operandA, operandB)
     return cpu.REG.A

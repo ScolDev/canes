@@ -1,14 +1,15 @@
 import CPU_FLAGS from './cpu-consts/cpu-flags'
+import CPU_REGISTERS from './cpu-consts/cpu-registers'
 
 export default (cpu) => {
   const setFlag = (flag, bitValue = 0x01) => {
     const byteMaskOn = bitValue << flag
-    cpu.REG.P = cpu.REG.P | byteMaskOn
+    cpu.setRegister(CPU_REGISTERS.P, cpu.REG.P | byteMaskOn)
   }
 
   const clearFlag = (flag) => {
     const byteMaskOff = (0x01 << flag) ^ 0xff
-    cpu.REG.P = cpu.REG.P & byteMaskOff
+    cpu.setRegister(CPU_REGISTERS.P, cpu.REG.P & byteMaskOff)
   }
 
   const getFlag = (flag) => {

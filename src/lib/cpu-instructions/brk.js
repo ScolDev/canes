@@ -1,6 +1,7 @@
 import CPU_DATA_SIZE from '../cpu-consts/cpu-data-size'
 import CPU_FLAGS from '../cpu-consts/cpu-flags'
 import CPU_MEMORY_MAP from '../cpu-consts/cpu-memory-map'
+import CPU_REGISTERS from '../cpu-consts/cpu-registers'
 
 export default (cpu, cpuALU) => {
   const execute = (opcode, operand) => {
@@ -14,7 +15,7 @@ export default (cpu, cpuALU) => {
     cpu.setMemoryValue(CPU_MEMORY_MAP.Stack + (--cpu.REG.SP), pch)
     cpu.setMemoryValue(CPU_MEMORY_MAP.Stack + (--cpu.REG.SP), cpu.REG.P)
 
-    cpu.REG.PC = irqInterruptVector
+    cpu.setRegister(CPU_REGISTERS.PC, irqInterruptVector)
   }
 
   return {

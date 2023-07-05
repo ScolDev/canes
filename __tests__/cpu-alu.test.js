@@ -21,7 +21,7 @@ describe('Tests for CPU_ALU module.', () => {
   })
 
   test('should get flag values from P cpu register.', () => {
-    cpu.REG.P = 0b10000001
+    cpu.setRegister(CPU_REGISTERS.P, 0b10000001)
 
     const carryFlag = cpuALU.getFlag(CPU_FLAGS.CarryFlag)
     const zeroFlag = cpuALU.getFlag(CPU_FLAGS.ZeroFlag)

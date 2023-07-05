@@ -1,10 +1,11 @@
 import CPU_MEMORY_MAP from './cpu-consts/cpu-memory-map'
 import CPU_DATA_SIZE from './cpu-consts/cpu-data-size'
+import CPU_REGISTERS from './cpu-consts/cpu-registers'
 
 export default (cpu, cpuALU) => {
   const acumulator = {
     get: () => cpu.REG.A,
-    set: (value, operand) => (cpu.REG.A = value)
+    set: (value, operand) => (cpu.setRegister(CPU_REGISTERS.A, value))
   }
 
   const immediate = {
