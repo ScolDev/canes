@@ -2251,4 +2251,15 @@ describe('CPU Instructions', () => {
 
     expect(cpu.REG.PC).toBe(0x2030)
   })
+
+  test('Emulate the JMP instruction for Indirect addressing mode', () => {
+    const operand = 0x1230
+    const address = 0x3212
+    const instruction = [0x6c, operand]
+
+    cpu.setMemoryValue(operand, address, CPU_DATA_SIZE.Word)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(address)
+  })
 })

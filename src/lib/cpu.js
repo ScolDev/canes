@@ -29,6 +29,8 @@ export default (instructions) => {
     if (addressingMode === CPU_ADDRESSING_MODES.Absolute) {
       return operand
     }
+
+    return getMemoryValueFromAddressingMode(addressingMode, operand)
   }
 
   const getMemoryValueFromAddressingMode = (addressingMode, operand) => {

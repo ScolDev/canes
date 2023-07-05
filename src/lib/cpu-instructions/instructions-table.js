@@ -128,6 +128,7 @@ export default (cpu, cpuALU) => {
     0xfe: inc,
     0xe8: inx,
     0xc8: iny,
-    0x4c: jmp
+    0x4c: jmp,
+    0x6c: jmp
   }
 }

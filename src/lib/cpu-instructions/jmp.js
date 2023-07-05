@@ -3,7 +3,8 @@ import CPU_REGISTERS from '../cpu-consts/cpu-registers'
 
 export default (cpu) => {
   const addressingModes = {
-    0x4c: CPU_ADDRESSING_MODES.Absolute
+    0x4c: CPU_ADDRESSING_MODES.Absolute,
+    0x6c: CPU_ADDRESSING_MODES.Indirect
   }
 
   const execute = (opcode, operand) => {
