@@ -30,6 +30,10 @@ export default (instructions) => {
       return operand
     }
 
+    if (operand & 0x00ff === 0xff) {
+      return getMemoryValue(operand) + (getMemoryValue(operand & 0xff00) << 8)
+    }
+
     return getMemoryValueFromAddressingMode(addressingMode, operand)
   }
 

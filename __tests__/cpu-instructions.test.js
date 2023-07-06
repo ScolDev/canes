@@ -2244,8 +2244,8 @@ describe('CPU Instructions', () => {
   })
 
   test('Emulate the JMP instruction for Absolute addressing mode', () => {
-    const operand = 0x2030
-    const instruction = [0x4c, operand]
+    const memoryAddress = 0x2030
+    const instruction = [0x4c, memoryAddress]
 
     cpu.execute(instruction)
 
@@ -2253,13 +2253,29 @@ describe('CPU Instructions', () => {
   })
 
   test('Emulate the JMP instruction for Indirect addressing mode', () => {
-    const operand = 0x1230
-    const address = 0x3212
-    const instruction = [0x6c, operand]
+    const memoryAddress = 0x1230
+    const vector = 0x3212
+    const instruction = [0x6c, memoryAddress]
 
-    cpu.setMemoryValue(operand, address, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(memoryAddress, vector, CPU_DATA_SIZE.Word)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(address)
+    expect(cpu.REG.PC).toBe(vector)
+  })
+
+  test('Emulate the JMP instruction for Indirect addressing mode and its bug present when accessing by the indirect way', () => {
+    // See more about this 6502 bug: https://www.nesdev.org/obelisk-6502-guide/reference.html#JMP
+    const memoryAddress = 0x40ff
+    const memoryAddressWithMask = memoryAddress & 0xff00
+    const vector = 0xa4ca
+    const anotherMemoryByte = 0x5f
+
+    const instruction = [0x6c, memoryAddress]
+
+    cpu.setMemoryValue(memoryAddress, vector, CPU_DATA_SIZE.Word)
+    cpu.setMemoryValue(memoryAddressWithMask, anotherMemoryByte)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(0x5fca)
   })
 })
