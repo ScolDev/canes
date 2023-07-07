@@ -10,7 +10,7 @@ export default (instructions) => {
   const MEM = Array(0xffff).fill(0x00)
   const REG = {
     PC: 0x0000,
-    SP: 0xff,
+    SP: 0x1ff,
     A: 0x00,
     X: 0x00,
     Y: 0x00,

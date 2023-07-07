@@ -26,6 +26,7 @@ import Inc from './inc'
 import Inx from './inx'
 import Iny from './iny'
 import Jmp from './jmp'
+import Jsr from './jsr'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -56,6 +57,7 @@ export default (cpu, cpuALU) => {
   const inx = Inx(cpu, cpuALU)
   const iny = Iny(cpu, cpuALU)
   const jmp = Jmp(cpu)
+  const jsr = Jsr(cpu)
 
   return {
     0x69: adc,
@@ -129,6 +131,7 @@ export default (cpu, cpuALU) => {
     0xe8: inx,
     0xc8: iny,
     0x4c: jmp,
-    0x6c: jmp
+    0x6c: jmp,
+    0x20: jsr
   }
 }

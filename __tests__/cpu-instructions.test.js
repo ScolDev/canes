@@ -2278,4 +2278,20 @@ describe('CPU Instructions', () => {
 
     expect(cpu.REG.PC).toBe(0x5fca)
   })
+
+  test('Emulate the JSR instruction for Absolute addressing mode', () => {
+    const operand = 0x48af
+    const stackPointer = 0xff
+    const memoryStackAddress = stackPointer + 0x100
+    const currentPCAddress = 0x7a10
+    const instruction = [0x20, operand]
+
+    cpu.setRegister(CPU_REGISTERS.SP, stackPointer)
+    cpu.setRegister(CPU_REGISTERS.PC, currentPCAddress)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(operand)
+    expect(cpu.REG.SP).toBe(stackPointer - 2)
+    expect(cpu.getMemoryValue(memoryStackAddress - 1, CPU_DATA_SIZE.Word)).toBe(currentPCAddress + 2)
+  })
 })
