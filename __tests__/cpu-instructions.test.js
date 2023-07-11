@@ -2294,4 +2294,131 @@ describe('CPU Instructions', () => {
     expect(cpu.REG.SP).toBe(stackPointer - 2)
     expect(cpu.getMemoryValue(memoryStackAddress - 1, CPU_DATA_SIZE.Word)).toBe(currentPCAddress + 2)
   })
+
+  test('Emulate the LDA instruction for Immediate Addressing mode', () => {
+    const operand = 0x9a
+    const instruction = [0xa9, operand]
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x9a)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the LDA instruction for Immediate Addressing mode with ZeroFlag set', () => {
+    const operand = 0x00
+    const instruction = [0xa9, operand]
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the LDA instruction for ZeroPage Addressing mode', () => {
+    const zeroPageOffset = 0x24
+    const memoryValue = 0x3f
+    const instruction = [0xa5, zeroPageOffset]
+
+    cpu.setMemoryValue(zeroPageOffset, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(memoryValue)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the LDA instruction for ZeroPage, X Addressing mode', () => {
+    const zeroPageOffset = 0x7a
+    const memoryValue = 0xa9
+    const xIndex = 0x22
+    const instruction = [0xb5, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setMemoryValue(zeroPageOffset + xIndex, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(memoryValue)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the LDA instruction for Absolute Addressing mode', () => {
+    const memoryAddress = 0xac01
+    const memoryValue = 0x00
+    const instruction = [0xad, memoryAddress]
+
+    cpu.setMemoryValue(memoryAddress, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(memoryValue)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the LDA instruction for Absolute, X Addressing mode', () => {
+    const memoryAddress = 0xcc0a
+    const memoryValue = 0xf0
+    const xIndex = 0x51
+    const instruction = [0xbd, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setMemoryValue(memoryAddress + xIndex, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(memoryValue)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the LDA instruction for Absolute, Y Addressing mode', () => {
+    const memoryAddress = 0x0015
+    const memoryValue = 0x3c
+    const yIndex = 0xac
+    const instruction = [0xb9, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.Y, yIndex)
+    cpu.setMemoryValue(memoryAddress + yIndex, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(memoryValue)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the LDA instruction for IndexedIndirect Addressing mode', () => {
+    const zeroPageOffset = 0xb1
+    const memoryAddress = 0x90af
+    const memoryValue = 0x71
+    const xIndex = 0x12
+    const instruction = [0xa1, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setMemoryValue(memoryAddress, memoryValue)
+    cpu.setMemoryValue(zeroPageOffset + xIndex, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(memoryValue)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the LDA instruction for IndirectIndexed Addressing mode', () => {
+    const zeroPageOffset = 0xca
+    const memoryAddress = 0xff00
+    const memoryValue = 0x9f
+    const yIndex = 0x12
+    const instruction = [0xb1, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.Y, yIndex)
+    cpu.setMemoryValue(memoryAddress + yIndex, memoryValue)
+    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(memoryValue)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
 })
