@@ -2577,4 +2577,90 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
+
+  test('Emulate the LSR instruction for Accumulator Addressing mode', () => {
+    const accumulatorValue = 0b10001101
+    const instruction = [0x4a]
+
+    cpu.setRegister(CPU_REGISTERS.A, accumulatorValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0b01000110)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the LSR instruction for Accumulator Addressing mode with ZeroFlag set', () => {
+    const accumulatorValue = 0b00000001
+    const instruction = [0x4a]
+
+    cpu.setRegister(CPU_REGISTERS.A, accumulatorValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0b00000000)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the LSR instruction for ZeroPage Addressing mode', () => {
+    const zeroPageOffset = 0x95
+    const memoryValue = 0b10100010
+    const instruction = [0x46, zeroPageOffset]
+
+    cpu.setMemoryValue(zeroPageOffset, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0b01010001)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the LSR instruction for ZeroPage, X Addressing mode', () => {
+    const zeroPageOffset = 0x21
+    const memoryValue = 0b00000010
+    const xIndex = 0x12
+    const instruction = [0x56, zeroPageOffset]
+
+    cpu.setMemoryValue(zeroPageOffset + xIndex, memoryValue)
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(zeroPageOffset + xIndex)).toBe(0b00000001)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the LSR instruction for Absolute Addressing mode', () => {
+    const memoryAddress = 0x3100
+    const memoryValue = 0b10101011
+    const instruction = [0x4e, memoryAddress]
+
+    cpu.setMemoryValue(memoryAddress, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress)).toBe(0b01010101)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the LSR instruction for Absolute, X Addressing mode', () => {
+    const memoryAddress = 0x1001
+    const memoryValue = 0b00000001
+    const xIndex = 0xc0
+    const instruction = [0x5e, memoryAddress]
+
+    cpu.setMemoryValue(memoryAddress + xIndex, memoryValue)
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(0x0)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
 })

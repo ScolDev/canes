@@ -30,6 +30,7 @@ import Jsr from './jsr'
 import Lda from './lda'
 import Ldx from './ldx'
 import Ldy from './ldy'
+import Lsr from './lsr'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -64,6 +65,7 @@ export default (cpu, cpuALU) => {
   const lda = Lda(cpu, cpuALU)
   const ldx = Ldx(cpu, cpuALU)
   const ldy = Ldy(cpu, cpuALU)
+  const lsr = Lsr(cpu, cpuALU)
 
   return {
     0x69: adc,
@@ -156,6 +158,11 @@ export default (cpu, cpuALU) => {
     0xa4: ldy,
     0xb4: ldy,
     0xac: ldy,
-    0xbc: ldy
+    0xbc: ldy,
+    0x4a: lsr,
+    0x46: lsr,
+    0x56: lsr,
+    0x4e: lsr,
+    0x5e: lsr
   }
 }
