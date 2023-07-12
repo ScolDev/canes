@@ -28,6 +28,8 @@ import Iny from './iny'
 import Jmp from './jmp'
 import Jsr from './jsr'
 import Lda from './lda'
+import Ldx from './ldx'
+import Ldy from './ldy'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -60,6 +62,8 @@ export default (cpu, cpuALU) => {
   const jmp = Jmp(cpu)
   const jsr = Jsr(cpu)
   const lda = Lda(cpu, cpuALU)
+  const ldx = Ldx(cpu, cpuALU)
+  const ldy = Ldy(cpu, cpuALU)
 
   return {
     0x69: adc,
@@ -142,6 +146,16 @@ export default (cpu, cpuALU) => {
     0xbd: lda,
     0xb9: lda,
     0xa1: lda,
-    0xb1: lda
+    0xb1: lda,
+    0xa2: ldx,
+    0xa6: ldx,
+    0xb6: ldx,
+    0xae: ldx,
+    0xbe: ldx,
+    0xa0: ldy,
+    0xa4: ldy,
+    0xb4: ldy,
+    0xac: ldy,
+    0xbc: ldy
   }
 }
