@@ -1,5 +1,4 @@
 # CaNES
----
 
 Es un emulador de la Nintendo NES (Nintendo Entertainment System) desarrollado con JavaScript vanilla e implementando la metodología de desarrollo guiado por pruebas TDD (Test Driven Development).
 
