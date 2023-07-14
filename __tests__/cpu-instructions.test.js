@@ -2238,7 +2238,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.Y, operand)
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(0x00)
+    expect(cpu.REG.Y).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
