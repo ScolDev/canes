@@ -31,6 +31,8 @@ import Lda from './lda'
 import Ldx from './ldx'
 import Ldy from './ldy'
 import Lsr from './lsr'
+import Nop from './nop'
+import Ora from './ora'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -66,6 +68,8 @@ export default (cpu, cpuALU) => {
   const ldx = Ldx(cpu, cpuALU)
   const ldy = Ldy(cpu, cpuALU)
   const lsr = Lsr(cpu, cpuALU)
+  const nop = Nop(cpu)
+  const ora = Ora(cpu, cpuALU)
 
   return {
     0x69: adc,
@@ -163,6 +167,15 @@ export default (cpu, cpuALU) => {
     0x46: lsr,
     0x56: lsr,
     0x4e: lsr,
-    0x5e: lsr
+    0x5e: lsr,
+    0xea: nop,
+    0x09: ora,
+    0x05: ora,
+    0x15: ora,
+    0x0d: ora,
+    0x1d: ora,
+    0x19: ora,
+    0x01: ora,
+    0x11: ora
   }
 }

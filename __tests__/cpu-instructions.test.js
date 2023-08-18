@@ -2663,4 +2663,166 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
+
+  test('Emulate the NOP instruction for Implied Addressing mode', () => {
+    const currentPC = 0x8018
+    const instruction = [0xea]
+
+    cpu.setRegister(CPU_REGISTERS.PC, currentPC)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(currentPC + 1)
+  })
+
+  test('Emulate the ORA instruction for Immediate addressing mode with ZeroFlag set', () => {
+    const operandA = 0x00
+    const operandB = 0x00
+    const instruction = [0x09, operandB]
+
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the ORA instruction for Immediate addressing mode with NegativeFlag set', () => {
+    const operandA = 0b10101001
+    const operandB = 0b00000001
+    const instruction = [0x09, operandB]
+
+    cpu.setRegister(CPU_REGISTERS.A, operandA)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0b10101001)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the ORA instruction for ZeroPage', () => {
+    const operand = 0xd5
+    const zeroPageOffset = 0x20
+    const acummulator = 0x10
+    const instruction = [0x05, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.A, acummulator)
+    cpu.setMemoryValue(zeroPageOffset, operand)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0xd5)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the ORA instruction for ZeroPageX', () => {
+    const operand = 0xb1
+    const zeroPageOffset = 0x72
+    const xIndex = 0x2a
+    const acummulator = 0xca
+    const instruction = [0x15, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, acummulator)
+    cpu.setMemoryValue(zeroPageOffset + xIndex, operand)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0xfb)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the ORA instruction for Absolute', () => {
+    const operand = 0x3f
+    const memoryAddress = 0xd010
+    const acummulator = 0xf1
+    const instruction = [0x0d, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.A, acummulator)
+    cpu.setMemoryValue(memoryAddress, operand)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0xff)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the ORA instruction for AbsoluteX', () => {
+    const operand = 0x2f
+    const memoryAddress = 0xa100
+    const xIndex = 0x38
+    const acummulator = 0xa3
+    const instruction = [0x1d, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.A, acummulator)
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setMemoryValue(memoryAddress + xIndex, operand)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0xaf)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the ORA instruction for AbsoluteY', () => {
+    const operand = 0x01
+    const memoryAddress = 0xf000
+    const yIndex = 0x12
+    const acummulator = 0x0f
+    const instruction = [0x19, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.A, acummulator)
+    cpu.setRegister(CPU_REGISTERS.Y, yIndex)
+    cpu.setMemoryValue(memoryAddress + yIndex, operand)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x0f)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the ORA instruction for IndexedIndirect', () => {
+    const operand = 0xb1
+    const xIndex = 0xa0
+    const zeroPageOffset = 0x0d
+    const memoryAddress = 0xd0df
+    const acummulator = 0x01
+    const instruction = [0x01, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, acummulator)
+    cpu.setMemoryValue(memoryAddress, operand)
+    cpu.setMemoryValue(zeroPageOffset + xIndex, memoryAddress, CPU_DATA_SIZE.Word)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0xb1)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the ORA instruction for IndirectIndexed', () => {
+    const operand = 0xaa
+    const yIndex = 0x28
+    const zeroPageOffset = 0x71
+    const memoryAddress = 0x401a
+    const acummulator = 0x0a
+    const instruction = [0x11, zeroPageOffset]
+
+    cpu.setRegister(CPU_REGISTERS.Y, yIndex)
+    cpu.setRegister(CPU_REGISTERS.A, acummulator)
+    cpu.setMemoryValue(memoryAddress + yIndex, operand)
+    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
+
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0xaa)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
 })
