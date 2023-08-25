@@ -2825,4 +2825,87 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
+
+  test('Emulate the PHA instruction for Implied addressing mode', () => {
+    const accumulator = 0x3f
+    const stackPointer = 0xff
+    const memoryAddress = 0x100 + stackPointer
+    const instruction = [0x48]
+
+    cpu.setRegister(CPU_REGISTERS.SP, stackPointer)
+    cpu.setRegister(CPU_REGISTERS.A, accumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress)).toBe(accumulator)
+    expect(cpu.REG.SP).toBe(0xfe)
+  })
+
+  test('Emulate the PHP instruction for Implied addressing mode', () => {
+    const processorStatus = 0xf1
+    const stackPointer = 0xd1
+    const memoryAddress = 0x100 + stackPointer
+    const instruction = [0x08]
+
+    cpu.setRegister(CPU_REGISTERS.SP, stackPointer)
+    cpu.setRegister(CPU_REGISTERS.P, processorStatus)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress)).toBe(processorStatus)
+    expect(cpu.REG.SP).toBe(0xd0)
+  })
+
+  test('Emulate the PLA instruction for Implied addressing mode with NegativeFlag set', () => {
+    const stackValue = 0xa6
+    const stackPointer = 0x37
+    const memoryAddress = 0x100 + stackPointer
+    const instruction = [0x68]
+
+    cpu.setMemoryValue(memoryAddress, stackValue)
+    cpu.setRegister(CPU_REGISTERS.SP, stackPointer)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(stackValue)
+    expect(cpu.REG.SP).toBe(0x38)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the PLA instruction for Implied addressing mode with ZeroFlag set', () => {
+    const previousAccumulator = 0x32
+    const stackValue = 0x00
+    const stackPointer = 0xfa
+    const memoryAddress = 0x100 + stackPointer
+    const instruction = [0x68]
+
+    cpu.setMemoryValue(memoryAddress, stackValue)
+    cpu.setRegister(CPU_REGISTERS.A, previousAccumulator)
+    cpu.setRegister(CPU_REGISTERS.SP, stackPointer)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(stackValue)
+    expect(cpu.REG.SP).toBe(0xfb)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the PLP instruction for Implied addressing mode', () => {
+    const previousProcessorStatus = 0x11110000
+    const stackValue = 0b00001111
+    const stackPointer = 0xcf
+    const memoryAddress = 0x100 + stackPointer
+    const instruction = [0x28]
+
+    cpu.setMemoryValue(memoryAddress, stackValue)
+    cpu.setRegister(CPU_REGISTERS.P, previousProcessorStatus)
+    cpu.setRegister(CPU_REGISTERS.SP, stackPointer)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.P).toBe(stackValue)
+    expect(cpu.REG.SP).toBe(0xd0)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.InterruptDisable)).toBe(0x01)
+    // This flag is ignored by the NES
+    expect(cpuALU.getFlag(CPU_FLAGS.DecimalModeFlag)).toBe(0x01)
+  })
 })

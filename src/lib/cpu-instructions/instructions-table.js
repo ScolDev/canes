@@ -33,6 +33,10 @@ import Ldy from './ldy'
 import Lsr from './lsr'
 import Nop from './nop'
 import Ora from './ora'
+import Pha from './pha'
+import Php from './php'
+import Pla from './pla'
+import Plp from './plp'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -70,6 +74,10 @@ export default (cpu, cpuALU) => {
   const lsr = Lsr(cpu, cpuALU)
   const nop = Nop(cpu)
   const ora = Ora(cpu, cpuALU)
+  const pha = Pha(cpu)
+  const php = Php(cpu)
+  const pla = Pla(cpu, cpuALU)
+  const plp = Plp(cpu)
 
   return {
     0x69: adc,
@@ -176,6 +184,10 @@ export default (cpu, cpuALU) => {
     0x1d: ora,
     0x19: ora,
     0x01: ora,
-    0x11: ora
+    0x11: ora,
+    0x48: pha,
+    0x08: php,
+    0x68: pla,
+    0x28: plp
   }
 }
