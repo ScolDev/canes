@@ -38,6 +38,8 @@ import Php from './php'
 import Pla from './pla'
 import Plp from './plp'
 import Rol from './rol'
+import Ror from './ror'
+import Rti from './rti'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -80,6 +82,8 @@ export default (cpu, cpuALU) => {
   const pla = Pla(cpu, cpuALU)
   const plp = Plp(cpu)
   const rol = Rol(cpu, cpuALU)
+  const ror = Ror(cpu, cpuALU)
+  const rti = Rti(cpu)
 
   return {
     0x69: adc,
@@ -195,6 +199,12 @@ export default (cpu, cpuALU) => {
     0x26: rol,
     0x36: rol,
     0x2e: rol,
-    0x3e: rol
+    0x3e: rol,
+    0x6a: ror,
+    0x66: ror,
+    0x76: ror,
+    0x6e: ror,
+    0x7e: ror,
+    0x40: rti
   }
 }
