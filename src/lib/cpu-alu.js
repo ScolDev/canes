@@ -3,8 +3,11 @@ import CPU_REGISTERS from './cpu-consts/cpu-registers'
 
 export default (cpu) => {
   const setFlag = (flag, bitValue = 0x01) => {
-    const byteMaskOn = bitValue << flag
-    cpu.setRegister(CPU_REGISTERS.P, cpu.REG.P | byteMaskOn)
+    const flagMask = (0x01 << flag) ^ 0xff
+    const valueMask = bitValue << flag
+    const registerValue = (valueMask + (cpu.REG.P & flagMask)) & 0xff
+
+    cpu.setRegister(CPU_REGISTERS.P, registerValue)
   }
 
   const clearFlag = (flag) => {

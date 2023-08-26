@@ -2908,4 +2908,102 @@ describe('CPU Instructions', () => {
     // This flag is ignored by the NES
     expect(cpuALU.getFlag(CPU_FLAGS.DecimalModeFlag)).toBe(0x01)
   })
+
+  test('Emulate the ROL instruction Accumulator addressing mode and CarryFlag enabled', () => {
+    const carryFlagOn = 0x01
+    const operand = 0b01001101
+    const instruction = [0x2a]
+
+    cpu.setRegister(CPU_REGISTERS.P, carryFlagOn)
+    cpu.setRegister(CPU_REGISTERS.A, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0b10011011)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the ROL instruction Accumulator addressing mode and CarryFlag disabled', () => {
+    const carryFlagOff = 0x00
+    const operand = 0b10001001
+    const instruction = [0x2a]
+
+    cpu.setRegister(CPU_REGISTERS.P, carryFlagOff)
+    cpu.setRegister(CPU_REGISTERS.A, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0b00010010)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the ROL instruction ZeroPage addressing mode', () => {
+    const carryFlagOn = 0x01
+    const operand = 0x1a
+    const memoryValue = 0b01111110
+    const instruction = [0x26, operand]
+
+    cpu.setRegister(CPU_REGISTERS.P, carryFlagOn)
+    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPage, memoryValue, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(operand)).toBe(0b11111101)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the ROL instruction ZeroPage,X addressing mode', () => {
+    const carryFlagOn = 0x01
+    const operand = 0x3f
+    const memoryValue = 0b00011100
+    const xIndex = 0x21
+    const instruction = [0x36, operand]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.P, carryFlagOn)
+    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, memoryValue, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(operand + xIndex)).toBe(0b00111001)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the ROL instruction Absolute addressing mode', () => {
+    const carryFlagOff = 0x00
+    const operand = 0xc5a0
+    const memoryValue = 0b11110000
+    const instruction = [0x2e, operand]
+
+    cpu.setRegister(CPU_REGISTERS.P, carryFlagOff)
+    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.Absolute, memoryValue, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(operand)).toBe(0b11100000)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the ROL instruction Absolute,X addressing mode', () => {
+    const carryFlagOff = 0x00
+    const operand = 0xa003
+    const memoryValue = 0b10000000
+    const xIndex = 0x3f
+    const instruction = [0x3e, operand]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.P, carryFlagOff)
+    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, memoryValue, operand)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(operand + xIndex)).toBe(0b00000000)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
 })

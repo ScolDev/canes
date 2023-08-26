@@ -37,6 +37,7 @@ import Pha from './pha'
 import Php from './php'
 import Pla from './pla'
 import Plp from './plp'
+import Rol from './rol'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -78,6 +79,7 @@ export default (cpu, cpuALU) => {
   const php = Php(cpu)
   const pla = Pla(cpu, cpuALU)
   const plp = Plp(cpu)
+  const rol = Rol(cpu, cpuALU)
 
   return {
     0x69: adc,
@@ -188,6 +190,11 @@ export default (cpu, cpuALU) => {
     0x48: pha,
     0x08: php,
     0x68: pla,
-    0x28: plp
+    0x28: plp,
+    0x2a: rol,
+    0x26: rol,
+    0x36: rol,
+    0x2e: rol,
+    0x3e: rol
   }
 }
