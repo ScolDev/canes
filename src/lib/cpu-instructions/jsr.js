@@ -2,7 +2,7 @@ import CPU_ADDRESSING_MODES from '../cpu-consts/cpu-addressing-modes'
 import CPU_REGISTERS from '../cpu-consts/cpu-registers'
 import CPU_DATA_SIZE from '../cpu-consts/cpu-data-size'
 
-export default (cpu, cpuALU) => {
+export default (cpu) => {
   const addressingModes = {
     0x20: CPU_ADDRESSING_MODES.Absolute
   }

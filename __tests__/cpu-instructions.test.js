@@ -3124,4 +3124,20 @@ describe('CPU Instructions', () => {
     expect(cpu.REG.P).toBe(processorStatusInStack)
     expect(cpu.REG.PC).toBe(pcInStack)
   })
+
+  test('Emulate the RTS instruction for Implied addressing mode', () => {
+    const stackPointer = 0xf0
+    const memoryStackAddress = stackPointer + 0x100
+    const pcInStack = 0x8080
+    const currentPCAddress = 0x99a0
+    const instruction = [0x60]
+
+    cpu.setRegister(CPU_REGISTERS.SP, stackPointer)
+    cpu.setRegister(CPU_REGISTERS.PC, currentPCAddress)
+    cpu.setMemoryValue(memoryStackAddress + 1, pcInStack, CPU_DATA_SIZE.Word)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.PC).toBe(pcInStack + 1)
+    expect(cpu.REG.SP).toBe(stackPointer + 2)
+  })
 })

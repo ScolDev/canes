@@ -40,6 +40,7 @@ import Plp from './plp'
 import Rol from './rol'
 import Ror from './ror'
 import Rti from './rti'
+import Rts from './rts'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -84,6 +85,7 @@ export default (cpu, cpuALU) => {
   const rol = Rol(cpu, cpuALU)
   const ror = Ror(cpu, cpuALU)
   const rti = Rti(cpu)
+  const rts = Rts(cpu)
 
   return {
     0x69: adc,
@@ -205,6 +207,7 @@ export default (cpu, cpuALU) => {
     0x76: ror,
     0x6e: ror,
     0x7e: ror,
-    0x40: rti
+    0x40: rti,
+    0x60: rts
   }
 }
