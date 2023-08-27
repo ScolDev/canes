@@ -17,13 +17,11 @@ export default (cpu, cpuALU) => {
   }
 
   const updateStatus = (result, operand) => {
-    const zeroFlag = result ? 0 : 1
     const overflowFlag = cpuALU.getBitValue(6, operand)
-    const negativeFlag = cpuALU.getBitValue(7, operand)
 
-    cpuALU.setFlag(CPU_FLAGS.ZeroFlag, zeroFlag)
+    cpuALU.updateZeroFlag(result)
     cpuALU.setFlag(CPU_FLAGS.OverflowFlag, overflowFlag)
-    cpuALU.setFlag(CPU_FLAGS.NegativeFlag, negativeFlag)
+    cpuALU.updateNegativeFlag(operand)
   }
 
   return {

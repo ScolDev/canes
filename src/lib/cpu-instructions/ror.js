@@ -22,13 +22,11 @@ export default (cpu, cpuALU) => {
   }
 
   const updateStatus = (result, operandValue) => {
-    const zeroFlag = result === 0 ? 1 : 0
     const carryFlag = cpuALU.getBitValue(0, operandValue)
-    const negativeFlag = cpuALU.getBitValue(7, result)
 
     cpuALU.setFlag(CPU_FLAGS.CarryFlag, carryFlag)
-    cpuALU.setFlag(CPU_FLAGS.ZeroFlag, zeroFlag)
-    cpuALU.setFlag(CPU_FLAGS.NegativeFlag, negativeFlag)
+    cpuALU.updateZeroFlag(result)
+    cpuALU.updateNegativeFlag(result)
   }
 
   return {
