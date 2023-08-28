@@ -41,6 +41,7 @@ import Rol from './rol'
 import Ror from './ror'
 import Rti from './rti'
 import Rts from './rts'
+import Sbc from './sbc'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -86,6 +87,7 @@ export default (cpu, cpuALU) => {
   const ror = Ror(cpu, cpuALU)
   const rti = Rti(cpu)
   const rts = Rts(cpu)
+  const sbc = Sbc(cpu, cpuALU)
 
   return {
     0x69: adc,
@@ -208,6 +210,14 @@ export default (cpu, cpuALU) => {
     0x6e: ror,
     0x7e: ror,
     0x40: rti,
-    0x60: rts
+    0x60: rts,
+    0xe9: sbc,
+    0xe5: sbc,
+    0xf5: sbc,
+    0xed: sbc,
+    0xfd: sbc,
+    0xf9: sbc,
+    0xe1: sbc,
+    0xf1: sbc
   }
 }

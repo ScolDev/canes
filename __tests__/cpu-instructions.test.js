@@ -3140,4 +3140,208 @@ describe('CPU Instructions', () => {
     expect(cpu.REG.PC).toBe(pcInStack + 1)
     expect(cpu.REG.SP).toBe(stackPointer + 2)
   })
+
+  test('Emulate the SBC instruction for Immediate addressing mode', () => {
+    const memoryValue = 0x28
+    const accumulator = 0x6a
+    const instruction = [0xe9, memoryValue]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x00)
+    cpu.setRegister(CPU_REGISTERS.A, accumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x42)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the SBC instruction for Immediate addressing mode with CarryFlag set', () => {
+    const memoryValue = 0x41
+    const accumulator = 0x70
+    const instruction = [0xe9, memoryValue]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x01)
+    cpu.setRegister(CPU_REGISTERS.A, accumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x30)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the SBC instruction for Immediate addressing mode with OverFlow flag set', () => {
+    const memoryValue = 0x79
+    const accumulator = 0x29
+    const instruction = [0xe9, memoryValue]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x01)
+    cpu.setRegister(CPU_REGISTERS.A, accumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0xb1)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the SBC instruction for Immediate addressing mode with OverFlow flag clear', () => {
+    const memoryValue = 0xa2
+    const accumulator = 0x4a
+    const instruction = [0xe9, memoryValue]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x00)
+    cpu.setRegister(CPU_REGISTERS.A, accumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0xa8)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the SBC instruction for ZeroPage addressing mode', () => {
+    const memoryValue = 0x40
+    const accumulator = 0x50
+    const stackAddress = 0x37
+    const instruction = [0xe5, stackAddress]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x01)
+    cpu.setRegister(CPU_REGISTERS.A, accumulator)
+    cpu.setMemoryValue(stackAddress, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x11)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the SBC instruction for ZeroPage, X addressing mode', () => {
+    const memoryValue = 0xa1
+    const accumulator = 0x32
+    const stackAddress = 0xc1
+    const xIndex = 0x12
+    const instruction = [0xf5, stackAddress]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x00)
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, accumulator)
+    cpu.setMemoryValue(stackAddress + xIndex, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x91)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the SBC instruction for Absolute addressing mode', () => {
+    const memoryValue = 0xcc
+    const accumulator = 0xcc
+    const memoryAddress = 0x8af0
+    const instruction = [0xed, memoryAddress]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x00)
+    cpu.setRegister(CPU_REGISTERS.A, accumulator)
+    cpu.setMemoryValue(memoryAddress, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the SBC instruction for Absolute, X addressing mode', () => {
+    const memoryValue = 0x7a
+    const accumulator = 0x21
+    const memoryAddress = 0xa001
+    const xIndex = 0x30
+    const instruction = [0xfd, memoryAddress]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x01)
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, accumulator)
+    cpu.setMemoryValue(memoryAddress + xIndex, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0xa8)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the SBC instruction for Absolute, Y addressing mode', () => {
+    const memoryValue = 0x00
+    const accumulator = 0x30
+    const memoryAddress = 0x9900
+    const yIndex = 0xa0
+    const instruction = [0xf9, memoryAddress]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x01)
+    cpu.setRegister(CPU_REGISTERS.Y, yIndex)
+    cpu.setRegister(CPU_REGISTERS.A, accumulator)
+    cpu.setMemoryValue(memoryAddress + yIndex, memoryValue)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x31)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the SBC instruction for IndexedIndirect addressing mode', () => {
+    const memoryValue = 0x31
+    const accumulator = 0xff
+    const addressVector = 0xa001
+    const stackAddress = 0xa0
+    const xIndex = 0x12
+    const instruction = [0xe1, stackAddress]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x01)
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, accumulator)
+    cpu.setMemoryValue(addressVector, memoryValue)
+    cpu.setMemoryValue(stackAddress + xIndex, addressVector, CPU_DATA_SIZE.Word)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0xcf)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the SBC instruction for IndirectIndexed addressing mode', () => {
+    const memoryValue = 0x20
+    const accumulator = 0xa0
+    const addressVector = 0x8032
+    const stackAddress = 0x44
+    const yIndex = 0x20
+    const instruction = [0xf1, stackAddress]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x00)
+    cpu.setRegister(CPU_REGISTERS.Y, yIndex)
+    cpu.setRegister(CPU_REGISTERS.A, accumulator)
+    cpu.setMemoryValue(addressVector + yIndex, memoryValue)
+    cpu.setMemoryValue(stackAddress, addressVector, CPU_DATA_SIZE.Word)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.A).toBe(0x80)
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
 })

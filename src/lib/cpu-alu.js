@@ -34,6 +34,10 @@ export default (cpu) => {
     return value
   }
 
+  const getTwoComplement = (value) => {
+    return (0x100 - value) & 0xff
+  }
+
   const updateZeroFlag = (result) => {
     if ((result & 0xff) === 0x00) {
       setFlag(CPU_FLAGS.ZeroFlag)
@@ -62,6 +66,7 @@ export default (cpu) => {
     clearFlag,
     getBitValue,
     getSignedByte,
+    getTwoComplement,
     updateZeroFlag,
     updateOverflowFlag,
     updateNegativeFlag
