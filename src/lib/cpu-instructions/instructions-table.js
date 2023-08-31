@@ -44,6 +44,7 @@ import Rts from './rts'
 import Sbc from './sbc'
 import Sec from './sec'
 import Sed from './sed'
+import Sei from './sei'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -92,6 +93,7 @@ export default (cpu, cpuALU) => {
   const sbc = Sbc(cpu, cpuALU)
   const sec = Sec(cpuALU)
   const sed = Sed(cpuALU)
+  const sei = Sei(cpuALU)
 
   return {
     0x69: adc,
@@ -224,6 +226,7 @@ export default (cpu, cpuALU) => {
     0xe1: sbc,
     0xf1: sbc,
     0x38: sec,
-    0xf8: sed
+    0xf8: sed,
+    0x78: sei
   }
 }

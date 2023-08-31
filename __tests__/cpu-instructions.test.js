@@ -3389,4 +3389,22 @@ describe('CPU Instructions', () => {
 
     expect(cpuALU.getFlag(CPU_FLAGS.DecimalModeFlag)).toBe(0x01)
   })
+
+  test('Emulate the SEI instruction for Implied addressing mode', () => {
+    const instruction = [0x78]
+
+    cpuALU.clearFlag(CPU_FLAGS.InterruptDisable)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.InterruptDisable)).toBe(0x01)
+  })
+
+  test('Emulate the SEI instruction for Implied addressing mode with previous InterruptDisableFlag set', () => {
+    const instruction = [0x78]
+
+    cpuALU.setFlag(CPU_FLAGS.InterruptDisable)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.InterruptDisable)).toBe(0x01)
+  })
 })
