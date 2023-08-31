@@ -1016,15 +1016,24 @@ describe('CPU Instructions', () => {
 
   test('Emulate the CLD instruction for Implied addressing mode', () => {
     const instruction = [0xd8]
+
     cpuALU.setFlag(CPU_FLAGS.DecimalModeFlag)
     cpuALU.setFlag(CPU_FLAGS.NegativeFlag)
     cpuALU.setFlag(CPU_FLAGS.OverflowFlag)
-
     cpu.execute(instruction)
 
-    expect(cpuALU.getFlag(CPU_FLAGS.DecimalModeFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.DecimalModeFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x01)
+  })
+
+  test('Emulate the CLD instruction for Implied addressing mode with previous DecimalModeFlag disabled', () => {
+    const instruction = [0xd8]
+
+    cpuALU.clearFlag(CPU_FLAGS.DecimalModeFlag)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.DecimalModeFlag)).toBe(0x00)
   })
 
   test('Emulate the CLI instruction for Implied addressing mode', () => {
