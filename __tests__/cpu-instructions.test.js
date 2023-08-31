@@ -3344,4 +3344,40 @@ describe('CPU Instructions', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
+
+  test('Emulate the SEC instruction for Implied addressing mode', () => {
+    const instruction = [0x38]
+
+    cpuALU.clearFlag(CPU_FLAGS.CarryFlag)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+  })
+
+  test('Emulate the SEC instruction for Implied addressing mode with previous CarryFlag set', () => {
+    const instruction = [0x38]
+
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
+  })
+
+  test('Emulate the SED instruction for Implied addressing mode', () => {
+    const instruction = [0xf8]
+
+    cpuALU.clearFlag(CPU_FLAGS.DecimalModeFlag)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.DecimalModeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the SED instruction for Implied addressing mode with previous DecimalModeFlag set', () => {
+    const instruction = [0xf8]
+
+    cpuALU.setFlag(CPU_FLAGS.DecimalModeFlag)
+    cpu.execute(instruction)
+
+    expect(cpuALU.getFlag(CPU_FLAGS.DecimalModeFlag)).toBe(0x01)
+  })
 })
