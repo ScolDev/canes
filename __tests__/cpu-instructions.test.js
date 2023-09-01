@@ -3407,4 +3407,95 @@ describe('CPU Instructions', () => {
 
     expect(cpuALU.getFlag(CPU_FLAGS.InterruptDisable)).toBe(0x01)
   })
+
+  test('Emulate the STA instruction for ZeroPage addressing mode', () => {
+    const currentAccumulator = 0x32
+    const memoryAddress = 0x71
+    const instruction = [0x85, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress)).toBe(currentAccumulator)
+  })
+
+  test('Emulate the STA instruction for ZeroPage,X addressing mode', () => {
+    const currentAccumulator = 0xf1
+    const memoryAddress = 0x4f
+    const xIndex = 0x4a
+    const instruction = [0x95, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(currentAccumulator)
+  })
+
+  test('Emulate the STA instruction for Absolute addressing mode', () => {
+    const currentAccumulator = 0xc0
+    const memoryAddress = 0xbaba
+    const instruction = [0x8d, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress)).toBe(currentAccumulator)
+  })
+
+  test('Emulate the STA instruction for Absolute,X addressing mode', () => {
+    const currentAccumulator = 0xc5
+    const memoryAddress = 0xa0cf
+    const xIndex = 0x9f
+    const instruction = [0x9d, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(currentAccumulator)
+  })
+
+  test('Emulate the STA instruction for Absolute,Y addressing mode', () => {
+    const currentAccumulator = 0x2f
+    const memoryAddress = 0xccff
+    const yIndex = 0x1f
+    const instruction = [0x9d, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.X, yIndex)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress + yIndex)).toBe(currentAccumulator)
+  })
+
+  test('Emulate the STA instruction for IndexedIndirect addressing mode', () => {
+    const currentAccumulator = 0x71
+    const stackPointer = 0xa1
+    const memoryAddressVector = 0x32ff
+    const xIndex = 0x2f
+    const instruction = [0x81, stackPointer]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.setMemoryValue(stackPointer + xIndex, memoryAddressVector, CPU_DATA_SIZE.Word)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddressVector)).toBe(currentAccumulator)
+  })
+
+  test('Emulate the STA instruction for IndirectIndexed addressing mode', () => {
+    const currentAccumulator = 0xcb
+    const stackPointer = 0x97
+    const memoryAddressVector = 0xc1a0
+    const yIndex = 0x3a
+    const instruction = [0x91, stackPointer]
+
+    cpu.setRegister(CPU_REGISTERS.Y, yIndex)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.setMemoryValue(stackPointer, memoryAddressVector, CPU_DATA_SIZE.Word)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddressVector + yIndex)).toBe(currentAccumulator)
+  })
 })
