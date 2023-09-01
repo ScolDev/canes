@@ -3568,4 +3568,274 @@ describe('CPU Instructions', () => {
 
     expect(cpu.getMemoryValue(memoryAddress)).toBe(currentY)
   })
+
+  test('Emulate the TAX instruction for Implied addressing mode', () => {
+    const currentXRegister = 0xf4
+    const currentAccumulator = 0x41
+    const instruction = [0xaa]
+
+    cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.X).toBe(currentAccumulator)
+    expect(cpu.REG.A).toBe(currentAccumulator)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the TAX instruction for Implied addressing mode with ZeroFlag set', () => {
+    const currentXRegister = 0xc1
+    const currentAccumulator = 0x00
+    const instruction = [0xaa]
+
+    cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.X).toBe(currentAccumulator)
+    expect(cpu.REG.A).toBe(currentAccumulator)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the TAX instruction for Implied addressing mode with NegativeFlag set', () => {
+    const currentXRegister = 0x03
+    const currentAccumulator = 0xac
+    const instruction = [0xaa]
+
+    cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.X).toBe(currentAccumulator)
+    expect(cpu.REG.A).toBe(currentAccumulator)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the TAY instruction for Implied addressing mode', () => {
+    const currentYRegister = 0xc0
+    const currentAccumulator = 0x5b
+    const instruction = [0xa8]
+
+    cpu.setRegister(CPU_REGISTERS.Y, currentYRegister)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.Y).toBe(currentAccumulator)
+    expect(cpu.REG.A).toBe(currentAccumulator)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the TAY instruction for Implied addressing mode with ZeroFlag set', () => {
+    const currentYRegister = 0x42
+    const currentAccumulator = 0x00
+    const instruction = [0xa8]
+
+    cpu.setRegister(CPU_REGISTERS.Y, currentYRegister)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.Y).toBe(currentAccumulator)
+    expect(cpu.REG.A).toBe(currentAccumulator)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the TAY instruction for Implied addressing mode with NegativeFlag set', () => {
+    const currentYRegister = 0xf2
+    const currentAccumulator = 0xbc
+    const instruction = [0xa8]
+
+    cpu.setRegister(CPU_REGISTERS.Y, currentYRegister)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.Y).toBe(currentAccumulator)
+    expect(cpu.REG.A).toBe(currentAccumulator)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the TSX instruction for Implied addressing mode', () => {
+    const currentSPRegister = 0x0a
+    const currentXRegister = 0x1f
+    const instruction = [0xba]
+
+    cpu.setRegister(CPU_REGISTERS.SP, currentSPRegister)
+    cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.SP).toBe(currentSPRegister)
+    expect(cpu.REG.X).toBe(currentSPRegister)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the TSX instruction for Implied addressing mode with ZeroFlag set', () => {
+    const currentSPRegister = 0x00
+    const currentXRegister = 0xb1
+    const instruction = [0xba]
+
+    cpu.setRegister(CPU_REGISTERS.SP, currentSPRegister)
+    cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.SP).toBe(currentSPRegister)
+    expect(cpu.REG.X).toBe(currentSPRegister)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the TSX instruction for Implied addressing mode with NegativeFlag set', () => {
+    const currentSPRegister = 0x8c
+    const currentXRegister = 0x3a
+    const instruction = [0xba]
+
+    cpu.setRegister(CPU_REGISTERS.SP, currentSPRegister)
+    cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.SP).toBe(currentSPRegister)
+    expect(cpu.REG.X).toBe(currentSPRegister)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the TXA instruction for Implied addressing mode', () => {
+    const currentXRegister = 0x2f
+    const currentAccumulator = 0x47
+    const instruction = [0x8a]
+
+    cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.X).toBe(currentXRegister)
+    expect(cpu.REG.A).toBe(currentXRegister)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the TXA instruction for Implied addressing mode with ZeroFlag set', () => {
+    const currentXRegister = 0x00
+    const currentAccumulator = 0x5a
+    const instruction = [0x8a]
+
+    cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.X).toBe(currentXRegister)
+    expect(cpu.REG.A).toBe(currentXRegister)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the TXA instruction for Implied addressing mode with NegativeFlag set', () => {
+    const currentXRegister = 0xc1
+    const currentAccumulator = 0x2f
+    const instruction = [0x8a]
+
+    cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.X).toBe(currentXRegister)
+    expect(cpu.REG.A).toBe(currentXRegister)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the TXS instruction for Implied addressing mode', () => {
+    const currentSPRegister = 0x71
+    const currentXRegister = 0x41
+    const instruction = [0x9a]
+
+    cpu.setRegister(CPU_REGISTERS.SP, currentSPRegister)
+    cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.SP).toBe(currentXRegister)
+    expect(cpu.REG.X).toBe(currentXRegister)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the TXS instruction for Implied addressing mode with ZeroFlag set', () => {
+    const currentSPRegister = 0xe2
+    const currentXRegister = 0x00
+    const instruction = [0x9a]
+
+    cpu.setRegister(CPU_REGISTERS.SP, currentSPRegister)
+    cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.SP).toBe(currentXRegister)
+    expect(cpu.REG.X).toBe(currentXRegister)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the TXS instruction for Implied addressing mode with NegativeFlag set', () => {
+    const currentSPRegister = 0x2f
+    const currentXRegister = 0xe2
+    const instruction = [0x9a]
+
+    cpu.setRegister(CPU_REGISTERS.SP, currentSPRegister)
+    cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.SP).toBe(currentXRegister)
+    expect(cpu.REG.X).toBe(currentXRegister)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
+
+  test('Emulate the TYA instruction for Implied addressing mode', () => {
+    const currentYRegister = 0x2f
+    const currentAccumulator = 0xf0
+    const instruction = [0x98]
+
+    cpu.setRegister(CPU_REGISTERS.Y, currentYRegister)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.Y).toBe(currentYRegister)
+    expect(cpu.REG.A).toBe(currentYRegister)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the TYA instruction for Implied addressing mode with ZeroFlag set', () => {
+    const currentYRegister = 0x00
+    const currentAccumulator = 0xb2
+    const instruction = [0x98]
+
+    cpu.setRegister(CPU_REGISTERS.Y, currentYRegister)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.Y).toBe(currentYRegister)
+    expect(cpu.REG.A).toBe(currentYRegister)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
+  })
+
+  test('Emulate the TYA instruction for Implied addressing mode with NegativeFlag set', () => {
+    const currentYRegister = 0xff
+    const currentAccumulator = 0x02
+    const instruction = [0x98]
+
+    cpu.setRegister(CPU_REGISTERS.Y, currentYRegister)
+    cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
+    cpu.execute(instruction)
+
+    expect(cpu.REG.Y).toBe(currentYRegister)
+    expect(cpu.REG.A).toBe(currentYRegister)
+    expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
+    expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
+  })
 })

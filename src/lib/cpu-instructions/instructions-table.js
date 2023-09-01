@@ -48,6 +48,12 @@ import Sei from './sei'
 import Sta from './sta'
 import Stx from './stx'
 import Sty from './sty'
+import Tax from './tax'
+import Tay from './tay'
+import Tsx from './tsx'
+import Txa from './txa'
+import Txs from './txs'
+import Tya from './tya'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -100,6 +106,12 @@ export default (cpu, cpuALU) => {
   const sta = Sta(cpu)
   const stx = Stx(cpu)
   const sty = Sty(cpu)
+  const tax = Tax(cpu, cpuALU)
+  const tay = Tay(cpu, cpuALU)
+  const tsx = Tsx(cpu, cpuALU)
+  const txa = Txa(cpu, cpuALU)
+  const txs = Txs(cpu, cpuALU)
+  const tya = Tya(cpu, cpuALU)
 
   return {
     0x69: adc,
@@ -246,6 +258,12 @@ export default (cpu, cpuALU) => {
     0x8e: stx,
     0x84: sty,
     0x94: sty,
-    0x8c: sty
+    0x8c: sty,
+    0xaa: tax,
+    0xa8: tay,
+    0xba: tsx,
+    0x8a: txa,
+    0x9a: txs,
+    0x98: tya
   }
 }
