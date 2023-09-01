@@ -46,6 +46,8 @@ import Sec from './sec'
 import Sed from './sed'
 import Sei from './sei'
 import Sta from './sta'
+import Stx from './stx'
+import Sty from './sty'
 
 export default (cpu, cpuALU) => {
   const and = And(cpu, cpuALU)
@@ -96,6 +98,8 @@ export default (cpu, cpuALU) => {
   const sed = Sed(cpuALU)
   const sei = Sei(cpuALU)
   const sta = Sta(cpu)
+  const stx = Stx(cpu)
+  const sty = Sty(cpu)
 
   return {
     0x69: adc,
@@ -236,6 +240,12 @@ export default (cpu, cpuALU) => {
     0x9d: sta,
     0x99: sta,
     0x81: sta,
-    0x91: sta
+    0x91: sta,
+    0x86: stx,
+    0x96: stx,
+    0x8e: stx,
+    0x84: sty,
+    0x94: sty,
+    0x8c: sty
   }
 }

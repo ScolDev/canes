@@ -38,6 +38,10 @@ export default (cpu, cpuALU) => {
     get: (operand) => {
       const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.REG.Y + operand) & 0xff)
       return cpu.getMemoryValue(memoryAddress)
+    },
+    set: (value, operand) => {
+      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.REG.Y + operand) & 0xff)
+      return cpu.setMemoryValue(memoryAddress, value)
     }
   }
 

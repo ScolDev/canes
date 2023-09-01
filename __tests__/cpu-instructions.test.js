@@ -3498,4 +3498,74 @@ describe('CPU Instructions', () => {
 
     expect(cpu.getMemoryValue(memoryAddressVector + yIndex)).toBe(currentAccumulator)
   })
+
+  test('Emulate the STX instruction for ZeroPage addressing mode', () => {
+    const currentX = 0x10
+    const memoryAddress = 0xaa
+    const instruction = [0x86, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.X, currentX)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress)).toBe(currentX)
+  })
+
+  test('Emulate the STX instruction for ZeroPage,Y addressing mode', () => {
+    const currentX = 0x2c
+    const memoryAddress = 0x2c
+    const yIndex = 0x52
+    const instruction = [0x96, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.Y, yIndex)
+    cpu.setRegister(CPU_REGISTERS.X, currentX)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress + yIndex)).toBe(currentX)
+  })
+
+  test('Emulate the STX instruction for Absolute addressing mode', () => {
+    const currentX = 0xff
+    const memoryAddress = 0xf00f
+    const instruction = [0x8e, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.X, currentX)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress)).toBe(currentX)
+  })
+
+  test('Emulate the STY instruction for ZeroPage addressing mode', () => {
+    const currentY = 0x3c
+    const memoryAddress = 0xc1
+    const instruction = [0x84, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.Y, currentY)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress)).toBe(currentY)
+  })
+
+  test('Emulate the STY instruction for ZeroPage,X addressing mode', () => {
+    const currentY = 0xfc
+    const memoryAddress = 0x9a
+    const xIndex = 0x3c
+    const instruction = [0x94, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.X, xIndex)
+    cpu.setRegister(CPU_REGISTERS.Y, currentY)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(currentY)
+  })
+
+  test('Emulate the STY instruction for Absolute addressing mode', () => {
+    const currentY = 0x77
+    const memoryAddress = 0xaa00
+    const instruction = [0x8c, memoryAddress]
+
+    cpu.setRegister(CPU_REGISTERS.Y, currentY)
+    cpu.execute(instruction)
+
+    expect(cpu.getMemoryValue(memoryAddress)).toBe(currentY)
+  })
 })
