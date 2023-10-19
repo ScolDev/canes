@@ -4,10 +4,11 @@ import CpuInstructions from './cpu-instructions'
 import CPU_ADDRESSING_MODES from './cpu-consts/cpu-addressing-modes'
 import CPU_REGISTERS from './cpu-consts/cpu-registers'
 import CPU_DATA_SIZE from './cpu-consts/cpu-data-size'
+import CPU_MEMORY_MAP from './cpu-consts/cpu-memory-map'
 import CPU_ALU from './cpu-alu'
 
 export default (instructions) => {
-  const MEM = Array(0xffff).fill(0x00)
+  const MEM = new Uint8Array(CPU_MEMORY_MAP.Size)
   const REG = {
     PC: 0x0000,
     SP: 0x1ff,

@@ -1,5 +1,6 @@
 import CPU from '../src/lib/cpu'
 
+import CPU_MEMORY_MAP from '../src/lib/cpu-consts/cpu-memory-map'
 import CPU_REGISTERS from '../src/lib/cpu-consts/cpu-registers'
 import CPU_FLAGS from '../src/lib/cpu-consts/cpu-flags'
 import CPU_ALU from '../src/lib/cpu-alu'
@@ -21,7 +22,7 @@ describe('Tests for CPU module.', () => {
     const memory = cpu.MEM
 
     expect(memory).toBeDefined()
-    expect(memory.length).toBe(0xffff)
+    expect(memory.length).toBe(CPU_MEMORY_MAP.Size)
   })
 
   test('should set the PC register.', () => {
