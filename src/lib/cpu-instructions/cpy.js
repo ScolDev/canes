@@ -13,7 +13,7 @@ export default (cpu, cpuALU) => {
     const registerValue = cpu.REG.Y
     const memoryValue = cpu.getMemoryValueFromAddressingMode(addressingMode, operand)
 
-    const result = (registerValue + (0x100 - memoryValue)) & 0xff
+    const result = 0x100 + registerValue - memoryValue
 
     updateStatus(result, registerValue, memoryValue)
   }

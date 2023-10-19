@@ -50,18 +50,18 @@ export default (cpu, cpuALU) => {
   }
 
   const aboslute = {
-    get: (operand) => cpu.getMemoryValue(operand & 0xffff),
-    set: (value, operand) => cpu.setMemoryValue(operand & 0xffff, value)
+    get: (operand) => cpu.getMemoryValue(operand),
+    set: (value, operand) => cpu.setMemoryValue(operand, value)
   }
 
   const absoluteX = {
-    get: (operand) => cpu.getMemoryValue((operand + cpu.REG.X) & 0xffff),
-    set: (value, operand) => cpu.setMemoryValue((operand + cpu.REG.X) & 0xffff, value)
+    get: (operand) => cpu.getMemoryValue((operand + cpu.REG.X)),
+    set: (value, operand) => cpu.setMemoryValue((operand + cpu.REG.X), value)
   }
 
   const absoluteY = {
-    get: (operand) => cpu.getMemoryValue((operand + cpu.REG.Y) & 0xffff),
-    set: (value, operand) => cpu.setMemoryValue((operand + cpu.REG.Y) & 0xffff, value)
+    get: (operand) => cpu.getMemoryValue((operand + cpu.REG.Y)),
+    set: (value, operand) => cpu.setMemoryValue((operand + cpu.REG.Y), value)
   }
 
   const indirect = {

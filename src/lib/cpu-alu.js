@@ -5,7 +5,7 @@ export default (cpu) => {
   const setFlag = (flag, bitValue = 0x01) => {
     const flagMask = (0x01 << flag) ^ 0xff
     const valueMask = bitValue << flag
-    const registerValue = (valueMask + (cpu.REG.P & flagMask)) & 0xff
+    const registerValue = valueMask + (cpu.REG.P & flagMask)
 
     cpu.setRegister(CPU_REGISTERS.P, registerValue)
   }
@@ -49,7 +49,7 @@ export default (cpu) => {
     const operandBBit7 = operandB >> 7
     const resultBit7 = (result & 0xff) >> 7
 
-    if ((operandABit7 === operandBBit7) && (resultBit7 !== operandABit7)) {
+    if (operandABit7 === operandBBit7 && resultBit7 !== operandABit7) {
       setFlag(CPU_FLAGS.OverflowFlag)
     }
   }

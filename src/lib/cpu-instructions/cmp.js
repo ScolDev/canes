@@ -18,7 +18,7 @@ export default (cpu, cpuALU) => {
     const accumulator = cpu.REG.A
     const memoryValue = cpu.getMemoryValueFromAddressingMode(addressingMode, operand)
 
-    const result = (accumulator + (0x100 - memoryValue)) & 0xff
+    const result = 0x100 + accumulator - memoryValue
 
     updateStatus(result, accumulator, memoryValue)
   }
