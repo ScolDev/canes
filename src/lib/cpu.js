@@ -1,13 +1,13 @@
-import CpuAddressingModes from './cpu-addressing-modes'
-import CpuInstructions from './cpu-instructions'
+import { AddressingModes } from './addressing-modes'
+import { Instructions } from './instructions'
 
-import CPU_ADDRESSING_MODES from './cpu-consts/cpu-addressing-modes'
-import CPU_REGISTERS from './cpu-consts/cpu-registers'
-import CPU_DATA_SIZE from './cpu-consts/cpu-data-size'
-import CPU_MEMORY_MAP from './cpu-consts/cpu-memory-map'
-import CPU_ALU from './cpu-alu'
+import { CPU_ADDRESSING_MODES } from './consts/addressing-modes'
+import { CPU_REGISTERS } from './consts/registers'
+import { CPU_DATA_SIZE } from './consts/data-size'
+import { CPU_MEMORY_MAP } from './consts/memory-map'
+import { ALU } from './alu'
 
-export default (instructions) => {
+export default () => {
   const MEM = new Uint8Array(CPU_MEMORY_MAP.Size)
   const REG = {
     PC: 0x0000,
@@ -39,11 +39,11 @@ export default (instructions) => {
   }
 
   const getMemoryValueFromAddressingMode = (addressingMode, operand) => {
-    return AddressingModes.get(addressingMode, operand)
+    return addressingModes.get(addressingMode, operand)
   }
 
   const setMemoryValueFromAddressingMode = (addressingMode, value, operand) => {
-    AddressingModes.set(addressingMode, value, operand)
+    addressingModes.set(addressingMode, value, operand)
   }
 
   const getMemoryValue = (memoryAddress, dataSize = CPU_DATA_SIZE.Byte) => {
@@ -66,7 +66,7 @@ export default (instructions) => {
   }
 
   const execute = (instruction) => {
-    Instructions.execute(instruction)
+    instructions.execute(instruction)
   }
 
   const cpuApi = {
@@ -81,9 +81,9 @@ export default (instructions) => {
     setMemoryValueFromAddressingMode
   }
 
-  const cpuALU = CPU_ALU(cpuApi)
-  const Instructions = CpuInstructions(cpuApi, cpuALU)
-  const AddressingModes = CpuAddressingModes(cpuApi, cpuALU)
+  const cpuALU = ALU(cpuApi)
+  const instructions = Instructions(cpuApi, cpuALU)
+  const addressingModes = AddressingModes(cpuApi, cpuALU)
 
   return cpuApi
 }

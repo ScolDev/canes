@@ -1,9 +1,9 @@
 import CPU from '../src/lib/cpu'
 
-import CPU_MEMORY_MAP from '../src/lib/cpu-consts/cpu-memory-map'
-import CPU_REGISTERS from '../src/lib/cpu-consts/cpu-registers'
-import CPU_FLAGS from '../src/lib/cpu-consts/cpu-flags'
-import CPU_ALU from '../src/lib/cpu-alu'
+import { CPU_MEMORY_MAP } from '../src/lib/consts/memory-map'
+import { CPU_REGISTERS } from '../src/lib/consts/registers'
+import { CPU_FLAGS } from '../src/lib/consts/flags'
+import { ALU } from '../src/lib/alu'
 
 describe('Tests for CPU module.', () => {
   let cpu
@@ -11,7 +11,7 @@ describe('Tests for CPU module.', () => {
 
   beforeEach(() => {
     cpu = CPU()
-    cpuALU = CPU_ALU(cpu)
+    cpuALU = ALU(cpu)
   })
 
   test('should load CPU module.', () => {

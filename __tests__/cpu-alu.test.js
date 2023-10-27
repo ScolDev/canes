@@ -1,15 +1,15 @@
-import CPU_REGISTERS from '../src/lib/cpu-consts/cpu-registers'
-import CPU_FLAGS from '../src/lib/cpu-consts/cpu-flags'
+import { CPU_REGISTERS } from '../src/lib/consts/registers'
+import { CPU_FLAGS } from '../src/lib/consts/flags'
+import { ALU } from '../src/lib/alu'
 import CPU from '../src/lib/cpu'
-import CPU_ALU from '../src/lib/cpu-alu'
 
-describe('Tests for CPU_ALU module.', () => {
+describe('Tests for ALU module.', () => {
   let cpu
   let cpuALU
 
   beforeEach(() => {
     cpu = CPU()
-    cpuALU = CPU_ALU(cpu)
+    cpuALU = ALU(cpu)
   })
 
   test('should get signed byte numbers.', () => {
