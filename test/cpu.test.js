@@ -1,9 +1,9 @@
-import CPU from '../src/lib/cpu'
+import CPU from '../src/cpu/cpu'
 
-import { CPU_MEMORY_MAP } from '../src/lib/consts/memory-map'
-import { CPU_REGISTERS } from '../src/lib/consts/registers'
-import { CPU_FLAGS } from '../src/lib/consts/flags'
-import { ALU } from '../src/lib/alu'
+import { CPU_MEMORY_MAP } from '../src/cpu/consts/memory-map'
+import { CPU_REGISTERS } from '../src/cpu/consts/registers'
+import { CPU_FLAGS } from '../src/cpu/consts/flags'
+import { ALU } from '../src/cpu/alu'
 
 describe('Tests for CPU module.', () => {
   let cpu

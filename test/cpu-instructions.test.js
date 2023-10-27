@@ -1,11 +1,11 @@
-import CPU from '../src/lib/cpu'
+import CPU from '../src/cpu/cpu'
 
-import { CPU_REGISTERS } from '../src/lib/consts/registers'
-import { CPU_FLAGS } from '../src/lib/consts/flags'
-import { CPU_ADDRESSING_MODES } from '../src/lib/consts/addressing-modes'
-import { CPU_DATA_SIZE } from '../src/lib/consts/data-size'
-import { CPU_MEMORY_MAP } from '../src/lib/consts/memory-map'
-import { ALU } from '../src/lib/alu'
+import { CPU_REGISTERS } from '../src/cpu/consts/registers'
+import { CPU_FLAGS } from '../src/cpu/consts/flags'
+import { CPU_ADDRESSING_MODES } from '../src/cpu/consts/addressing-modes'
+import { CPU_DATA_SIZE } from '../src/cpu/consts/data-size'
+import { CPU_MEMORY_MAP } from '../src/cpu/consts/memory-map'
+import { ALU } from '../src/cpu/alu'
 
 describe('CPU Instructions', () => {
   let cpu
