@@ -12,12 +12,12 @@ export default (cpu, cpuALU) => {
 
   const execute = (opcode, operand) => {
     const addressingMode = addressingModes[opcode]
-    const operandValue = cpu.getMemoryValueFromAddressingMode(addressingMode, operand)
+    const operandValue = cpu.loadByAddressingMode(addressingMode, operand)
     const carryFlag = cpuALU.getFlag(CPU_FLAGS.CarryFlag)
 
     const result = (operandValue >> 1) + (carryFlag << 7)
 
-    cpu.setMemoryValueFromAddressingMode(addressingMode, result, operand)
+    cpu.storeByAddressingMode(addressingMode, result, operand)
     updateStatus(result, operandValue)
   }
 

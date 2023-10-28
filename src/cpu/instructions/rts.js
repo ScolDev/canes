@@ -1,11 +1,10 @@
 import { CPU_REGISTERS } from '../consts/registers'
-import { CPU_DATA_SIZE } from '../consts/data-size'
 
 export default (cpu) => {
   const execute = (opcode, operand) => {
-    const newStackPointer = cpu.REG.SP + 2
-    const stackMemoryAddress = cpu.REG.SP + 0x100
-    const loadedPC = cpu.getMemoryValue(stackMemoryAddress + 1, CPU_DATA_SIZE.Word)
+    const newStackPointer = cpu.getRegister(CPU_REGISTERS.SP) + 2
+    const stackMemoryAddress = cpu.getRegister(CPU_REGISTERS.SP) + 0x100
+    const loadedPC = cpu.loadWord(stackMemoryAddress + 1)
     const newPC = loadedPC + 1
 
     cpu.setRegister(CPU_REGISTERS.PC, newPC)

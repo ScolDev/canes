@@ -10,10 +10,10 @@ export default (cpu, cpuALU) => {
 
   const execute = (opcode, operand) => {
     const addressingMode = addressingModes[opcode]
-    const memoryValue = cpu.getMemoryValueFromAddressingMode(addressingMode, operand)
+    const memoryValue = cpu.loadByAddressingMode(addressingMode, operand)
     const resultValue = (memoryValue - 1) & 0xff
 
-    cpu.setMemoryValueFromAddressingMode(addressingMode, resultValue, operand)
+    cpu.storeByAddressingMode(addressingMode, resultValue, operand)
     updateStatus(resultValue)
   }
 

@@ -2,10 +2,10 @@ import { CPU_REGISTERS } from '../consts/registers'
 
 export default (cpu, cpuALU) => {
   const execute = (opcode) => {
-    const stackPointer = cpu.REG.SP
+    const stackPointer = cpu.getRegister(CPU_REGISTERS.SP)
 
     cpu.setRegister(CPU_REGISTERS.X, stackPointer)
-    updateStatus(cpu.REG.X)
+    updateStatus(cpu.getRegister(CPU_REGISTERS.X))
   }
 
   const updateStatus = (newXRegister) => {

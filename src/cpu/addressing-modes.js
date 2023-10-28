@@ -1,10 +1,9 @@
 import { CPU_MEMORY_MAP } from './consts/memory-map'
-import { CPU_DATA_SIZE } from './consts/data-size'
 import { CPU_REGISTERS } from './consts/registers'
 
 export const AddressingModes = (cpu, cpuALU) => {
   const acumulator = {
-    get: () => cpu.REG.A,
+    get: () => cpu.getRegister(CPU_REGISTERS.A),
     set: (value, operand) => (cpu.setRegister(CPU_REGISTERS.A, value))
   }
 
@@ -15,33 +14,33 @@ export const AddressingModes = (cpu, cpuALU) => {
   const zeroPage = {
     get: (operand) => {
       const memoryAddress = CPU_MEMORY_MAP.ZeroPage + (operand & 0xff)
-      return cpu.getMemoryValue(memoryAddress)
+      return cpu.load(memoryAddress)
     },
     set: (value, operand) => {
       const memoryAddress = CPU_MEMORY_MAP.ZeroPage + (operand & 0xff)
-      cpu.setMemoryValue(memoryAddress, value)
+      cpu.store(memoryAddress, value)
     }
   }
 
   const zeroPageX = {
     get: (operand) => {
-      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.REG.X + operand) & 0xff)
-      return cpu.getMemoryValue(memoryAddress)
+      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.getRegister(CPU_REGISTERS.X) + operand) & 0xff)
+      return cpu.load(memoryAddress)
     },
     set: (value, operand) => {
-      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.REG.X + operand) & 0xff)
-      return cpu.setMemoryValue(memoryAddress, value)
+      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.getRegister(CPU_REGISTERS.X) + operand) & 0xff)
+      return cpu.store(memoryAddress, value)
     }
   }
 
   const zeroPageY = {
     get: (operand) => {
-      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.REG.Y + operand) & 0xff)
-      return cpu.getMemoryValue(memoryAddress)
+      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.getRegister(CPU_REGISTERS.Y) + operand) & 0xff)
+      return cpu.load(memoryAddress)
     },
     set: (value, operand) => {
-      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.REG.Y + operand) & 0xff)
-      return cpu.setMemoryValue(memoryAddress, value)
+      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.getRegister(CPU_REGISTERS.Y) + operand) & 0xff)
+      return cpu.store(memoryAddress, value)
     }
   }
 
@@ -50,53 +49,53 @@ export const AddressingModes = (cpu, cpuALU) => {
   }
 
   const aboslute = {
-    get: (operand) => cpu.getMemoryValue(operand),
-    set: (value, operand) => cpu.setMemoryValue(operand, value)
+    get: (operand) => cpu.load(operand),
+    set: (value, operand) => cpu.store(operand, value)
   }
 
   const absoluteX = {
-    get: (operand) => cpu.getMemoryValue((operand + cpu.REG.X)),
-    set: (value, operand) => cpu.setMemoryValue((operand + cpu.REG.X), value)
+    get: (operand) => cpu.load((operand + cpu.getRegister(CPU_REGISTERS.X))),
+    set: (value, operand) => cpu.store((operand + cpu.getRegister(CPU_REGISTERS.X)), value)
   }
 
   const absoluteY = {
-    get: (operand) => cpu.getMemoryValue((operand + cpu.REG.Y)),
-    set: (value, operand) => cpu.setMemoryValue((operand + cpu.REG.Y), value)
+    get: (operand) => cpu.load((operand + cpu.getRegister(CPU_REGISTERS.Y))),
+    set: (value, operand) => cpu.store((operand + cpu.getRegister(CPU_REGISTERS.Y)), value)
   }
 
   const indirect = {
-    get: (operand) => cpu.getMemoryValue(operand, CPU_DATA_SIZE.Word)
+    get: (operand) => cpu.loadWord(operand)
   }
 
   const indexedIndirect = {
     get: (operand) => {
-      const zeroPageOffset = (operand + cpu.REG.X) & 0xff
+      const zeroPageOffset = (operand + cpu.getRegister(CPU_REGISTERS.X)) & 0xff
 
-      const memoryAddress = cpu.getMemoryValue(zeroPageOffset) +
-                  (cpu.getMemoryValue((zeroPageOffset + 1) & 0xff) << 8)
+      const memoryAddress = cpu.load(zeroPageOffset) +
+                  (cpu.load((zeroPageOffset + 1) & 0xff) << 8)
 
-      return cpu.getMemoryValue(memoryAddress)
+      return cpu.load(memoryAddress)
     },
     set: (value, operand) => {
-      const zeroPageOffset = (operand + cpu.REG.X) & 0xff
+      const zeroPageOffset = (operand + cpu.getRegister(CPU_REGISTERS.X)) & 0xff
 
-      const memoryAddress = cpu.getMemoryValue(zeroPageOffset) +
-                  (cpu.getMemoryValue((zeroPageOffset + 1) & 0xff) << 8)
+      const memoryAddress = cpu.load(zeroPageOffset) +
+                  (cpu.load((zeroPageOffset + 1) & 0xff) << 8)
 
-      cpu.setMemoryValue(memoryAddress, value)
+      cpu.store(memoryAddress, value)
     }
   }
 
   const indirectIndexed = {
     get: (operand) => {
-      const memoryAddress = cpu.getMemoryValue(operand) +
-                  (cpu.getMemoryValue((operand + 1) & 0xff) << 8)
-      return cpu.getMemoryValue(memoryAddress + cpu.REG.Y)
+      const memoryAddress = cpu.load(operand) +
+                  (cpu.load((operand + 1) & 0xff) << 8)
+      return cpu.load(memoryAddress + cpu.getRegister(CPU_REGISTERS.Y))
     },
     set: (value, operand) => {
-      const memoryAddress = cpu.getMemoryValue(operand) +
-                  (cpu.getMemoryValue((operand + 1) & 0xff) << 8)
-      cpu.setMemoryValue(memoryAddress + cpu.REG.Y, value)
+      const memoryAddress = cpu.load(operand) +
+                  (cpu.load((operand + 1) & 0xff) << 8)
+      cpu.store(memoryAddress + cpu.getRegister(CPU_REGISTERS.Y), value)
     }
   }
 

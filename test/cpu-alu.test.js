@@ -43,7 +43,7 @@ describe('Tests for ALU module.', () => {
     cpuALU.clearFlag(CPU_FLAGS.InterruptDisable)
     cpuALU.setFlag(CPU_FLAGS.NegativeFlag)
 
-    expect(cpu.REG.P).toBe(finalValue)
+    expect(cpu.getRegister(CPU_REGISTERS.P)).toBe(finalValue)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.InterruptDisable)).toBe(0)

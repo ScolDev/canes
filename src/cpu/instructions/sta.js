@@ -1,4 +1,5 @@
 import { CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
+import { CPU_REGISTERS } from '../consts/registers'
 
 export default (cpu) => {
   const addressingModes = {
@@ -13,9 +14,9 @@ export default (cpu) => {
 
   const execute = (opcode, operand) => {
     const addressingMode = addressingModes[opcode]
-    const accumulator = cpu.REG.A
+    const accumulator = cpu.getRegister(CPU_REGISTERS.A)
 
-    cpu.setMemoryValueFromAddressingMode(addressingMode, accumulator, operand)
+    cpu.storeByAddressingMode(addressingMode, accumulator, operand)
   }
 
   return {

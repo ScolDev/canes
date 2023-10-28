@@ -12,10 +12,10 @@ export default (cpu, cpuALU) => {
 
   const execute = (opcode, operand) => {
     const addressingMode = addressingModes[opcode]
-    const memoryValue = cpu.getMemoryValueFromAddressingMode(addressingMode, operand)
+    const memoryValue = cpu.loadByAddressingMode(addressingMode, operand)
 
     cpu.setRegister(CPU_REGISTERS.X, memoryValue)
-    updateStatus(cpu.REG.X)
+    updateStatus(cpu.getRegister(CPU_REGISTERS.X))
   }
 
   const updateStatus = (accumulator) => {

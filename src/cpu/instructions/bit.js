@@ -1,6 +1,7 @@
 
 import { CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 import { CPU_FLAGS } from '../consts/flags'
+import { CPU_REGISTERS } from '../consts/registers'
 
 export default (cpu, cpuALU) => {
   const addressingModes = {
@@ -10,8 +11,8 @@ export default (cpu, cpuALU) => {
 
   const execute = (opcode, operand) => {
     const addressingMode = addressingModes[opcode]
-    const memoryValue = cpu.getMemoryValueFromAddressingMode(addressingMode, operand)
-    const result = cpu.REG.A & memoryValue
+    const memoryValue = cpu.loadByAddressingMode(addressingMode, operand)
+    const result = cpu.getRegister(CPU_REGISTERS.A) & memoryValue
 
     updateStatus(result, memoryValue)
   }

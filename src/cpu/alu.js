@@ -5,18 +5,18 @@ export const ALU = (cpu) => {
   const setFlag = (flag, bitValue = 0x01) => {
     const flagMask = (0x01 << flag) ^ 0xff
     const valueMask = bitValue << flag
-    const registerValue = valueMask + (cpu.REG.P & flagMask)
+    const registerValue = valueMask + (cpu.getRegister(CPU_REGISTERS.P) & flagMask)
 
     cpu.setRegister(CPU_REGISTERS.P, registerValue)
   }
 
   const clearFlag = (flag) => {
     const byteMaskOff = (0x01 << flag) ^ 0xff
-    cpu.setRegister(CPU_REGISTERS.P, cpu.REG.P & byteMaskOff)
+    cpu.setRegister(CPU_REGISTERS.P, cpu.getRegister(CPU_REGISTERS.P) & byteMaskOff)
   }
 
   const getFlag = (flag) => {
-    return getBitValue(flag, cpu.REG.P)
+    return getBitValue(flag, cpu.getRegister(CPU_REGISTERS.P))
   }
 
   const getBitValue = (bit, byteNumber) => {

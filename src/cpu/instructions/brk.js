@@ -1,20 +1,21 @@
-import { CPU_DATA_SIZE } from '../consts/data-size'
 import { CPU_FLAGS } from '../consts/flags'
 import { CPU_MEMORY_MAP } from '../consts/memory-map'
 import { CPU_REGISTERS } from '../consts/registers'
 
 export default (cpu, cpuALU) => {
   const execute = (opcode, operand) => {
-    const pcl = (cpu.REG.PC & 0xff) + 2
-    const pch = (cpu.REG.PC & 0xff00) >> 8
-    const irqInterruptVector = cpu.getMemoryValue(CPU_MEMORY_MAP.IRQ_Vector, CPU_DATA_SIZE.Word)
+    const pcl = (cpu.getRegister(CPU_REGISTERS.PC) & 0xff) + 2
+    const pch = (cpu.getRegister(CPU_REGISTERS.PC) & 0xff00) >> 8
+    const irqInterruptVector = cpu.loadWord(CPU_MEMORY_MAP.IRQ_Vector)
+    const currentSP = cpu.getRegister(CPU_REGISTERS.SP)
 
     cpuALU.setFlag(CPU_FLAGS.BreakCommand)
 
-    cpu.setMemoryValue(CPU_MEMORY_MAP.Stack + cpu.REG.SP, pcl)
-    cpu.setMemoryValue(CPU_MEMORY_MAP.Stack + (--cpu.REG.SP), pch)
-    cpu.setMemoryValue(CPU_MEMORY_MAP.Stack + (--cpu.REG.SP), cpu.REG.P)
+    cpu.store(CPU_MEMORY_MAP.Stack + currentSP, pcl)
+    cpu.store(CPU_MEMORY_MAP.Stack + (currentSP - 1), pch)
+    cpu.store(CPU_MEMORY_MAP.Stack + (currentSP - 2), cpu.getRegister(CPU_REGISTERS.P))
 
+    cpu.setRegister(CPU_REGISTERS.SP, currentSP - 2)
     cpu.setRegister(CPU_REGISTERS.PC, irqInterruptVector)
   }
 

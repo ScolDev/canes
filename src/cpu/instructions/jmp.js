@@ -9,7 +9,7 @@ export default (cpu) => {
 
   const execute = (opcode, operand) => {
     const addressingMode = addressingModes[opcode]
-    const addressValue = cpu.getAddressFromAddressingMode(addressingMode, operand)
+    const addressValue = cpu.loadAddressByAddressingMode(addressingMode, operand)
 
     cpu.setRegister(CPU_REGISTERS.PC, addressValue)
   }

@@ -3,7 +3,6 @@ import CPU from '../src/cpu/cpu'
 import { CPU_REGISTERS } from '../src/cpu/consts/registers'
 import { CPU_FLAGS } from '../src/cpu/consts/flags'
 import { CPU_ADDRESSING_MODES } from '../src/cpu/consts/addressing-modes'
-import { CPU_DATA_SIZE } from '../src/cpu/consts/data-size'
 import { CPU_MEMORY_MAP } from '../src/cpu/consts/memory-map'
 import { ALU } from '../src/cpu/alu'
 
@@ -20,7 +19,7 @@ describe('CPU Instructions', () => {
     const instruction = [0x29, 0xff]
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
@@ -30,7 +29,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, 0x80)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x80)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x80)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
   })
@@ -41,10 +40,10 @@ describe('CPU Instructions', () => {
     const instruction = [0x25, address]
 
     cpu.setRegister(CPU_REGISTERS.A, 0x2d)
-    cpu.setMemoryValue(address, memoryValue)
+    cpu.store(address, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x28)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x28)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
@@ -56,10 +55,10 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.A, 0x9a)
     cpu.setRegister(CPU_REGISTERS.X, 0x10)
-    cpu.setMemoryValue(address + cpu.REG.X, memoryValue)
+    cpu.store(address + cpu.getRegister(CPU_REGISTERS.X), memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x8a)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x8a)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
   })
@@ -71,10 +70,10 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.A, 0x00)
     cpu.setRegister(CPU_REGISTERS.X, 0x10)
-    cpu.setMemoryValue(address + cpu.REG.X, memoryValue)
+    cpu.store(address + cpu.getRegister(CPU_REGISTERS.X), memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
@@ -85,10 +84,10 @@ describe('CPU Instructions', () => {
     const instruction = [0x2d, address]
 
     cpu.setRegister(CPU_REGISTERS.A, 0x46)
-    cpu.setMemoryValue(address, memoryValue)
+    cpu.store(address, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
@@ -100,10 +99,10 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.A, 0xd3)
     cpu.setRegister(CPU_REGISTERS.X, 0x3f)
-    cpu.setMemoryValue((address + cpu.REG.X) & 0xffff, memoryValue)
+    cpu.store((address + cpu.getRegister(CPU_REGISTERS.X)) & 0xffff, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x91)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x91)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
   })
@@ -115,10 +114,10 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.A, 0xd3)
     cpu.setRegister(CPU_REGISTERS.Y, 0x3f)
-    cpu.setMemoryValue((address + cpu.REG.Y) & 0xffff, memoryValue)
+    cpu.store((address + cpu.getRegister(CPU_REGISTERS.Y)) & 0xffff, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x91)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x91)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
   })
@@ -132,12 +131,12 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, 0x92)
     cpu.setRegister(CPU_REGISTERS.X, 0x14)
 
-    cpu.setMemoryValue(address, memoryValue)
-    cpu.setMemoryValue((operand + cpu.REG.X) & 0xff, address, CPU_DATA_SIZE.Word)
+    cpu.store(address, memoryValue)
+    cpu.storeWord((operand + cpu.getRegister(CPU_REGISTERS.X)) & 0xff, address)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x02)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x02)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
@@ -151,12 +150,12 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, 0x13)
     cpu.setRegister(CPU_REGISTERS.Y, 0x4a)
 
-    cpu.setMemoryValue(address + cpu.REG.Y, memoryValue)
-    cpu.setMemoryValue((operand) & 0xff, address, CPU_DATA_SIZE.Word)
+    cpu.store(address + cpu.getRegister(CPU_REGISTERS.Y), memoryValue)
+    cpu.storeWord((operand) & 0xff, address)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x12)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x12)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
   })
@@ -170,7 +169,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x46)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x46)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -186,7 +185,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x14)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x14)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -201,7 +200,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x95)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x95)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
@@ -216,10 +215,10 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.P, 0x00)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.setMemoryValue(zeroPageOffset, operandB)
+    cpu.store(zeroPageOffset, operandB)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x46)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x46)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -234,10 +233,10 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.P, 0x01)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.setMemoryValue(zeroPageOffset, operandB)
+    cpu.store(zeroPageOffset, operandB)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x14)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x14)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -250,11 +249,11 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xff
     const instruction = [0x65, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operandB)
+    cpu.store(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x85)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x85)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
@@ -271,10 +270,10 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, 0x00)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.setMemoryValue(zeroPageOffset + xIndex, operandB)
+    cpu.store(zeroPageOffset + xIndex, operandB)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x46)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x46)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -291,10 +290,10 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, 0x01)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.setMemoryValue(zeroPageOffset + xIndex, operandB)
+    cpu.store(zeroPageOffset + xIndex, operandB)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x14)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x14)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -308,12 +307,12 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xff
     const instruction = [0x75, zeroPageOffset]
 
-    cpu.setMemoryValue((zeroPageOffset + xIndex) & 0xff, operandB)
+    cpu.store((zeroPageOffset + xIndex) & 0xff, operandB)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x85)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x85)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
@@ -328,10 +327,10 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.P, 0x00)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.setMemoryValue(address, operandB)
+    cpu.store(address, operandB)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x68)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x68)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -346,10 +345,10 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.P, 0x01)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.setMemoryValue(address, operandB)
+    cpu.store(address, operandB)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x14)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x14)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -362,11 +361,11 @@ describe('CPU Instructions', () => {
     const address = 0xffaa
     const instruction = [0x6d, address]
 
-    cpu.setMemoryValue(address, operandB)
+    cpu.store(address, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x85)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x85)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
@@ -383,10 +382,10 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, 0x00)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.setMemoryValue(address + xIndex, operandB)
+    cpu.store(address + xIndex, operandB)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x68)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x68)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -403,10 +402,10 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, 0x01)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.setMemoryValue(address + xIndex, operandB)
+    cpu.store(address + xIndex, operandB)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x14)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x14)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -420,12 +419,12 @@ describe('CPU Instructions', () => {
     const address = 0xffaa
     const instruction = [0x7d, address]
 
-    cpu.setMemoryValue(address + xIndex, operandB)
+    cpu.store(address + xIndex, operandB)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x85)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x85)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
@@ -442,10 +441,10 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, 0x00)
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.setMemoryValue(address + yIndex, operandB)
+    cpu.store(address + yIndex, operandB)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x68)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x68)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -462,10 +461,10 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, 0x01)
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
-    cpu.setMemoryValue(address + yIndex, operandB)
+    cpu.store(address + yIndex, operandB)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x14)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x14)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -479,12 +478,12 @@ describe('CPU Instructions', () => {
     const address = 0xffaa
     const instruction = [0x79, address]
 
-    cpu.setMemoryValue(address + yIndex, operandB)
+    cpu.store(address + yIndex, operandB)
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x85)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x85)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
@@ -499,13 +498,13 @@ describe('CPU Instructions', () => {
     const offsetZeroPage = 0xab
     const instruction = [0x61, offsetZeroPage]
 
-    cpu.setMemoryValue(address, operandB)
-    cpu.setMemoryValue(offsetZeroPage + xIndex, address, CPU_DATA_SIZE.Word)
+    cpu.store(address, operandB)
+    cpu.storeWord(offsetZeroPage + xIndex, address)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x85)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x85)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
@@ -520,13 +519,13 @@ describe('CPU Instructions', () => {
     const offsetZeroPage = 0xab
     const instruction = [0x71, offsetZeroPage]
 
-    cpu.setMemoryValue(address + yIndex, operandB)
-    cpu.setMemoryValue(offsetZeroPage, address, CPU_DATA_SIZE.Word)
+    cpu.store(address + yIndex, operandB)
+    cpu.storeWord(offsetZeroPage, address)
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x85)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x85)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
@@ -540,7 +539,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, operand)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x24)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x24)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -553,7 +552,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, operand)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -566,7 +565,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, operand)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0xb4)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0xb4)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
@@ -577,10 +576,10 @@ describe('CPU Instructions', () => {
     const operandValue = 0x81
     const instruction = [0x06, address]
 
-    cpu.setMemoryValue(address, operandValue)
+    cpu.store(address, operandValue)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(address)).toBe(0x02)
+    expect(cpu.load(address)).toBe(0x02)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -593,10 +592,10 @@ describe('CPU Instructions', () => {
     const instruction = [0x16, address]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValue(address + xIndex, operandValue)
+    cpu.store(address + xIndex, operandValue)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(address + xIndex)).toBe(0x46)
+    expect(cpu.load(address + xIndex)).toBe(0x46)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -607,10 +606,10 @@ describe('CPU Instructions', () => {
     const operandValue = 0x9f
     const instruction = [0x0e, address]
 
-    cpu.setMemoryValue(address, operandValue)
+    cpu.store(address, operandValue)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(address)).toBe(0x3e)
+    expect(cpu.load(address)).toBe(0x3e)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -621,10 +620,10 @@ describe('CPU Instructions', () => {
     const operandValue = 0x00
     const instruction = [0x1e, address]
 
-    cpu.setMemoryValue(address, operandValue)
+    cpu.store(address, operandValue)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(address)).toBe(0x00)
+    expect(cpu.load(address)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(1)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0)
@@ -639,7 +638,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x806f)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x806f)
   })
 
   test('Emulate the BCC instruction for Relative addressing mode with negative offset.', () => {
@@ -651,7 +650,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x7fc1)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x7fc1)
   })
 
   test('Emulate the BCC instruction for Relative addressing mode with CarryFlag set.', () => {
@@ -663,7 +662,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x8021)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x8021)
   })
 
   test('Emulate the BCS instruction for Relative addressing mode.', () => {
@@ -675,7 +674,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x12b3)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x12b3)
   })
 
   test('Emulate the BCS instruction for Relative addressing mode with negative offset.', () => {
@@ -687,7 +686,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x346c)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x346c)
   })
 
   test('Emulate the BCS instruction for Relative addressing mode with CarryFlag clear.', () => {
@@ -699,7 +698,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x1003)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x1003)
   })
 
   test('Emulate the BEQ instruction for Relative addressing mode.', () => {
@@ -711,7 +710,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x9050)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x9050)
   })
 
   test('Emulate the BEQ instruction for Relative addressing mode with negative offset.', () => {
@@ -723,7 +722,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0xffe6)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0xffe6)
   })
 
   test('Emulate the BEQ instruction for Relative addressing mode with ZeroFlag clear.', () => {
@@ -735,7 +734,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0xa023)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0xa023)
   })
 
   test('Emulate the BIT instruction for ZeroPage Addressing mode.', () => {
@@ -744,7 +743,7 @@ describe('CPU Instructions', () => {
     const address = 0x47
     const instruction = [0x24, address]
 
-    cpu.setMemoryValue(address, operand)
+    cpu.store(address, operand)
     cpu.setRegister(CPU_REGISTERS.A, bitMask)
     cpu.execute(instruction)
 
@@ -759,7 +758,7 @@ describe('CPU Instructions', () => {
     const address = 0x12
     const instruction = [0x24, address]
 
-    cpu.setMemoryValue(address, operand)
+    cpu.store(address, operand)
     cpu.setRegister(CPU_REGISTERS.A, bitMask)
     cpu.execute(instruction)
 
@@ -774,7 +773,7 @@ describe('CPU Instructions', () => {
     const address = 0xa712
     const instruction = [0x2c, address]
 
-    cpu.setMemoryValue(address, operand)
+    cpu.store(address, operand)
     cpu.setRegister(CPU_REGISTERS.A, bitMask)
     cpu.execute(instruction)
 
@@ -789,7 +788,7 @@ describe('CPU Instructions', () => {
     const address = 0x91a4
     const instruction = [0x2c, address]
 
-    cpu.setMemoryValue(address, operand)
+    cpu.store(address, operand)
     cpu.setRegister(CPU_REGISTERS.A, bitMask)
     cpu.execute(instruction)
 
@@ -807,7 +806,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x7a82)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x7a82)
   })
 
   test('Emulate the BMI instruction for Relative addressing mode with negative offset.', () => {
@@ -819,7 +818,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x394d)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x394d)
   })
 
   test('Emulate the BMI instruction for Relative addressing mode with NegativeFlag clear.', () => {
@@ -831,7 +830,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x819c)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x819c)
   })
 
   test('Emulate the BNE instruction for Relative addressing mode.', () => {
@@ -843,7 +842,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0xa042)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0xa042)
   })
 
   test('Emulate the BNE instruction for Relative addressing mode with negative offset.', () => {
@@ -855,7 +854,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x8741)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x8741)
   })
 
   test('Emulate the BNE instruction for Relative addressing mode with ZeroFlag set.', () => {
@@ -867,7 +866,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x3473)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x3473)
   })
 
   test('Emulate the BPL instruction for Relative addressing mode.', () => {
@@ -879,7 +878,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0xe032)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0xe032)
   })
 
   test('Emulate the BPL instruction for Relative addressing mode with negative offset.', () => {
@@ -891,7 +890,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x8fb5)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x8fb5)
   })
 
   test('Emulate the BPL instruction for Relative addressing mode with NegativeFlag set.', () => {
@@ -903,7 +902,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x9022)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x9022)
   })
 
   test('Emulate the BRK instruction.', () => {
@@ -916,17 +915,17 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, pStatus)
     cpu.setRegister(CPU_REGISTERS.SP, sPointer)
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
-    cpu.setMemoryValue(CPU_MEMORY_MAP.IRQ_Vector, irqInterruptVector, CPU_DATA_SIZE.Word)
+    cpu.storeWord(CPU_MEMORY_MAP.IRQ_Vector, irqInterruptVector)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.SP).toBe(0xfd)
-    expect(cpu.REG.PC).toBe(irqInterruptVector)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(0xfd)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(irqInterruptVector)
     expect(cpuALU.getFlag(CPU_FLAGS.BreakCommand)).toBe(0x1)
 
-    expect(cpu.getMemoryValue(0x01fd)).toBe(0b10110011)
-    expect(cpu.getMemoryValue(0x1ff)).toBe(0x25)
-    expect(cpu.getMemoryValue(0x1fe)).toBe(0x40)
+    expect(cpu.load(0x01fd)).toBe(0b10110011)
+    expect(cpu.load(0x1ff)).toBe(0x25)
+    expect(cpu.load(0x1fe)).toBe(0x40)
   })
 
   test('Emulate the BVC instruction for Relative addressing mode.', () => {
@@ -938,7 +937,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x62d1)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x62d1)
   })
 
   test('Emulate the BVC instruction for Relative addressing mode with negative offset.', () => {
@@ -950,7 +949,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x1018)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x1018)
   })
 
   test('Emulate the BVC instruction for Relative addressing mode with OverflowFlag set.', () => {
@@ -962,7 +961,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0xc012)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0xc012)
   })
 
   test('Emulate the BVS instruction for Relative addressing mode.', () => {
@@ -974,7 +973,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x245c)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x245c)
   })
 
   test('Emulate the BVS instruction for Relative addressing mode with negative offset.', () => {
@@ -986,7 +985,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x323e)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x323e)
   })
 
   test('Emulate the BVS instruction for Relative addressing mode with OverflowFlag clear.', () => {
@@ -998,7 +997,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, pcAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0xa003)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0xa003)
   })
 
   test('Emulate the CLC instruction for Implied addressing mode', () => {
@@ -1107,7 +1106,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x2a
     const instruction = [0xc5, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operandB)
+    cpu.store(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1122,7 +1121,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xa9
     const instruction = [0xc5, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operandB)
+    cpu.store(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1137,7 +1136,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x82
     const instruction = [0xc5, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operandB)
+    cpu.store(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1154,7 +1153,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xd5, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operandB, zeroPageOffset)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1171,7 +1170,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xd5, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operandB, zeroPageOffset)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1188,7 +1187,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xd5, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operandB, zeroPageOffset)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1203,7 +1202,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x2212
     const instruction = [0xcd, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operandB)
+    cpu.store(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1218,7 +1217,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0xe101
     const instruction = [0xcd, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operandB)
+    cpu.store(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1233,7 +1232,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0xe101
     const instruction = [0xcd, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operandB)
+    cpu.store(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1250,7 +1249,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xdd, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operandB, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operandB, memoryAddress)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1267,7 +1266,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xdd, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operandB, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operandB, memoryAddress)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1284,7 +1283,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xdd, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operandB, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operandB, memoryAddress)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1301,7 +1300,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xd9, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteY, operandB, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.AbsoluteY, operandB, memoryAddress)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1318,7 +1317,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xd9, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteY, operandB, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.AbsoluteY, operandB, memoryAddress)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1335,7 +1334,7 @@ describe('CPU Instructions', () => {
     const instruction = [0xd9, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteY, operandB, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.AbsoluteY, operandB, memoryAddress)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1353,8 +1352,8 @@ describe('CPU Instructions', () => {
     const instruction = [0xc1, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndexedIndirect, operandB, zeroPageOffset)
+    cpu.storeWord(zeroPageOffset, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.IndexedIndirect, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1372,8 +1371,8 @@ describe('CPU Instructions', () => {
     const instruction = [0xc1, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndexedIndirect, operandB, zeroPageOffset)
+    cpu.storeWord(zeroPageOffset, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.IndexedIndirect, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1391,8 +1390,8 @@ describe('CPU Instructions', () => {
     const instruction = [0xc1, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndexedIndirect, operandB, zeroPageOffset)
+    cpu.storeWord(zeroPageOffset, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.IndexedIndirect, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1410,8 +1409,8 @@ describe('CPU Instructions', () => {
     const instruction = [0xd1, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
-    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndirectIndexed, operandB, zeroPageOffset)
+    cpu.storeWord(zeroPageOffset, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.IndirectIndexed, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1429,8 +1428,8 @@ describe('CPU Instructions', () => {
     const instruction = [0xd1, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, yIndex)
-    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndirectIndexed, operandB, zeroPageOffset)
+    cpu.storeWord(zeroPageOffset, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.IndirectIndexed, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1448,8 +1447,8 @@ describe('CPU Instructions', () => {
     const instruction = [0xd1, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, yIndex)
-    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.IndirectIndexed, operandB, zeroPageOffset)
+    cpu.storeWord(zeroPageOffset, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.IndirectIndexed, operandB, zeroPageOffset)
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
@@ -1503,7 +1502,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xa0
     const instruction = [0xe4, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operandB)
+    cpu.store(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.X, operandA)
     cpu.execute(instruction)
 
@@ -1518,7 +1517,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x37
     const instruction = [0xe4, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operandB)
+    cpu.store(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.X, operandA)
     cpu.execute(instruction)
 
@@ -1533,7 +1532,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xc0
     const instruction = [0xe4, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operandB)
+    cpu.store(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.X, operandA)
     cpu.execute(instruction)
 
@@ -1548,7 +1547,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x48ac
     const instruction = [0xec, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operandB)
+    cpu.store(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.X, operandA)
     cpu.execute(instruction)
 
@@ -1563,7 +1562,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0xff10
     const instruction = [0xec, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operandB)
+    cpu.store(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.X, operandA)
     cpu.execute(instruction)
 
@@ -1578,7 +1577,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x1010
     const instruction = [0xec, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operandB)
+    cpu.store(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.X, operandA)
     cpu.execute(instruction)
 
@@ -1632,7 +1631,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xb0
     const instruction = [0xc4, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operandB)
+    cpu.store(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.Y, operandA)
     cpu.execute(instruction)
 
@@ -1647,7 +1646,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x49
     const instruction = [0xc4, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operandB)
+    cpu.store(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.Y, operandA)
     cpu.execute(instruction)
 
@@ -1662,7 +1661,7 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x72
     const instruction = [0xc4, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operandB)
+    cpu.store(zeroPageOffset, operandB)
     cpu.setRegister(CPU_REGISTERS.Y, operandA)
     cpu.execute(instruction)
 
@@ -1677,7 +1676,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x6a9a
     const instruction = [0xcc, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operandB)
+    cpu.store(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.Y, operandA)
     cpu.execute(instruction)
 
@@ -1692,7 +1691,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x1010
     const instruction = [0xcc, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operandB)
+    cpu.store(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.Y, operandA)
     cpu.execute(instruction)
 
@@ -1707,7 +1706,7 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x2394
     const instruction = [0xcc, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operandB)
+    cpu.store(memoryAddress, operandB)
     cpu.setRegister(CPU_REGISTERS.Y, operandA)
     cpu.execute(instruction)
 
@@ -1721,10 +1720,10 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x23
     const instruction = [0xc6, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operand)
+    cpu.store(zeroPageOffset, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0x31)
+    expect(cpu.load(zeroPageOffset)).toBe(0x31)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -1734,10 +1733,10 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xfa
     const instruction = [0xc6, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operand)
+    cpu.store(zeroPageOffset, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0x00)
+    expect(cpu.load(zeroPageOffset)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -1747,10 +1746,10 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xd0
     const instruction = [0xc6, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operand)
+    cpu.store(zeroPageOffset, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0xff)
+    expect(cpu.load(zeroPageOffset)).toBe(0xff)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -1762,10 +1761,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xd6, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(zeroPageOffset + xIndex)).toBe(0x73)
+    expect(cpu.load(zeroPageOffset + xIndex)).toBe(0x73)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -1777,10 +1776,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xd6, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(zeroPageOffset + xIndex)).toBe(0x00)
+    expect(cpu.load(zeroPageOffset + xIndex)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -1792,10 +1791,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xd6, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(zeroPageOffset + xIndex)).toBe(0xdd)
+    expect(cpu.load(zeroPageOffset + xIndex)).toBe(0xdd)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -1805,10 +1804,10 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x573d
     const instruction = [0xce, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operand)
+    cpu.store(memoryAddress, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(0x7e)
+    expect(cpu.load(memoryAddress)).toBe(0x7e)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -1818,10 +1817,10 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x1235
     const instruction = [0xce, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operand)
+    cpu.store(memoryAddress, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(0x00)
+    expect(cpu.load(memoryAddress)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -1831,10 +1830,10 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x734c
     const instruction = [0xce, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operand)
+    cpu.store(memoryAddress, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(0xa8)
+    expect(cpu.load(memoryAddress)).toBe(0xa8)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -1846,10 +1845,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xde, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(0x41)
+    expect(cpu.load(memoryAddress + xIndex)).toBe(0x41)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -1861,10 +1860,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xde, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(0x00)
+    expect(cpu.load(memoryAddress + xIndex)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -1876,10 +1875,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xde, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(0xdd)
+    expect(cpu.load(memoryAddress + xIndex)).toBe(0xdd)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -1891,7 +1890,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.X, operand)
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(0x9f)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(0x9f)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -1903,7 +1902,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.Y, operand)
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -1916,7 +1915,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -1929,7 +1928,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0b11000000)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0b11000000)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -1941,11 +1940,11 @@ describe('CPU Instructions', () => {
     const instruction = [0x45, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.setMemoryValue(zeroPageOffset, operand)
+    cpu.store(zeroPageOffset, operand)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x16)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x16)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -1959,11 +1958,11 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.setMemoryValue(zeroPageOffset + xIndex, operand)
+    cpu.store(zeroPageOffset + xIndex, operand)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x8a)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x8a)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -1975,11 +1974,11 @@ describe('CPU Instructions', () => {
     const instruction = [0x4d, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.setMemoryValue(memoryAddress, operand)
+    cpu.store(memoryAddress, operand)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x5e)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x5e)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -1993,11 +1992,11 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValue(memoryAddress + xIndex, operand)
+    cpu.store(memoryAddress + xIndex, operand)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2011,11 +2010,11 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
-    cpu.setMemoryValue(memoryAddress + yIndex, operand)
+    cpu.store(memoryAddress + yIndex, operand)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0xc8)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0xc8)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2030,12 +2029,12 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.setMemoryValue(memoryAddress, operand)
-    cpu.setMemoryValue(zeroPageOffset + xIndex, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.store(memoryAddress, operand)
+    cpu.storeWord(zeroPageOffset + xIndex, memoryAddress)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0xaa)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0xaa)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2050,12 +2049,12 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.setMemoryValue(memoryAddress + yIndex, operand)
-    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.store(memoryAddress + yIndex, operand)
+    cpu.storeWord(zeroPageOffset, memoryAddress)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x1c)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x1c)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2065,10 +2064,10 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x60
     const instruction = [0xe6, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operand)
+    cpu.store(zeroPageOffset, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0x63)
+    expect(cpu.load(zeroPageOffset)).toBe(0x63)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2078,10 +2077,10 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0xd0
     const instruction = [0xe6, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operand)
+    cpu.store(zeroPageOffset, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0x00)
+    expect(cpu.load(zeroPageOffset)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2091,10 +2090,10 @@ describe('CPU Instructions', () => {
     const zeroPageOffset = 0x39
     const instruction = [0xe6, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, operand)
+    cpu.store(zeroPageOffset, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0xfb)
+    expect(cpu.load(zeroPageOffset)).toBe(0xfb)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2106,10 +2105,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xf6, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(zeroPageOffset + xIndex)).toBe(0x8b)
+    expect(cpu.load(zeroPageOffset + xIndex)).toBe(0x8b)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2121,10 +2120,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xf6, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(zeroPageOffset + xIndex)).toBe(0x00)
+    expect(cpu.load(zeroPageOffset + xIndex)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2136,10 +2135,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xf6, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, operand, zeroPageOffset)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(zeroPageOffset + xIndex)).toBe(0xd1)
+    expect(cpu.load(zeroPageOffset + xIndex)).toBe(0xd1)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2149,10 +2148,10 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x482c
     const instruction = [0xee, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operand)
+    cpu.store(memoryAddress, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(0x90)
+    expect(cpu.load(memoryAddress)).toBe(0x90)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2162,10 +2161,10 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0xff00
     const instruction = [0xee, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operand)
+    cpu.store(memoryAddress, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(0x00)
+    expect(cpu.load(memoryAddress)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2175,10 +2174,10 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0xbbaa
     const instruction = [0xee, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, operand)
+    cpu.store(memoryAddress, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(0xd1)
+    expect(cpu.load(memoryAddress)).toBe(0xd1)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2190,10 +2189,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xfe, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(0x3b)
+    expect(cpu.load(memoryAddress + xIndex)).toBe(0x3b)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2205,10 +2204,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xfe, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(0x00)
+    expect(cpu.load(memoryAddress + xIndex)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2220,10 +2219,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xfe, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, operand, memoryAddress)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(0xa9)
+    expect(cpu.load(memoryAddress + xIndex)).toBe(0xa9)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2235,7 +2234,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.X, operand)
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(0xe8)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(0xe8)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2247,7 +2246,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.Y, operand)
     cpu.execute(instruction)
 
-    expect(cpu.REG.Y).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2258,7 +2257,7 @@ describe('CPU Instructions', () => {
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x2030)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x2030)
   })
 
   test('Emulate the JMP instruction for Indirect addressing mode', () => {
@@ -2266,10 +2265,10 @@ describe('CPU Instructions', () => {
     const vector = 0x3212
     const instruction = [0x6c, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, vector, CPU_DATA_SIZE.Word)
+    cpu.storeWord(memoryAddress, vector)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(vector)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(vector)
   })
 
   test('Emulate the JMP instruction for Indirect addressing mode and its bug present when accessing by the indirect way', () => {
@@ -2281,11 +2280,11 @@ describe('CPU Instructions', () => {
 
     const instruction = [0x6c, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, vector, CPU_DATA_SIZE.Word)
-    cpu.setMemoryValue(memoryAddressWithMask, anotherMemoryByte)
+    cpu.storeWord(memoryAddress, vector)
+    cpu.store(memoryAddressWithMask, anotherMemoryByte)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(0x5fca)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x5fca)
   })
 
   test('Emulate the JSR instruction for Absolute addressing mode', () => {
@@ -2299,9 +2298,9 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, currentPCAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(operand)
-    expect(cpu.REG.SP).toBe(stackPointer - 2)
-    expect(cpu.getMemoryValue(memoryStackAddress - 1, CPU_DATA_SIZE.Word)).toBe(currentPCAddress + 2)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(operand)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(stackPointer - 2)
+    expect(cpu.loadWord(memoryStackAddress - 1)).toBe(currentPCAddress + 2)
   })
 
   test('Emulate the LDA instruction for Immediate Addressing mode', () => {
@@ -2310,7 +2309,7 @@ describe('CPU Instructions', () => {
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x9a)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x9a)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2321,7 +2320,7 @@ describe('CPU Instructions', () => {
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2331,10 +2330,10 @@ describe('CPU Instructions', () => {
     const memoryValue = 0x3f
     const instruction = [0xa5, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, memoryValue)
+    cpu.store(zeroPageOffset, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2346,10 +2345,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xb5, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValue(zeroPageOffset + xIndex, memoryValue)
+    cpu.store(zeroPageOffset + xIndex, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2359,10 +2358,10 @@ describe('CPU Instructions', () => {
     const memoryValue = 0x00
     const instruction = [0xad, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, memoryValue)
+    cpu.store(memoryAddress, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2374,10 +2373,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xbd, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValue(memoryAddress + xIndex, memoryValue)
+    cpu.store(memoryAddress + xIndex, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2389,10 +2388,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xb9, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
-    cpu.setMemoryValue(memoryAddress + yIndex, memoryValue)
+    cpu.store(memoryAddress + yIndex, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2405,11 +2404,11 @@ describe('CPU Instructions', () => {
     const instruction = [0xa1, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValue(memoryAddress, memoryValue)
-    cpu.setMemoryValue(zeroPageOffset + xIndex, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.store(memoryAddress, memoryValue)
+    cpu.storeWord(zeroPageOffset + xIndex, memoryAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2422,11 +2421,11 @@ describe('CPU Instructions', () => {
     const instruction = [0xb1, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
-    cpu.setMemoryValue(memoryAddress + yIndex, memoryValue)
-    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.store(memoryAddress + yIndex, memoryValue)
+    cpu.storeWord(zeroPageOffset, memoryAddress)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2437,7 +2436,7 @@ describe('CPU Instructions', () => {
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(0xf0)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(0xf0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2448,7 +2447,7 @@ describe('CPU Instructions', () => {
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2458,10 +2457,10 @@ describe('CPU Instructions', () => {
     const memoryValue = 0x7f
     const instruction = [0xa6, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, memoryValue)
+    cpu.store(zeroPageOffset, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2473,10 +2472,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xb6, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
-    cpu.setMemoryValue(zeroPageOffset + yIndex, memoryValue)
+    cpu.store(zeroPageOffset + yIndex, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2486,10 +2485,10 @@ describe('CPU Instructions', () => {
     const memoryValue = 0xb1
     const instruction = [0xae, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, memoryValue)
+    cpu.store(memoryAddress, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2501,10 +2500,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xbe, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
-    cpu.setMemoryValue(memoryAddress + yIndex, memoryValue)
+    cpu.store(memoryAddress + yIndex, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2515,7 +2514,7 @@ describe('CPU Instructions', () => {
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.Y).toBe(0x41)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(0x41)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2526,7 +2525,7 @@ describe('CPU Instructions', () => {
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.Y).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2536,10 +2535,10 @@ describe('CPU Instructions', () => {
     const memoryValue = 0xf1
     const instruction = [0xa4, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, memoryValue)
+    cpu.store(zeroPageOffset, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.Y).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2551,10 +2550,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xb4, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValue(zeroPageOffset + xIndex, memoryValue)
+    cpu.store(zeroPageOffset + xIndex, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.Y).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2564,10 +2563,10 @@ describe('CPU Instructions', () => {
     const memoryValue = 0xa1
     const instruction = [0xac, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, memoryValue)
+    cpu.store(memoryAddress, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.Y).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2579,10 +2578,10 @@ describe('CPU Instructions', () => {
     const instruction = [0xbc, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValue(memoryAddress + xIndex, memoryValue)
+    cpu.store(memoryAddress + xIndex, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.Y).toBe(memoryValue)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(memoryValue)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2594,7 +2593,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, accumulatorValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0b01000110)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0b01000110)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
@@ -2607,7 +2606,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, accumulatorValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0b00000000)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0b00000000)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
@@ -2618,10 +2617,10 @@ describe('CPU Instructions', () => {
     const memoryValue = 0b10100010
     const instruction = [0x46, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset, memoryValue)
+    cpu.store(zeroPageOffset, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(zeroPageOffset)).toBe(0b01010001)
+    expect(cpu.load(zeroPageOffset)).toBe(0b01010001)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
@@ -2633,11 +2632,11 @@ describe('CPU Instructions', () => {
     const xIndex = 0x12
     const instruction = [0x56, zeroPageOffset]
 
-    cpu.setMemoryValue(zeroPageOffset + xIndex, memoryValue)
+    cpu.store(zeroPageOffset + xIndex, memoryValue)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(zeroPageOffset + xIndex)).toBe(0b00000001)
+    expect(cpu.load(zeroPageOffset + xIndex)).toBe(0b00000001)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
@@ -2648,10 +2647,10 @@ describe('CPU Instructions', () => {
     const memoryValue = 0b10101011
     const instruction = [0x4e, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress, memoryValue)
+    cpu.store(memoryAddress, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(0b01010101)
+    expect(cpu.load(memoryAddress)).toBe(0b01010101)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
@@ -2663,11 +2662,11 @@ describe('CPU Instructions', () => {
     const xIndex = 0xc0
     const instruction = [0x5e, memoryAddress]
 
-    cpu.setMemoryValue(memoryAddress + xIndex, memoryValue)
+    cpu.store(memoryAddress + xIndex, memoryValue)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(0x0)
+    expect(cpu.load(memoryAddress + xIndex)).toBe(0x0)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
@@ -2680,7 +2679,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, currentPC)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(currentPC + 1)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(currentPC + 1)
   })
 
   test('Emulate the ORA instruction for Immediate addressing mode with ZeroFlag set', () => {
@@ -2691,7 +2690,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2704,7 +2703,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, operandA)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0b10101001)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0b10101001)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2716,11 +2715,11 @@ describe('CPU Instructions', () => {
     const instruction = [0x05, zeroPageOffset]
 
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.setMemoryValue(zeroPageOffset, operand)
+    cpu.store(zeroPageOffset, operand)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0xd5)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0xd5)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2734,11 +2733,11 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.setMemoryValue(zeroPageOffset + xIndex, operand)
+    cpu.store(zeroPageOffset + xIndex, operand)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0xfb)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0xfb)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2750,11 +2749,11 @@ describe('CPU Instructions', () => {
     const instruction = [0x0d, memoryAddress]
 
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.setMemoryValue(memoryAddress, operand)
+    cpu.store(memoryAddress, operand)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0xff)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0xff)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2768,11 +2767,11 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
-    cpu.setMemoryValue(memoryAddress + xIndex, operand)
+    cpu.store(memoryAddress + xIndex, operand)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0xaf)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0xaf)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2786,11 +2785,11 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
-    cpu.setMemoryValue(memoryAddress + yIndex, operand)
+    cpu.store(memoryAddress + yIndex, operand)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x0f)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x0f)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2805,12 +2804,12 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.setMemoryValue(memoryAddress, operand)
-    cpu.setMemoryValue(zeroPageOffset + xIndex, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.store(memoryAddress, operand)
+    cpu.storeWord(zeroPageOffset + xIndex, memoryAddress)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0xb1)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0xb1)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2825,12 +2824,12 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, acummulator)
-    cpu.setMemoryValue(memoryAddress + yIndex, operand)
-    cpu.setMemoryValue(zeroPageOffset, memoryAddress, CPU_DATA_SIZE.Word)
+    cpu.store(memoryAddress + yIndex, operand)
+    cpu.storeWord(zeroPageOffset, memoryAddress)
 
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0xaa)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0xaa)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2845,8 +2844,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, accumulator)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(accumulator)
-    expect(cpu.REG.SP).toBe(0xfe)
+    expect(cpu.load(memoryAddress)).toBe(accumulator)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(0xfe)
   })
 
   test('Emulate the PHP instruction for Implied addressing mode', () => {
@@ -2859,8 +2858,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.P, processorStatus)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(processorStatus)
-    expect(cpu.REG.SP).toBe(0xd0)
+    expect(cpu.load(memoryAddress)).toBe(processorStatus)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(0xd0)
   })
 
   test('Emulate the PLA instruction for Implied addressing mode with NegativeFlag set', () => {
@@ -2869,12 +2868,12 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x100 + stackPointer
     const instruction = [0x68]
 
-    cpu.setMemoryValue(memoryAddress, stackValue)
+    cpu.store(memoryAddress, stackValue)
     cpu.setRegister(CPU_REGISTERS.SP, stackPointer)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(stackValue)
-    expect(cpu.REG.SP).toBe(0x38)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(stackValue)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(0x38)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -2886,13 +2885,13 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x100 + stackPointer
     const instruction = [0x68]
 
-    cpu.setMemoryValue(memoryAddress, stackValue)
+    cpu.store(memoryAddress, stackValue)
     cpu.setRegister(CPU_REGISTERS.A, previousAccumulator)
     cpu.setRegister(CPU_REGISTERS.SP, stackPointer)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(stackValue)
-    expect(cpu.REG.SP).toBe(0xfb)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(stackValue)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(0xfb)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -2904,13 +2903,13 @@ describe('CPU Instructions', () => {
     const memoryAddress = 0x100 + stackPointer
     const instruction = [0x28]
 
-    cpu.setMemoryValue(memoryAddress, stackValue)
+    cpu.store(memoryAddress, stackValue)
     cpu.setRegister(CPU_REGISTERS.P, previousProcessorStatus)
     cpu.setRegister(CPU_REGISTERS.SP, stackPointer)
     cpu.execute(instruction)
 
-    expect(cpu.REG.P).toBe(stackValue)
-    expect(cpu.REG.SP).toBe(0xd0)
+    expect(cpu.getRegister(CPU_REGISTERS.P)).toBe(stackValue)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(0xd0)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.InterruptDisable)).toBe(0x01)
@@ -2927,7 +2926,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, operand)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0b10011011)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0b10011011)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
@@ -2942,7 +2941,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, operand)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0b00010010)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0b00010010)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
@@ -2955,10 +2954,10 @@ describe('CPU Instructions', () => {
     const instruction = [0x26, operand]
 
     cpu.setRegister(CPU_REGISTERS.P, carryFlagOn)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPage, memoryValue, operand)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.ZeroPage, memoryValue, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(operand)).toBe(0b11111101)
+    expect(cpu.load(operand)).toBe(0b11111101)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
@@ -2973,10 +2972,10 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.P, carryFlagOn)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, memoryValue, operand)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, memoryValue, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(operand + xIndex)).toBe(0b00111001)
+    expect(cpu.load(operand + xIndex)).toBe(0b00111001)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
@@ -2989,10 +2988,10 @@ describe('CPU Instructions', () => {
     const instruction = [0x2e, operand]
 
     cpu.setRegister(CPU_REGISTERS.P, carryFlagOff)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.Absolute, memoryValue, operand)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.Absolute, memoryValue, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(operand)).toBe(0b11100000)
+    expect(cpu.load(operand)).toBe(0b11100000)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
@@ -3007,10 +3006,10 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.P, carryFlagOff)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, memoryValue, operand)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, memoryValue, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(operand + xIndex)).toBe(0b00000000)
+    expect(cpu.load(operand + xIndex)).toBe(0b00000000)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
@@ -3025,7 +3024,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, operand)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0b10111001)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0b10111001)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
@@ -3040,7 +3039,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, operand)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0b01010100)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0b01010100)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
@@ -3053,10 +3052,10 @@ describe('CPU Instructions', () => {
     const instruction = [0x66, operand]
 
     cpu.setRegister(CPU_REGISTERS.P, carryFlag)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPage, memoryValue, operand)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.ZeroPage, memoryValue, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(operand)).toBe(0b11111000)
+    expect(cpu.load(operand)).toBe(0b11111000)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
@@ -3071,10 +3070,10 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.P, carryFlag)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, memoryValue, operand)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.ZeroPageX, memoryValue, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(operand + xIndex)).toBe(0b10101101)
+    expect(cpu.load(operand + xIndex)).toBe(0b10101101)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
@@ -3087,10 +3086,10 @@ describe('CPU Instructions', () => {
     const instruction = [0x6e, operand]
 
     cpu.setRegister(CPU_REGISTERS.P, carryFlag)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.Absolute, memoryValue, operand)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.Absolute, memoryValue, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(operand)).toBe(0b00011001)
+    expect(cpu.load(operand)).toBe(0b00011001)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
@@ -3105,10 +3104,10 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.P, carryFlag)
-    cpu.setMemoryValueFromAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, memoryValue, operand)
+    cpu.storeByAddressingMode(CPU_ADDRESSING_MODES.AbsoluteX, memoryValue, operand)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(operand + xIndex)).toBe(0b00000000)
+    expect(cpu.load(operand + xIndex)).toBe(0b00000000)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
@@ -3125,13 +3124,13 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.PC, currentPC)
     cpu.setRegister(CPU_REGISTERS.P, currentProcessorStatus)
     cpu.setRegister(CPU_REGISTERS.SP, stackPointer)
-    cpu.setMemoryValue(0x100 + stackPointer, processorStatusInStack)
-    cpu.setMemoryValue(0x100 + stackPointer + 1, pcInStack, CPU_DATA_SIZE.Word)
+    cpu.store(0x100 + stackPointer, processorStatusInStack)
+    cpu.storeWord(0x100 + stackPointer + 1, pcInStack)
     cpu.execute(instruction)
 
-    expect(cpu.REG.SP).toBe(0xff)
-    expect(cpu.REG.P).toBe(processorStatusInStack)
-    expect(cpu.REG.PC).toBe(pcInStack)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(0xff)
+    expect(cpu.getRegister(CPU_REGISTERS.P)).toBe(processorStatusInStack)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(pcInStack)
   })
 
   test('Emulate the RTS instruction for Implied addressing mode', () => {
@@ -3143,11 +3142,11 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.SP, stackPointer)
     cpu.setRegister(CPU_REGISTERS.PC, currentPCAddress)
-    cpu.setMemoryValue(memoryStackAddress + 1, pcInStack, CPU_DATA_SIZE.Word)
+    cpu.storeWord(memoryStackAddress + 1, pcInStack)
     cpu.execute(instruction)
 
-    expect(cpu.REG.PC).toBe(pcInStack + 1)
-    expect(cpu.REG.SP).toBe(stackPointer + 2)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(pcInStack + 1)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(stackPointer + 2)
   })
 
   test('Emulate the SBC instruction for Immediate addressing mode', () => {
@@ -3159,7 +3158,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, accumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x42)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x42)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
@@ -3175,7 +3174,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, accumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x30)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x30)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
@@ -3191,7 +3190,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, accumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0xb1)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0xb1)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x01)
@@ -3207,7 +3206,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, accumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0xa8)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0xa8)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
@@ -3222,10 +3221,10 @@ describe('CPU Instructions', () => {
 
     cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x01)
     cpu.setRegister(CPU_REGISTERS.A, accumulator)
-    cpu.setMemoryValue(stackAddress, memoryValue)
+    cpu.store(stackAddress, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x11)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x11)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
@@ -3242,10 +3241,10 @@ describe('CPU Instructions', () => {
     cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x00)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, accumulator)
-    cpu.setMemoryValue(stackAddress + xIndex, memoryValue)
+    cpu.store(stackAddress + xIndex, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x91)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x91)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
@@ -3260,10 +3259,10 @@ describe('CPU Instructions', () => {
 
     cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x00)
     cpu.setRegister(CPU_REGISTERS.A, accumulator)
-    cpu.setMemoryValue(memoryAddress, memoryValue)
+    cpu.store(memoryAddress, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x01)
@@ -3280,10 +3279,10 @@ describe('CPU Instructions', () => {
     cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x01)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, accumulator)
-    cpu.setMemoryValue(memoryAddress + xIndex, memoryValue)
+    cpu.store(memoryAddress + xIndex, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0xa8)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0xa8)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x01)
@@ -3300,10 +3299,10 @@ describe('CPU Instructions', () => {
     cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x01)
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, accumulator)
-    cpu.setMemoryValue(memoryAddress + yIndex, memoryValue)
+    cpu.store(memoryAddress + yIndex, memoryValue)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x31)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x31)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
@@ -3321,11 +3320,11 @@ describe('CPU Instructions', () => {
     cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x01)
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, accumulator)
-    cpu.setMemoryValue(addressVector, memoryValue)
-    cpu.setMemoryValue(stackAddress + xIndex, addressVector, CPU_DATA_SIZE.Word)
+    cpu.store(addressVector, memoryValue)
+    cpu.storeWord(stackAddress + xIndex, addressVector)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0xcf)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0xcf)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
@@ -3343,11 +3342,11 @@ describe('CPU Instructions', () => {
     cpuALU.setFlag(CPU_FLAGS.CarryFlag, 0x00)
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, accumulator)
-    cpu.setMemoryValue(addressVector + yIndex, memoryValue)
-    cpu.setMemoryValue(stackAddress, addressVector, CPU_DATA_SIZE.Word)
+    cpu.store(addressVector + yIndex, memoryValue)
+    cpu.storeWord(stackAddress, addressVector)
     cpu.execute(instruction)
 
-    expect(cpu.REG.A).toBe(0x80)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x80)
     expect(cpuALU.getFlag(CPU_FLAGS.CarryFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0x00)
@@ -3416,7 +3415,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(currentAccumulator)
+    expect(cpu.load(memoryAddress)).toBe(currentAccumulator)
   })
 
   test('Emulate the STA instruction for ZeroPage,X addressing mode', () => {
@@ -3429,7 +3428,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(currentAccumulator)
+    expect(cpu.load(memoryAddress + xIndex)).toBe(currentAccumulator)
   })
 
   test('Emulate the STA instruction for Absolute addressing mode', () => {
@@ -3440,7 +3439,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(currentAccumulator)
+    expect(cpu.load(memoryAddress)).toBe(currentAccumulator)
   })
 
   test('Emulate the STA instruction for Absolute,X addressing mode', () => {
@@ -3453,7 +3452,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(currentAccumulator)
+    expect(cpu.load(memoryAddress + xIndex)).toBe(currentAccumulator)
   })
 
   test('Emulate the STA instruction for Absolute,Y addressing mode', () => {
@@ -3466,7 +3465,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress + yIndex)).toBe(currentAccumulator)
+    expect(cpu.load(memoryAddress + yIndex)).toBe(currentAccumulator)
   })
 
   test('Emulate the STA instruction for IndexedIndirect addressing mode', () => {
@@ -3478,10 +3477,10 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.X, xIndex)
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
-    cpu.setMemoryValue(stackPointer + xIndex, memoryAddressVector, CPU_DATA_SIZE.Word)
+    cpu.storeWord(stackPointer + xIndex, memoryAddressVector)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddressVector)).toBe(currentAccumulator)
+    expect(cpu.load(memoryAddressVector)).toBe(currentAccumulator)
   })
 
   test('Emulate the STA instruction for IndirectIndexed addressing mode', () => {
@@ -3493,10 +3492,10 @@ describe('CPU Instructions', () => {
 
     cpu.setRegister(CPU_REGISTERS.Y, yIndex)
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
-    cpu.setMemoryValue(stackPointer, memoryAddressVector, CPU_DATA_SIZE.Word)
+    cpu.storeWord(stackPointer, memoryAddressVector)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddressVector + yIndex)).toBe(currentAccumulator)
+    expect(cpu.load(memoryAddressVector + yIndex)).toBe(currentAccumulator)
   })
 
   test('Emulate the STX instruction for ZeroPage addressing mode', () => {
@@ -3507,7 +3506,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.X, currentX)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(currentX)
+    expect(cpu.load(memoryAddress)).toBe(currentX)
   })
 
   test('Emulate the STX instruction for ZeroPage,Y addressing mode', () => {
@@ -3520,7 +3519,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.X, currentX)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress + yIndex)).toBe(currentX)
+    expect(cpu.load(memoryAddress + yIndex)).toBe(currentX)
   })
 
   test('Emulate the STX instruction for Absolute addressing mode', () => {
@@ -3531,7 +3530,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.X, currentX)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(currentX)
+    expect(cpu.load(memoryAddress)).toBe(currentX)
   })
 
   test('Emulate the STY instruction for ZeroPage addressing mode', () => {
@@ -3542,7 +3541,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.Y, currentY)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(currentY)
+    expect(cpu.load(memoryAddress)).toBe(currentY)
   })
 
   test('Emulate the STY instruction for ZeroPage,X addressing mode', () => {
@@ -3555,7 +3554,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.Y, currentY)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress + xIndex)).toBe(currentY)
+    expect(cpu.load(memoryAddress + xIndex)).toBe(currentY)
   })
 
   test('Emulate the STY instruction for Absolute addressing mode', () => {
@@ -3566,7 +3565,7 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.Y, currentY)
     cpu.execute(instruction)
 
-    expect(cpu.getMemoryValue(memoryAddress)).toBe(currentY)
+    expect(cpu.load(memoryAddress)).toBe(currentY)
   })
 
   test('Emulate the TAX instruction for Implied addressing mode', () => {
@@ -3578,8 +3577,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(currentAccumulator)
-    expect(cpu.REG.A).toBe(currentAccumulator)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(currentAccumulator)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(currentAccumulator)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -3593,8 +3592,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(currentAccumulator)
-    expect(cpu.REG.A).toBe(currentAccumulator)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(currentAccumulator)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(currentAccumulator)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -3608,8 +3607,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(currentAccumulator)
-    expect(cpu.REG.A).toBe(currentAccumulator)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(currentAccumulator)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(currentAccumulator)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -3623,8 +3622,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.Y).toBe(currentAccumulator)
-    expect(cpu.REG.A).toBe(currentAccumulator)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(currentAccumulator)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(currentAccumulator)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -3638,8 +3637,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.Y).toBe(currentAccumulator)
-    expect(cpu.REG.A).toBe(currentAccumulator)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(currentAccumulator)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(currentAccumulator)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -3653,8 +3652,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.Y).toBe(currentAccumulator)
-    expect(cpu.REG.A).toBe(currentAccumulator)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(currentAccumulator)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(currentAccumulator)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -3668,8 +3667,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
     cpu.execute(instruction)
 
-    expect(cpu.REG.SP).toBe(currentSPRegister)
-    expect(cpu.REG.X).toBe(currentSPRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(currentSPRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(currentSPRegister)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -3683,8 +3682,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
     cpu.execute(instruction)
 
-    expect(cpu.REG.SP).toBe(currentSPRegister)
-    expect(cpu.REG.X).toBe(currentSPRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(currentSPRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(currentSPRegister)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -3698,8 +3697,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
     cpu.execute(instruction)
 
-    expect(cpu.REG.SP).toBe(currentSPRegister)
-    expect(cpu.REG.X).toBe(currentSPRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(currentSPRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(currentSPRegister)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -3713,8 +3712,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(currentXRegister)
-    expect(cpu.REG.A).toBe(currentXRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(currentXRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(currentXRegister)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -3728,8 +3727,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(currentXRegister)
-    expect(cpu.REG.A).toBe(currentXRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(currentXRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(currentXRegister)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -3743,8 +3742,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.X).toBe(currentXRegister)
-    expect(cpu.REG.A).toBe(currentXRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(currentXRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(currentXRegister)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -3758,8 +3757,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
     cpu.execute(instruction)
 
-    expect(cpu.REG.SP).toBe(currentXRegister)
-    expect(cpu.REG.X).toBe(currentXRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(currentXRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(currentXRegister)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -3773,8 +3772,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
     cpu.execute(instruction)
 
-    expect(cpu.REG.SP).toBe(currentXRegister)
-    expect(cpu.REG.X).toBe(currentXRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(currentXRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(currentXRegister)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -3788,8 +3787,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.X, currentXRegister)
     cpu.execute(instruction)
 
-    expect(cpu.REG.SP).toBe(currentXRegister)
-    expect(cpu.REG.X).toBe(currentXRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(currentXRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(currentXRegister)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })
@@ -3803,8 +3802,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.Y).toBe(currentYRegister)
-    expect(cpu.REG.A).toBe(currentYRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(currentYRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(currentYRegister)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -3818,8 +3817,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.Y).toBe(currentYRegister)
-    expect(cpu.REG.A).toBe(currentYRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(currentYRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(currentYRegister)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x01)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x00)
   })
@@ -3833,8 +3832,8 @@ describe('CPU Instructions', () => {
     cpu.setRegister(CPU_REGISTERS.A, currentAccumulator)
     cpu.execute(instruction)
 
-    expect(cpu.REG.Y).toBe(currentYRegister)
-    expect(cpu.REG.A).toBe(currentYRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(currentYRegister)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(currentYRegister)
     expect(cpuALU.getFlag(CPU_FLAGS.ZeroFlag)).toBe(0x00)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(0x01)
   })

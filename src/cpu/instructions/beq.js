@@ -4,7 +4,7 @@ import { CPU_REGISTERS } from '../consts/registers'
 export default (cpu, cpuALU) => {
   const execute = (opcode, operand) => {
     const zeroFlag = cpuALU.getFlag(CPU_FLAGS.ZeroFlag)
-    let nextPCAddress = cpu.REG.PC + 2
+    let nextPCAddress = cpu.getRegister(CPU_REGISTERS.PC) + 2
 
     if (zeroFlag) {
       nextPCAddress += cpuALU.getSignedByte(operand)
