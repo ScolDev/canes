@@ -1,7 +1,7 @@
 import { CPU_REGISTERS } from '../../src/cpu/consts/registers'
 import { CPU_FLAGS } from '../../src/cpu/consts/flags'
 import { ALU } from '../../src/cpu/alu'
-import CPU from '../../src/cpu/cpu'
+import { CPU } from '../../src/cpu/cpu'
 
 describe('Tests for ALU module.', () => {
   let cpu

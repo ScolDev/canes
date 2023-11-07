@@ -5,8 +5,9 @@ import { CPU_ADDRESSING_MODES } from './consts/addressing-modes'
 import { CPU_REGISTERS } from './consts/registers'
 import { CPU_MEMORY_MAP } from './consts/memory-map'
 import { ALU } from './alu'
+import { CPU_FLAGS } from './consts/flags'
 
-export default () => {
+export const CPU = () => {
   const MEM = new Uint8Array(CPU_MEMORY_MAP.Size)
   const REG = {
     PC: 0x0000,
@@ -75,14 +76,40 @@ export default () => {
     instructions.execute(instruction)
   }
 
+  const powerUp = () => {
+    setRegister(CPU_REGISTERS.P, 0x34)
+    setRegister(CPU_REGISTERS.A, 0x00)
+    setRegister(CPU_REGISTERS.X, 0x00)
+    setRegister(CPU_REGISTERS.Y, 0x00)
+    setRegister(CPU_REGISTERS.SP, 0xfd)
+
+    store(CPU_MEMORY_MAP.SND_CHN, 0x00)
+    store(CPU_MEMORY_MAP.JOY2, 0x00)
+  }
+
+  const getMemorySection = (start, end) => {
+    return Buffer.from(MEM.subarray(start, end + 1))
+  }
+
+  const reset = () => {
+    const previousSP = getRegister(CPU_REGISTERS.SP)
+    setRegister(CPU_REGISTERS.SP, previousSP - 0x03)
+
+    store(CPU_MEMORY_MAP.SND_CHN, 0x00)
+    cpuALU.setFlag(CPU_FLAGS.InterruptDisable)
+  }
+
   const cpuApi = {
     execute,
+    getMemorySection,
     getRegister,
     setRegister,
     load,
     loadWord,
     loadByAddressingMode,
     loadAddressByAddressingMode,
+    powerUp,
+    reset,
     store,
     storeWord,
     storeByAddressingMode

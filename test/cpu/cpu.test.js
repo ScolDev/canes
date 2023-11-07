@@ -1,4 +1,4 @@
-import CPU from '../../src/cpu/cpu'
+import { CPU } from '../../src/cpu/cpu'
 
 import { CPU_REGISTERS } from '../../src/cpu/consts/registers'
 import { CPU_FLAGS } from '../../src/cpu/consts/flags'
@@ -141,5 +141,56 @@ describe('Tests for CPU module.', () => {
     expect(cpuALU.getFlag(CPU_FLAGS.BreakCommand)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.OverflowFlag)).toBe(0)
     expect(cpuALU.getFlag(CPU_FLAGS.NegativeFlag)).toBe(1)
+  })
+
+  test('should power-up the cpu', () => {
+    cpu.powerUp()
+
+    expect(cpu.getRegister(CPU_REGISTERS.P)).toBe(0x34)
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(0x00)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(0xfd)
+
+    expect(cpu.load(0x4015)).toBe(0x00)
+    expect(cpu.load(0x4017)).toBe(0x00)
+    expect(cpu.getMemorySection(0x4000, 0x400f).equals(Buffer.alloc(0x10, 0x00))).toBe(true)
+    expect(cpu.getMemorySection(0x4010, 0x4013).equals(Buffer.alloc(0x04, 0x00))).toBe(true)
+  })
+
+  test('should reset the cpu', () => {
+    const previousX = 0x31
+    const previousY = 0xf1
+    const previousA = 0xca
+    const previousSP = 0xf0
+    const previousP = 0b11001010
+    const dummyByte = 0xfa
+
+    cpu.setRegister(CPU_REGISTERS.X, previousX)
+    cpu.setRegister(CPU_REGISTERS.Y, previousY)
+    cpu.setRegister(CPU_REGISTERS.A, previousA)
+    cpu.setRegister(CPU_REGISTERS.SP, previousSP)
+    cpu.setRegister(CPU_REGISTERS.P, previousP)
+
+    cpu.store(0x0000, dummyByte)
+    cpu.store(0x0102, dummyByte)
+    cpu.store(0x07ff, dummyByte)
+
+    cpu.store(0x4015, dummyByte)
+    cpu.store(0x4017, dummyByte)
+
+    const previousInternalMemory = cpu.getMemorySection(0x0000, 0x07ff)
+
+    cpu.reset()
+
+    expect(cpu.getRegister(CPU_REGISTERS.A)).toBe(previousA)
+    expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(previousX)
+    expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(previousY)
+    expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(previousSP - 0x03)
+    expect(cpu.getRegister(CPU_REGISTERS.P)).toBe(0b11001110)
+
+    expect(cpu.load(0x4015)).toBe(0x00)
+    expect(cpu.load(0x4017)).toBe(dummyByte)
+    expect(previousInternalMemory.equals(cpu.getMemorySection(0x0000, 0x07ff))).toBe(true)
   })
 })
