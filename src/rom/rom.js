@@ -5,18 +5,7 @@ export const ROM = async (romLoader) => {
   let romFileBuffer = null
   const signature = new Uint8Array([0x4e, 0x45, 0x53, 0x1a])
   const header = {
-    isValid: false,
-    numOfPRG: 0,
-    numOfCHR: 0,
-    hasBatteryBacked: false,
-    hasTrainer: false,
-    size: 0,
-    prgSize: 0,
-    chrSize: 0,
-    mapper: {
-      code: 0x00,
-      name: ''
-    }
+    isValid: false
   }
 
   const getHeader = () => {
@@ -24,6 +13,10 @@ export const ROM = async (romLoader) => {
   }
 
   const getPRG = () => {
+    if (!header.isValid) {
+      return getEmptyPRG()
+    }
+
     const { start } = getPRGOffsets()
 
     if (header.mapper.code === MAPPERS_CODES.NROM) {
@@ -38,10 +31,8 @@ export const ROM = async (romLoader) => {
         size: prg.length
       }
     }
-    return {
-      buffer: Buffer.from([]),
-      size: 0
-    }
+
+    return getEmptyPRG()
   }
 
   const getPRGOffsets = () => {
@@ -51,6 +42,13 @@ export const ROM = async (romLoader) => {
 
     return {
       start
+    }
+  }
+
+  const getEmptyPRG = () => {
+    return {
+      buffer: Buffer.from([]),
+      size: 0
     }
   }
 
@@ -65,8 +63,12 @@ export const ROM = async (romLoader) => {
     const numOfPRG = romFileBuffer[4]
     const numOfCHR = romFileBuffer[5]
 
-    if (_signature.equals(signature)) header.isValid = true
+    if (!_signature.equals(signature)) {
+      header.isValid = false
+      return
+    }
 
+    header.isValid = true
     header.numOfPRG = numOfPRG
     header.numOfCHR = numOfCHR
     header.hasBatteryBacked = (flags6 >> 1 & 0x01) === 0x01
