@@ -6,6 +6,7 @@ import { CPU_REGISTERS } from './consts/registers'
 import { CPU_MEMORY_MAP } from './consts/memory-map'
 import { ALU } from './alu'
 import { CPU_FLAGS } from './consts/flags'
+import { MEMORY_MIRRORS } from './consts/memory-mirros'
 
 export const CPU = () => {
   const MEM = new Uint8Array(CPU_MEMORY_MAP.Size)
@@ -16,6 +17,14 @@ export const CPU = () => {
     X: 0x00,
     Y: 0x00,
     P: 0x00
+  }
+
+  const execute = (instruction) => {
+    instructions.execute(instruction)
+  }
+
+  const getMemorySection = (start, end) => {
+    return Buffer.from(MEM.subarray(start, end + 1))
   }
 
   const getRegister = (register) => {
@@ -39,7 +48,7 @@ export const CPU = () => {
       return operand
     }
 
-    if (operand & 0x00ff === 0xff) {
+    if (operand & (0x00ff === 0xff)) {
       return load(operand) + (load(operand & 0xff00) << 8)
     }
 
@@ -48,10 +57,6 @@ export const CPU = () => {
 
   const loadByAddressingMode = (addressingMode, operand) => {
     return addressingModes.get(addressingMode, operand)
-  }
-
-  const storeByAddressingMode = (addressingMode, value, operand) => {
-    addressingModes.set(addressingMode, value, operand)
   }
 
   const load = (memoryAddress) => {
@@ -63,8 +68,12 @@ export const CPU = () => {
   }
 
   const store = (memoryAddress, memoryValue) => {
-    memoryAddress &= 0xffff
-    MEM[memoryAddress] = memoryValue & 0xff
+    storeByte(memoryAddress, memoryValue)
+
+    const mirrors = getMemoryMirrors(memoryAddress)
+    if (mirrors.mirrorSize > 0) {
+      mirror(memoryAddress, memoryValue, mirrors)
+    }
   }
 
   const storeWord = (memoryAddress, memoryValue) => {
@@ -72,8 +81,8 @@ export const CPU = () => {
     store(memoryAddress + 1, (memoryValue & 0xff00) >> 8)
   }
 
-  const execute = (instruction) => {
-    instructions.execute(instruction)
+  const storeByAddressingMode = (addressingMode, value, operand) => {
+    addressingModes.set(addressingMode, value, operand)
   }
 
   const powerUp = () => {
@@ -87,16 +96,44 @@ export const CPU = () => {
     store(CPU_MEMORY_MAP.JOY2, 0x00)
   }
 
-  const getMemorySection = (start, end) => {
-    return Buffer.from(MEM.subarray(start, end + 1))
-  }
-
   const reset = () => {
     const previousSP = getRegister(CPU_REGISTERS.SP)
     setRegister(CPU_REGISTERS.SP, previousSP - 0x03)
 
     store(CPU_MEMORY_MAP.SND_CHN, 0x00)
     cpuALU.setFlag(CPU_FLAGS.InterruptDisable)
+  }
+
+  const getMemoryMirrors = (memoryAddress) => {
+    for (const mirror of Object.values(MEMORY_MIRRORS)) {
+      if (memoryAddress >= mirror.start && memoryAddress <= mirror.end) {
+        return {
+          ...mirror
+        }
+      }
+    }
+
+    return { start: 0, end: 0, mirrorSize: 0 }
+  }
+
+  const mirror = (memoryAddress, value, mirrors) => {
+    const { start, end, mirrorSize } = mirrors
+
+    for (
+      let baseAddress = start;
+      baseAddress < end;
+      baseAddress += mirrorSize
+    ) {
+      const relativeAddress = memoryAddress % mirrorSize
+      const mirroredAddress = baseAddress + relativeAddress
+
+      storeByte(mirroredAddress, value)
+    }
+  }
+
+  const storeByte = (memoryAddress, memoryValue) => {
+    memoryAddress &= 0xffff
+    MEM[memoryAddress] = memoryValue & 0xff
   }
 
   const cpuApi = {
