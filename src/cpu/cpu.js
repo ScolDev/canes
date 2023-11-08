@@ -68,11 +68,11 @@ export const CPU = () => {
   }
 
   const store = (memoryAddress, memoryValue) => {
-    storeByte(memoryAddress, memoryValue)
+    _storeByte(memoryAddress, memoryValue)
 
-    const mirrors = getMemoryMirrors(memoryAddress)
+    const mirrors = _getMemoryMirrors(memoryAddress)
     if (mirrors.mirrorSize > 0) {
-      mirror(memoryAddress, memoryValue, mirrors)
+      _mirror(memoryAddress, memoryValue, mirrors)
     }
   }
 
@@ -104,7 +104,7 @@ export const CPU = () => {
     cpuALU.setFlag(CPU_FLAGS.InterruptDisable)
   }
 
-  const getMemoryMirrors = (memoryAddress) => {
+  const _getMemoryMirrors = (memoryAddress) => {
     for (const mirror of Object.values(MEMORY_MIRRORS)) {
       if (memoryAddress >= mirror.start && memoryAddress <= mirror.end) {
         return {
@@ -116,7 +116,7 @@ export const CPU = () => {
     return { start: 0, end: 0, mirrorSize: 0 }
   }
 
-  const mirror = (memoryAddress, value, mirrors) => {
+  const _mirror = (memoryAddress, value, mirrors) => {
     const { start, end, mirrorSize } = mirrors
 
     for (
@@ -127,11 +127,11 @@ export const CPU = () => {
       const relativeAddress = memoryAddress % mirrorSize
       const mirroredAddress = baseAddress + relativeAddress
 
-      storeByte(mirroredAddress, value)
+      _storeByte(mirroredAddress, value)
     }
   }
 
-  const storeByte = (memoryAddress, memoryValue) => {
+  const _storeByte = (memoryAddress, memoryValue) => {
     memoryAddress &= 0xffff
     MEM[memoryAddress] = memoryValue & 0xff
   }
