@@ -8,7 +8,7 @@ describe('Tests for CPU memory mirroring.', () => {
     cpu = CPU()
   })
 
-  test('should mirror the internal RAM: Storing single bytes', () => {
+  test('should mirror the internal RAM: Storing and loading single bytes', () => {
     const ramStart = 0x0000
     const ramEnd = 0x0800
     const dummyByte = 0x61
@@ -37,7 +37,7 @@ describe('Tests for CPU memory mirroring.', () => {
     expect(cpu.load(0x1fff)).toBe(dummyByteEdge)
   })
 
-  test('should mirror the internal RAM: Storing two bytes', () => {
+  test('should mirror the internal RAM: Storing and loading two bytes', () => {
     const ramStart = 0x0000
     const ramEnd = 0x0800
     const dummyByte = 0xc110
@@ -66,7 +66,7 @@ describe('Tests for CPU memory mirroring.', () => {
     expect(cpu.loadWord(0x1ffe)).toBe(dummyByteEdge)
   })
 
-  test('should mirror the PPU I/O Registers: Storing bytes', () => {
+  test('should mirror the PPU I/O Registers: Storing and loading bytes', () => {
     const ppuIOStart = 0x2000
     const ppuIOEnd = 0x2008
     const ppuIOMirrorsEnd = 0x4000

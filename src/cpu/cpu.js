@@ -24,7 +24,19 @@ export const CPU = () => {
   }
 
   const getMemorySection = (start, end) => {
-    return Buffer.from(MEM.subarray(start, end + 1))
+    const sectionSize = end - start + 1
+    const endOfMirrors = MEMORY_MIRRORS.PPUIORegisters.end
+    const memorySection = new Uint8Array(sectionSize)
+
+    for (let idxMemory = start, idxSection = 0; idxMemory <= end; idxMemory++, idxSection++) {
+      if (idxMemory < endOfMirrors) {
+        memorySection[idxSection] = load(idxMemory)
+      } else {
+        memorySection.set(MEM.subarray(idxMemory, end + 1), idxSection)
+        break
+      }
+    }
+    return Buffer.from(memorySection)
   }
 
   const getRegister = (register) => {
@@ -60,7 +72,12 @@ export const CPU = () => {
   }
 
   const load = (memoryAddress) => {
-    return MEM[memoryAddress & 0xffff]
+    const mirrors = _getMemoryMirrors(memoryAddress)
+    if (mirrors.mirrorSize > 0) {
+      return _loadMirror(memoryAddress, mirrors)
+    }
+
+    return _loadByte(memoryAddress)
   }
 
   const loadWord = (memoryAddress) => {
@@ -68,12 +85,13 @@ export const CPU = () => {
   }
 
   const store = (memoryAddress, memoryValue) => {
-    _storeByte(memoryAddress, memoryValue)
-
     const mirrors = _getMemoryMirrors(memoryAddress)
     if (mirrors.mirrorSize > 0) {
-      _mirror(memoryAddress, memoryValue, mirrors)
+      _storeMirror(memoryAddress, memoryValue, mirrors)
+      return
     }
+
+    _storeByte(memoryAddress, memoryValue)
   }
 
   const storeWord = (memoryAddress, memoryValue) => {
@@ -116,20 +134,29 @@ export const CPU = () => {
     return { start: 0, end: 0, mirrorSize: 0 }
   }
 
-  const _mirror = (memoryAddress, value, mirrors) => {
-    const { start, end, mirrorSize } = mirrors
+  const _storeMirror = (memoryAddress, value, mirrors) => {
+    const { start, mirrorSize } = mirrors
+    const relativeAddress = memoryAddress % mirrorSize
+    const mirroredAddress = start + relativeAddress
 
-    for (let baseAddress = start; baseAddress < end; baseAddress += mirrorSize) {
-      const relativeAddress = memoryAddress % mirrorSize
-      const mirroredAddress = baseAddress + relativeAddress
-
-      _storeByte(mirroredAddress, value)
-    }
+    _storeByte(mirroredAddress, value)
   }
 
   const _storeByte = (memoryAddress, memoryValue) => {
     memoryAddress &= 0xffff
     MEM[memoryAddress] = memoryValue & 0xff
+  }
+
+  const _loadMirror = (memoryAddress, mirrors) => {
+    const { start, mirrorSize } = mirrors
+    const relativeAddress = memoryAddress % mirrorSize
+    const mirroredAddress = start + relativeAddress
+
+    return _loadByte(mirroredAddress)
+  }
+
+  const _loadByte = (memoryAddress, memoryValue) => {
+    return MEM[memoryAddress & 0xffff]
   }
 
   const cpuApi = {
