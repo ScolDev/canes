@@ -65,4 +65,24 @@ describe('Tests for CPU memory mirroring.', () => {
     expect(cpu.loadWord(0x1a00)).toBe(dummyByte)
     expect(cpu.loadWord(0x1ffe)).toBe(dummyByteEdge)
   })
+
+  test('should mirror the PPU I/O Registers: Storing bytes', () => {
+    const ppuIOStart = 0x2000
+    const ppuIOEnd = 0x2008
+    const ppuIOMirrorsEnd = 0x4000
+    const ppuIOMirrorsSize = 0x08
+    const ppuIOBuffer = Buffer.from([0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0])
+
+    cpu.powerUp()
+    for (let index = ppuIOStart, bufferIndex = 0; index < ppuIOEnd; index++, bufferIndex++) {
+      cpu.store(index, ppuIOBuffer[bufferIndex])
+    }
+
+    for (let index = ppuIOEnd; index < ppuIOMirrorsEnd; index += ppuIOMirrorsSize) {
+      const bufferSize = index + ppuIOMirrorsSize - 1
+      const mirrorBuffer = cpu.getMemorySection(index, bufferSize)
+
+      expect(mirrorBuffer.equals(ppuIOBuffer)).toBe(true)
+    }
+  })
 })

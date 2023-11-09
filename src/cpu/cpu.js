@@ -106,7 +106,7 @@ export const CPU = () => {
 
   const _getMemoryMirrors = (memoryAddress) => {
     for (const mirror of Object.values(MEMORY_MIRRORS)) {
-      if (memoryAddress >= mirror.start && memoryAddress <= mirror.end) {
+      if (memoryAddress >= mirror.start && memoryAddress < mirror.end) {
         return {
           ...mirror
         }
@@ -119,11 +119,7 @@ export const CPU = () => {
   const _mirror = (memoryAddress, value, mirrors) => {
     const { start, end, mirrorSize } = mirrors
 
-    for (
-      let baseAddress = start;
-      baseAddress < end;
-      baseAddress += mirrorSize
-    ) {
+    for (let baseAddress = start; baseAddress < end; baseAddress += mirrorSize) {
       const relativeAddress = memoryAddress % mirrorSize
       const mirroredAddress = baseAddress + relativeAddress
 
