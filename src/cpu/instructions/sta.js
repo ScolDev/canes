@@ -17,6 +17,7 @@ export default (cpu) => {
     const accumulator = cpu.getRegister(CPU_REGISTERS.A)
 
     cpu.storeByAddressingMode(addressingMode, accumulator, operand)
+    cpu.nextPC(addressingMode)
   }
 
   return {

@@ -16,6 +16,7 @@ export default (cpu, cpuALU) => {
 
     cpu.setRegister(CPU_REGISTERS.Y, memoryValue)
     updateStatus(cpu.getRegister(CPU_REGISTERS.Y))
+    cpu.nextPC(addressingMode)
   }
 
   const updateStatus = (accumulator) => {

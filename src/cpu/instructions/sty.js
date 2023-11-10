@@ -13,6 +13,7 @@ export default (cpu) => {
     const yRegister = cpu.getRegister(CPU_REGISTERS.Y)
 
     cpu.storeByAddressingMode(addressingMode, yRegister, operand)
+    cpu.nextPC(addressingMode)
   }
 
   return {

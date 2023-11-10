@@ -10,7 +10,8 @@ export const CPU_ADDRESSING_MODES = {
   AbsoluteY: 8,
   Indirect: 9,
   IndexedIndirect: 10,
-  IndirectIndexed: 11
+  IndirectIndexed: 11,
+  Implied: 12
 }
 
 export const AddressingModeSize = new Map([
@@ -25,6 +26,6 @@ export const AddressingModeSize = new Map([
   [CPU_ADDRESSING_MODES.AbsoluteY, 2],
   [CPU_ADDRESSING_MODES.Indirect, 1],
   [CPU_ADDRESSING_MODES.IndexedIndirect, 1],
-  [CPU_ADDRESSING_MODES.IndirectIndexed, 1]
-
+  [CPU_ADDRESSING_MODES.IndirectIndexed, 1],
+  [CPU_ADDRESSING_MODES.Implied, 0]
 ])

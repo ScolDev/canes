@@ -22,6 +22,7 @@ export default (cpu, cpuALU) => {
     const result = 0x100 + accumulator - memoryValue
 
     updateStatus(result, accumulator, memoryValue)
+    cpu.nextPC(addressingMode)
   }
 
   const updateStatus = (result, operandA, operandB) => {

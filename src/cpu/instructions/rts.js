@@ -7,8 +7,8 @@ export default (cpu) => {
     const loadedPC = cpu.loadWord(stackMemoryAddress + 1)
     const newPC = loadedPC + 1
 
-    cpu.setRegister(CPU_REGISTERS.PC, newPC)
     cpu.setRegister(CPU_REGISTERS.SP, newStackPointer)
+    cpu.setPC(newPC)
   }
 
   return {

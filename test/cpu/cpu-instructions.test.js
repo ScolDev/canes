@@ -3114,7 +3114,7 @@ describe('CPU Instructions', () => {
   })
 
   test('Emulate the RTI instruction for Implied addressing mode', () => {
-    const pcInStack = 0x2a
+    const pcInStack = 0x2a32
     const processorStatusInStack = 0xff
     const currentPC = 0x8a23
     const currentProcessorStatus = 0x00

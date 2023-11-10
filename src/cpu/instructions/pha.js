@@ -1,7 +1,13 @@
+import { CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 import { CPU_REGISTERS } from '../consts/registers'
 
 export default (cpu) => {
-  const execute = (opcode, operand) => {
+  const addressingModes = {
+    0x48: CPU_ADDRESSING_MODES.Implied
+  }
+
+  const execute = (opcode) => {
+    const addressingMode = addressingModes[opcode]
     const accumulator = cpu.getRegister(CPU_REGISTERS.A)
     const currentSP = cpu.getRegister(CPU_REGISTERS.SP)
 
@@ -9,6 +15,7 @@ export default (cpu) => {
 
     cpu.store(stackMemoryAddress, accumulator)
     cpu.setRegister(CPU_REGISTERS.SP, currentSP - 1)
+    cpu.nextPC(addressingMode)
   }
 
   return {

@@ -13,9 +13,9 @@ export default (cpu) => {
     const newStackPointer = cpu.getRegister(CPU_REGISTERS.SP) - 2
     const stackMemoryAddress = (cpu.getRegister(CPU_REGISTERS.SP) - 1) + 0x100
 
-    cpu.setRegister(CPU_REGISTERS.PC, addressValue)
     cpu.setRegister(CPU_REGISTERS.SP, newStackPointer)
     cpu.storeWord(stackMemoryAddress, currentPC + 2)
+    cpu.setPC(addressValue)
   }
 
   return {

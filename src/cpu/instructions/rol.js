@@ -19,6 +19,7 @@ export default (cpu, cpuALU) => {
 
     cpu.storeByAddressingMode(addressingMode, result, operand)
     updateStatus(result, operandValue)
+    cpu.nextPC(addressingMode)
   }
 
   const updateStatus = (result, operandValue) => {

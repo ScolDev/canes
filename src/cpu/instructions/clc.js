@@ -1,8 +1,16 @@
+import { CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 import { CPU_FLAGS } from '../consts/flags'
 
-export default (cpuALU) => {
-  const execute = (opcode, operand) => {
+export default (cpu, cpuALU) => {
+  const addressingModes = {
+    0x18: CPU_ADDRESSING_MODES.Implied
+  }
+
+  const execute = (opcode) => {
+    const addressingMode = addressingModes[opcode]
+
     cpuALU.clearFlag(CPU_FLAGS.CarryFlag)
+    cpu.nextPC(addressingMode)
   }
 
   return {
