@@ -13,11 +13,9 @@ export const Instructions = (cpu, cpuALU) => {
     decodedInstruction.execute(opcode, operand)
   }
 
-  const cpuInstructions = {
-    execute
-  }
-
   const instructionsTable = InstructionsTable(cpu, cpuALU)
 
-  return cpuInstructions
+  return {
+    execute
+  }
 }

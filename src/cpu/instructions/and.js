@@ -18,6 +18,7 @@ export default (cpu, cpuALU) => {
     cpu.setRegister(CPU_REGISTERS.A, cpu.getRegister(CPU_REGISTERS.A) & cpu.loadByAddressingMode(addressingMode, operand))
 
     updateStatus(cpu.getRegister(CPU_REGISTERS.A))
+    cpu.nextPC(addressingMode)
   }
 
   const updateStatus = (result) => {

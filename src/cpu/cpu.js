@@ -1,7 +1,7 @@
 import { AddressingModes } from './addressing-modes'
 import { Instructions } from './instructions'
 
-import { CPU_ADDRESSING_MODES } from './consts/addressing-modes'
+import { AddressingModeSize, CPU_ADDRESSING_MODES } from './consts/addressing-modes'
 import { CPU_REGISTERS } from './consts/registers'
 import { CPU_MEMORY_MAP } from './consts/memory-map'
 import { ALU } from './alu'
@@ -21,6 +21,18 @@ export const CPU = () => {
 
   const execute = (instruction) => {
     instructions.execute(instruction)
+  }
+
+  const nextPC = (addressingMode, displacement = 0x00) => {
+    const numOfBytes = AddressingModeSize.get(addressingMode) || 0x00
+    const currentPC = getRegister(CPU_REGISTERS.PC)
+    const nextPC = currentPC + numOfBytes + displacement + 1
+
+    setPC(nextPC)
+  }
+
+  const setPC = (address) => {
+    setRegister(CPU_REGISTERS.PC, address)
   }
 
   const getMemorySection = (start, end) => {
@@ -168,8 +180,10 @@ export const CPU = () => {
     loadWord,
     loadByAddressingMode,
     loadAddressByAddressingMode,
+    nextPC,
     powerUp,
     reset,
+    setPC,
     store,
     storeWord,
     storeByAddressingMode

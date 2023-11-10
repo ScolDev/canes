@@ -16,7 +16,7 @@ export default (cpu, cpuALU) => {
     cpu.store(CPU_MEMORY_MAP.Stack + (currentSP - 2), cpu.getRegister(CPU_REGISTERS.P))
 
     cpu.setRegister(CPU_REGISTERS.SP, currentSP - 2)
-    cpu.setRegister(CPU_REGISTERS.PC, irqInterruptVector)
+    cpu.setPC(irqInterruptVector)
   }
 
   return {

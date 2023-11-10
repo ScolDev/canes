@@ -1,16 +1,20 @@
+import { CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 import { CPU_FLAGS } from '../consts/flags'
-import { CPU_REGISTERS } from '../consts/registers'
 
 export default (cpu, cpuALU) => {
+  const addressingModes = {
+    0xd0: CPU_ADDRESSING_MODES.Relative
+  }
   const execute = (opcode, operand) => {
+    const addressingMode = addressingModes[opcode]
     const zeroFlag = cpuALU.getFlag(CPU_FLAGS.ZeroFlag)
-    let nextPCAddress = cpu.getRegister(CPU_REGISTERS.PC) + 2
+    let displacement = 0x00
 
     if (!zeroFlag) {
-      nextPCAddress += cpuALU.getSignedByte(operand)
+      displacement = cpuALU.getSignedByte(operand)
     }
 
-    cpu.setRegister(CPU_REGISTERS.PC, nextPCAddress)
+    cpu.nextPC(addressingMode, displacement)
   }
 
   return {
