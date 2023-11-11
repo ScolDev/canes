@@ -3,6 +3,7 @@ import { CPU } from '../../src/cpu/cpu'
 import { CPU_REGISTERS } from '../../src/cpu/consts/registers'
 import { CPU_FLAGS } from '../../src/cpu/consts/flags'
 import { ALU } from '../../src/cpu/alu'
+import { CPU_MEMORY_MAP } from '../../src/cpu/consts/memory-map'
 
 describe('Tests for CPU module.', () => {
   let cpu
@@ -144,6 +145,7 @@ describe('Tests for CPU module.', () => {
   })
 
   test('should power-up the cpu', () => {
+    cpu.storeWord(CPU_MEMORY_MAP.RESET_Vector, 0x8000)
     cpu.powerUp()
 
     expect(cpu.getRegister(CPU_REGISTERS.P)).toBe(0x34)
@@ -151,6 +153,7 @@ describe('Tests for CPU module.', () => {
     expect(cpu.getRegister(CPU_REGISTERS.X)).toBe(0x00)
     expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(0x00)
     expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(0xfd)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x8000)
 
     expect(cpu.load(0x4015)).toBe(0x00)
     expect(cpu.load(0x4017)).toBe(0x00)
@@ -178,6 +181,7 @@ describe('Tests for CPU module.', () => {
 
     cpu.store(0x4015, dummyByte)
     cpu.store(0x4017, dummyByte)
+    cpu.storeWord(CPU_MEMORY_MAP.RESET_Vector, 0x8000)
 
     const previousInternalMemory = cpu.getMemorySection(0x0000, 0x07ff)
 
@@ -188,6 +192,7 @@ describe('Tests for CPU module.', () => {
     expect(cpu.getRegister(CPU_REGISTERS.Y)).toBe(previousY)
     expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(previousSP - 0x03)
     expect(cpu.getRegister(CPU_REGISTERS.P)).toBe(0b11001110)
+    expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x8000)
 
     expect(cpu.load(0x4015)).toBe(0x00)
     expect(cpu.load(0x4017)).toBe(dummyByte)

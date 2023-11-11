@@ -121,6 +121,7 @@ export const CPU = () => {
     setRegister(CPU_REGISTERS.X, 0x00)
     setRegister(CPU_REGISTERS.Y, 0x00)
     setRegister(CPU_REGISTERS.SP, 0xfd)
+    _loadResetVector()
 
     store(CPU_MEMORY_MAP.SND_CHN, 0x00)
     store(CPU_MEMORY_MAP.JOY2, 0x00)
@@ -129,6 +130,7 @@ export const CPU = () => {
   const reset = () => {
     const previousSP = getRegister(CPU_REGISTERS.SP)
     setRegister(CPU_REGISTERS.SP, previousSP - 0x03)
+    _loadResetVector()
 
     store(CPU_MEMORY_MAP.SND_CHN, 0x00)
     cpuALU.setFlag(CPU_FLAGS.InterruptDisable)
@@ -169,6 +171,11 @@ export const CPU = () => {
 
   const _loadByte = (memoryAddress, memoryValue) => {
     return MEM[memoryAddress & 0xffff]
+  }
+
+  const _loadResetVector = () => {
+    const resetVector = loadWord(CPU_MEMORY_MAP.RESET_Vector)
+    setRegister(CPU_REGISTERS.PC, resetVector)
   }
 
   const cpuApi = {
