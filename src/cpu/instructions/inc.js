@@ -1,4 +1,4 @@
-import { CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
+import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 
 export default (cpu, cpuALU) => {
   const addressingModes = {
@@ -23,7 +23,15 @@ export default (cpu, cpuALU) => {
     cpuALU.updateNegativeFlag(result)
   }
 
+  const getASM = (instruction) => {
+    const [opcode, operand] = instruction
+    const addressingMode = addressingModes[opcode]
+    return `inc${getASMByAddrMode(addressingMode, operand)}`
+  }
+
   return {
-    execute
+    execute,
+    getASM,
+    addressingModes
   }
 }

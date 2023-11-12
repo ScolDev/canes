@@ -7,8 +7,14 @@ import { CPU_MEMORY_MAP } from './consts/memory-map'
 import { ALU } from './alu'
 import { CPU_FLAGS } from './consts/flags'
 import { MEMORY_MIRRORS } from './consts/memory-mirros'
+import { Debugger } from '../debugger/debugger'
 
 export const CPU = () => {
+  const cpuController = {
+    paused: false,
+    debugMode: false,
+    instructionsExecuted: 0
+  }
   const MEM = new Uint8Array(CPU_MEMORY_MAP.Size)
   const REG = {
     PC: 0x0000,
@@ -21,6 +27,7 @@ export const CPU = () => {
 
   const execute = (instruction) => {
     instructions.execute(instruction)
+    cpuController.instructionsExecuted++
   }
 
   const nextPC = (addressingMode, displacement = 0x00) => {
@@ -33,6 +40,18 @@ export const CPU = () => {
 
   const setPC = (address) => {
     setRegister(CPU_REGISTERS.PC, address)
+  }
+
+  const getPC = () => {
+    return getRegister(CPU_REGISTERS.PC)
+  }
+
+  const getCPUController = () => {
+    return cpuController
+  }
+
+  const getLastExecuted = () => {
+    return instructions.getLastExecuted()
   }
 
   const getMemorySection = (start, end) => {
@@ -115,25 +134,65 @@ export const CPU = () => {
     addressingModes.set(addressingMode, value, operand)
   }
 
+  const pauseWhen = (conditions) => {
+    _setDebugMode(true)
+    debug.setConditions(conditions)
+  }
+
   const powerUp = () => {
     setRegister(CPU_REGISTERS.P, 0x34)
     setRegister(CPU_REGISTERS.A, 0x00)
     setRegister(CPU_REGISTERS.X, 0x00)
     setRegister(CPU_REGISTERS.Y, 0x00)
     setRegister(CPU_REGISTERS.SP, 0xfd)
-    _loadResetVector()
 
     store(CPU_MEMORY_MAP.SND_CHN, 0x00)
     store(CPU_MEMORY_MAP.JOY2, 0x00)
+
+    _loadResetVector()
+    _executeNext()
   }
 
   const reset = () => {
     const previousSP = getRegister(CPU_REGISTERS.SP)
     setRegister(CPU_REGISTERS.SP, previousSP - 0x03)
-    _loadResetVector()
 
     store(CPU_MEMORY_MAP.SND_CHN, 0x00)
     cpuALU.setFlag(CPU_FLAGS.InterruptDisable)
+
+    _loadResetVector()
+    _executeNext()
+  }
+
+  const _executeNext = () => {
+    setTimeout(_runPRG, 0)
+  }
+
+  const _runPRG = () => {
+    if (cpuController.debugMode) {
+      debug.validate()
+    }
+
+    if (!cpuController.paused) {
+      const instruction = _fetchInstruction()
+      execute(instruction)
+      _executeNext()
+    }
+  }
+
+  const _fetchInstruction = () => {
+    const pc = getPC()
+    const opcode = load(pc)
+    const instruction = [opcode]
+    const instructionSize = instructions.getInstructionSize(opcode)
+
+    if (instructionSize === 0x01) {
+      instruction.push(load(pc + 1))
+    } else if (instructionSize === 0x02) {
+      instruction.push(loadWord(pc + 1))
+    }
+
+    return instruction
   }
 
   const _getMemoryMirrors = (memoryAddress) => {
@@ -178,25 +237,34 @@ export const CPU = () => {
     setRegister(CPU_REGISTERS.PC, resetVector)
   }
 
+  const _setDebugMode = (status) => {
+    cpuController.debugMode = status
+  }
+
   const cpuApi = {
     execute,
+    getCPUController,
+    getLastExecuted,
     getMemorySection,
     getRegister,
     setRegister,
+    getPC,
+    setPC,
     load,
     loadWord,
     loadByAddressingMode,
     loadAddressByAddressingMode,
     nextPC,
+    pauseWhen,
     powerUp,
     reset,
-    setPC,
     store,
     storeWord,
     storeByAddressingMode
   }
 
   const cpuALU = ALU(cpuApi)
+  const debug = Debugger(cpuApi)
   const instructions = Instructions(cpuApi, cpuALU)
   const addressingModes = AddressingModes(cpuApi, cpuALU)
 

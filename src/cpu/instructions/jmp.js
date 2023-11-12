@@ -1,4 +1,4 @@
-import { CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
+import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 
 export default (cpu) => {
   const addressingModes = {
@@ -13,7 +13,15 @@ export default (cpu) => {
     cpu.setPC(addressValue)
   }
 
+  const getASM = (instruction) => {
+    const [opcode, operand] = instruction
+    const addressingMode = addressingModes[opcode]
+    return `jmp${getASMByAddrMode(addressingMode, operand)}`
+  }
+
   return {
-    execute
+    execute,
+    getASM,
+    addressingModes
   }
 }

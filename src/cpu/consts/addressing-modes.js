@@ -29,3 +29,23 @@ export const AddressingModeSize = new Map([
   [CPU_ADDRESSING_MODES.IndirectIndexed, 1],
   [CPU_ADDRESSING_MODES.Implied, 0]
 ])
+
+export const AddressingModeASM = new Map([
+  [CPU_ADDRESSING_MODES.Acumulator, () => ''],
+  [CPU_ADDRESSING_MODES.Immediate, (operand) => ` #$${Number(operand).toString(16).padStart(2, '0')}`],
+  [CPU_ADDRESSING_MODES.ZeroPage, (operand) => ` $${Number(operand).toString(16).padStart(2, '0')}`],
+  [CPU_ADDRESSING_MODES.ZeroPageX, (operand) => ` $${Number(operand).toString(16).padStart(2, '0')}, X`],
+  [CPU_ADDRESSING_MODES.ZeroPageY, (operand) => ` $${Number(operand).toString(16).padStart(2, '0')}, Y`],
+  [CPU_ADDRESSING_MODES.Relative, (operand) => ` $${Number(operand).toString(16).padStart(2, '0')}`],
+  [CPU_ADDRESSING_MODES.Absolute, (operand) => ` $${Number(operand).toString(16).padStart(4, '0')}`],
+  [CPU_ADDRESSING_MODES.AbsoluteX, (operand) => ` $${Number(operand).toString(16).padStart(4, '0')}, X`],
+  [CPU_ADDRESSING_MODES.AbsoluteY, (operand) => ` $${Number(operand).toString(16).padStart(4, '0')}, Y`],
+  [CPU_ADDRESSING_MODES.Indirect, (operand) => ` ($${Number(operand).toString(16).padStart(4, '0')})`],
+  [CPU_ADDRESSING_MODES.IndexedIndirect, (operand) => ` ($${Number(operand).toString(16).padStart(2, '0')}, X)`],
+  [CPU_ADDRESSING_MODES.IndirectIndexed, (operand) => ` ($${Number(operand).toString(16).padStart(2, '0')}), Y`],
+  [CPU_ADDRESSING_MODES.Implied, () => '']
+])
+
+export const getASMByAddrMode = (addressingMode, operand) => {
+  return AddressingModeASM.get(addressingMode)(operand)
+}

@@ -1,6 +1,11 @@
 import { CPU_REGISTERS } from '../consts/registers'
+import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 
 export default (cpu) => {
+  const addressingModes = {
+    0x40: CPU_ADDRESSING_MODES.Implied
+  }
+
   const execute = (opcode, operand) => {
     const currentSP = cpu.getRegister(CPU_REGISTERS.SP)
     const stackMemoryAddress = 0x100 + currentSP
@@ -12,7 +17,15 @@ export default (cpu) => {
     cpu.setPC(pc)
   }
 
+  const getASM = (instruction) => {
+    const [opcode, operand] = instruction
+    const addressingMode = addressingModes[opcode]
+    return `rti${getASMByAddrMode(addressingMode, operand)}`
+  }
+
   return {
-    execute
+    execute,
+    getASM,
+    addressingModes
   }
 }

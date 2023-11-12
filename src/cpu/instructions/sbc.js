@@ -1,6 +1,6 @@
 import { CPU_FLAGS } from '../consts/flags'
 import { CPU_REGISTERS } from '../consts/registers'
-import { CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
+import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 
 export default (cpu, cpuALU) => {
   const addressingModes = {
@@ -37,7 +37,15 @@ export default (cpu, cpuALU) => {
     cpuALU.updateOverflowFlag(result, memoryValue, previousAccumulator)
   }
 
+  const getASM = (instruction) => {
+    const [opcode, operand] = instruction
+    const addressingMode = addressingModes[opcode]
+    return `sbc${getASMByAddrMode(addressingMode, operand)}`
+  }
+
   return {
-    execute
+    execute,
+    getASM,
+    addressingModes
   }
 }
