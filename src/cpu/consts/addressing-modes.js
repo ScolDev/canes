@@ -15,19 +15,19 @@ export const CPU_ADDRESSING_MODES = {
 }
 
 export const AddressingModeSize = new Map([
-  [CPU_ADDRESSING_MODES.Acumulator, 0],
-  [CPU_ADDRESSING_MODES.Immediate, 1],
-  [CPU_ADDRESSING_MODES.ZeroPage, 1],
-  [CPU_ADDRESSING_MODES.ZeroPageX, 1],
-  [CPU_ADDRESSING_MODES.ZeroPageY, 1],
-  [CPU_ADDRESSING_MODES.Relative, 1],
-  [CPU_ADDRESSING_MODES.Absolute, 2],
-  [CPU_ADDRESSING_MODES.AbsoluteX, 2],
-  [CPU_ADDRESSING_MODES.AbsoluteY, 2],
-  [CPU_ADDRESSING_MODES.Indirect, 1],
-  [CPU_ADDRESSING_MODES.IndexedIndirect, 1],
-  [CPU_ADDRESSING_MODES.IndirectIndexed, 1],
-  [CPU_ADDRESSING_MODES.Implied, 0]
+  [CPU_ADDRESSING_MODES.Acumulator, 1],
+  [CPU_ADDRESSING_MODES.Immediate, 2],
+  [CPU_ADDRESSING_MODES.ZeroPage, 2],
+  [CPU_ADDRESSING_MODES.ZeroPageX, 2],
+  [CPU_ADDRESSING_MODES.ZeroPageY, 2],
+  [CPU_ADDRESSING_MODES.Relative, 2],
+  [CPU_ADDRESSING_MODES.Absolute, 3],
+  [CPU_ADDRESSING_MODES.AbsoluteX, 3],
+  [CPU_ADDRESSING_MODES.AbsoluteY, 3],
+  [CPU_ADDRESSING_MODES.Indirect, 2],
+  [CPU_ADDRESSING_MODES.IndexedIndirect, 2],
+  [CPU_ADDRESSING_MODES.IndirectIndexed, 2],
+  [CPU_ADDRESSING_MODES.Implied, 1]
 ])
 
 export const AddressingModeASM = new Map([

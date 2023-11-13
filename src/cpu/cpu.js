@@ -33,7 +33,7 @@ export const CPU = () => {
   const nextPC = (addressingMode, displacement = 0x00) => {
     const numOfBytes = AddressingModeSize.get(addressingMode) || 0x00
     const currentPC = getRegister(CPU_REGISTERS.PC)
-    const nextPC = currentPC + numOfBytes + displacement + 1
+    const nextPC = currentPC + numOfBytes + displacement
 
     setPC(nextPC)
   }
@@ -186,9 +186,9 @@ export const CPU = () => {
     const instruction = [opcode]
     const instructionSize = instructions.getInstructionSize(opcode)
 
-    if (instructionSize === 0x01) {
+    if (instructionSize === 0x02) {
       instruction.push(load(pc + 1))
-    } else if (instructionSize === 0x02) {
+    } else if (instructionSize === 0x03) {
       instruction.push(loadWord(pc + 1))
     }
 
