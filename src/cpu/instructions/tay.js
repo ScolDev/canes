@@ -15,9 +15,9 @@ export default (cpu, cpuALU) => {
     cpu.nextPC(addressingMode)
   }
 
-  const updateStatus = (newYRegister) => {
-    cpuALU.updateZeroFlag(newYRegister)
-    cpuALU.updateNegativeFlag(newYRegister)
+  const updateStatus = (result) => {
+    cpuALU.updateZeroFlag(result)
+    cpuALU.updateNegativeFlag(result)
   }
 
   const getASM = (instruction) => {

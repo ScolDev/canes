@@ -23,7 +23,7 @@ describe('Tests for ROMs executions.', () => {
       0x8002  a20f    ldx #$0f
       0x8004  9a      txs
       0x8005  ad0220  lda $2002   (sym.PPU_STATUS)
-      0x8008  30fb    bmi $800e
+      0x8008  30fb    bmi $8005
       0x800a  a900    lda #$00
       0x700c  ea      nop
      */
@@ -42,6 +42,7 @@ describe('Tests for ROMs executions.', () => {
       const { opcode, asm } = cpu.getLastExecuted()
 
       expect(asm).toBe('lda #$00')
+      expect(cpu.getPC()).toBe(0x800c)
       expect(opcode).toBe(0xa9)
       expect(cpu.getCPUController().paused).toBe(true)
 
@@ -56,14 +57,14 @@ describe('Tests for ROMs executions.', () => {
       0x8002  a2ff    ldx #$ff    (Cause branching, NegativeFlag set)
       0x8004  9a      txs
       0x8005  ad0220  lda $2002   (sym.PPU_STATUS)
-      0x8008  30fb    bmi $800e   (Infinite loop because NegativeFlag is set)
+      0x8008  10fb    bpl $8005   (Branch because negative flag is always zero from $2002)
       0x800a  a900    lda #$00
       0x700c  ea      nop
      */
     const prg = new Uint8Array([
       0x78, 0xd8, 0xa2, 0xff,
       0x9a, 0xad, 0x02, 0x20,
-      0x30, 0xfb, 0xa9, 0x00,
+      0x10, 0xfb, 0xa9, 0x00,
       0xea
     ])
     storePRG(prg)
@@ -75,6 +76,7 @@ describe('Tests for ROMs executions.', () => {
       const { opcode, asm } = cpu.getLastExecuted()
 
       expect(asm).toBe('lda $2002')
+      expect(cpu.getPC()).toBe(0x8008)
       expect(opcode).toBe(0xad)
       expect(cpu.getCPUController().paused).toBe(true)
 

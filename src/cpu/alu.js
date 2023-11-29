@@ -39,9 +39,9 @@ export const ALU = (cpu) => {
   }
 
   const updateZeroFlag = (result) => {
-    if ((result & 0xff) === 0x00) {
-      setFlag(CPU_FLAGS.ZeroFlag)
-    }
+    (result & 0xff) === 0x00
+      ? setFlag(CPU_FLAGS.ZeroFlag)
+      : clearFlag(CPU_FLAGS.ZeroFlag)
   }
 
   const updateOverflowFlag = (result, operandA, operandB) => {
@@ -49,15 +49,13 @@ export const ALU = (cpu) => {
     const operandBBit7 = operandB >> 7
     const resultBit7 = (result & 0xff) >> 7
 
-    if (operandABit7 === operandBBit7 && resultBit7 !== operandABit7) {
-      setFlag(CPU_FLAGS.OverflowFlag)
-    }
+    operandABit7 === operandBBit7 && resultBit7 !== operandABit7
+      ? setFlag(CPU_FLAGS.OverflowFlag)
+      : clearFlag(CPU_FLAGS.OverflowFlag)
   }
 
   const updateNegativeFlag = (result) => {
-    if (getBitValue(0x07, result) === 0x01) {
-      setFlag(CPU_FLAGS.NegativeFlag)
-    }
+    setFlag(CPU_FLAGS.NegativeFlag, getBitValue(0x07, result))
   }
 
   return {
