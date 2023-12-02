@@ -8,12 +8,15 @@ import { ALU } from './alu'
 import { CPU_FLAGS } from './consts/flags'
 import { MEMORY_MIRRORS } from './consts/memory-mirros'
 import { Debugger } from '../debugger/debugger'
+import { FileLoader } from '../utils/file-loader'
+import { ROM } from '../rom/rom'
 
 export const CPU = () => {
   const cpuController = {
     paused: false,
     debugMode: false,
-    instructionsExecuted: 0
+    instructionsExecuted: 0,
+    lastWrite: { address: -1, value: -1 }
   }
   const MEM = new Uint8Array(CPU_MEMORY_MAP.Size)
   const REG = {
@@ -27,7 +30,7 @@ export const CPU = () => {
 
   const execute = (instruction) => {
     instructions.execute(instruction)
-    cpuController.instructionsExecuted++
+    _updateCtrl()
   }
 
   const nextPC = (addressingMode, displacement = 0x00) => {
@@ -67,7 +70,7 @@ export const CPU = () => {
         break
       }
     }
-    return Buffer.from(memorySection)
+    return memorySection
   }
 
   const getRegister = (register) => {
@@ -134,6 +137,16 @@ export const CPU = () => {
     addressingModes.set(addressingMode, value, operand)
   }
 
+  const loadROM = async ({ filePath }) => {
+    const fileLoader = FileLoader(filePath)
+    rom = await ROM(fileLoader)
+
+    if (rom.getHeader().isValid) {
+      _loadPRG()
+      powerUp()
+    }
+  }
+
   const pauseWhen = (conditions) => {
     _setDebugMode(true)
     debug.setConditions(conditions)
@@ -150,7 +163,7 @@ export const CPU = () => {
     store(CPU_MEMORY_MAP.JOY2, 0x00)
 
     _loadResetVector()
-    _executeNext()
+    _run()
   }
 
   const reset = () => {
@@ -161,23 +174,29 @@ export const CPU = () => {
     cpuALU.setFlag(CPU_FLAGS.InterruptDisable)
 
     _loadResetVector()
-    _executeNext()
+    _run()
   }
 
-  const _executeNext = () => {
+  const _run = () => {
     setTimeout(_runPRG, 0)
   }
 
   const _runPRG = () => {
-    if (cpuController.debugMode) {
-      debug.validate()
+    for (let tick = 0; tick < 256; tick++) {
+      if (cpuController.debugMode) {
+        debug.validate()
+      }
+      if (cpuController.paused) {
+        return
+      }
+      _executeCurrent()
     }
+    _run()
+  }
 
-    if (!cpuController.paused) {
-      const instruction = _fetchInstruction()
-      execute(instruction)
-      _executeNext()
-    }
+  const _executeCurrent = () => {
+    const instruction = _fetchInstruction()
+    execute(instruction)
   }
 
   const _fetchInstruction = () => {
@@ -193,6 +212,11 @@ export const CPU = () => {
     }
 
     return instruction
+  }
+
+  const _loadPRG = () => {
+    const { buffer } = rom.getPRG()
+    buffer.copy(MEM, CPU_MEMORY_MAP.PRG_ROM)
   }
 
   const _getMemoryMirrors = (memoryAddress) => {
@@ -233,12 +257,16 @@ export const CPU = () => {
   }
 
   const _loadResetVector = () => {
-    const resetVector = loadWord(CPU_MEMORY_MAP.RESET_Vector)
+    const resetVector = loadWord(CPU_MEMORY_MAP.Reset_Vector)
     setRegister(CPU_REGISTERS.PC, resetVector)
   }
 
   const _setDebugMode = (status) => {
     cpuController.debugMode = status
+  }
+
+  const _updateCtrl = () => {
+    cpuController.instructionsExecuted++
   }
 
   const cpuApi = {
@@ -255,6 +283,7 @@ export const CPU = () => {
     loadByAddressingMode,
     loadAddressByAddressingMode,
     nextPC,
+    loadROM,
     pauseWhen,
     powerUp,
     reset,
@@ -263,6 +292,7 @@ export const CPU = () => {
     storeByAddressingMode
   }
 
+  let rom = null
   const cpuALU = ALU(cpuApi)
   const debug = Debugger(cpuApi)
   const instructions = Instructions(cpuApi, cpuALU)

@@ -6,7 +6,7 @@ describe('Tests for ROMs executions.', () => {
   let cpu
 
   function storePRG (prg) {
-    cpu.storeWord(CPU_MEMORY_MAP.RESET_Vector, 0x8000)
+    cpu.storeWord(CPU_MEMORY_MAP.Reset_Vector, 0x8000)
     for (let address = 0x8000, index = 0; index < prg.length; address++, index++) {
       cpu.store(address, prg[index])
     }
@@ -82,5 +82,80 @@ describe('Tests for ROMs executions.', () => {
 
       done()
     }, 100)
+  })
+
+  test('should stop execution before the first instruction is executed', done => {
+    const filePath = './test/__roms__/instr_test-v5/rom_singles/01-basics.nes'
+    const romResetVector = 0xe683
+    cpu.pauseWhen({
+      atResetVector: true
+    })
+
+    cpu.loadROM({ filePath })
+      .then(() => {
+        setTimeout(() => {
+          const pc = cpu.getPC()
+          expect(pc).toBe(romResetVector)
+          expect(cpu.getCPUController().paused).toBe(true)
+
+          done()
+        }, 0)
+      })
+  })
+
+  test('should stop execution when ROM test status was running (0x80)', done => {
+    const filePath = './test/__roms__/instr_test-v5/rom_singles/01-basics.nes'
+    const testStatusAddress = 0x6000
+    cpu.pauseWhen({
+      memory: [{
+        address: testStatusAddress,
+        equalsTo: 0x80,
+        onWrite: true
+      }]
+    })
+
+    cpu.loadROM({ filePath })
+      .then(() => {
+        setTimeout(() => {
+          const pc = cpu.getPC()
+          const memoryValue = cpu.load(testStatusAddress)
+
+          expect(cpu.getCPUController().paused).toBe(true)
+          expect(memoryValue).toBe(0x80)
+          expect(pc).toBeLessThanOrEqual(0xffff)
+          expect(pc).toBeGreaterThanOrEqual(0x8000)
+
+          done()
+        }, 400)
+      })
+  })
+
+  test('should stop execution when ROM test $6001 memory value is between (0x80-0xff) status', done => {
+    const filePath = './test/__roms__/instr_test-v5/rom_singles/01-basics.nes'
+    const testStatusAddress = 0x6001
+    cpu.pauseWhen({
+      memory: [
+        {
+          address: testStatusAddress,
+          greaterThanOrEquals: 0x80,
+          lessThanOrEquals: 0xff,
+          onWrite: true
+        }]
+    })
+
+    cpu.loadROM({ filePath })
+      .then(() => {
+        setTimeout(() => {
+          const pc = cpu.getPC()
+          const memoryValue = cpu.load(testStatusAddress)
+
+          expect(cpu.getCPUController().paused).toBe(true)
+          expect(memoryValue).toBe(0xde)
+          expect(pc).toBeGreaterThanOrEqual(0x8000)
+          expect(pc).toBeLessThanOrEqual(0xffff)
+
+          done()
+        }, 400)
+      })
   })
 })

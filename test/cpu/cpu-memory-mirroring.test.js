@@ -71,7 +71,7 @@ describe('Tests for CPU memory mirroring.', () => {
     const ppuIOEnd = 0x2008
     const ppuIOMirrorsEnd = 0x4000
     const ppuIOMirrorsSize = 0x08
-    const ppuIOBuffer = Buffer.from([0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0])
+    const ppuIOBuffer = new Uint8Array([0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0])
 
     cpu.powerUp()
     for (let index = ppuIOStart, bufferIndex = 0; index < ppuIOEnd; index++, bufferIndex++) {
@@ -82,7 +82,7 @@ describe('Tests for CPU memory mirroring.', () => {
       const bufferSize = index + ppuIOMirrorsSize - 1
       const mirrorBuffer = cpu.getMemorySection(index, bufferSize)
 
-      expect(mirrorBuffer.equals(ppuIOBuffer)).toBe(true)
+      expect(mirrorBuffer).toEqual(ppuIOBuffer)
     }
   })
 })

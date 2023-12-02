@@ -145,7 +145,7 @@ describe('Tests for CPU module.', () => {
   })
 
   test('should power-up the cpu', () => {
-    cpu.storeWord(CPU_MEMORY_MAP.RESET_Vector, 0x8000)
+    cpu.storeWord(CPU_MEMORY_MAP.Reset_Vector, 0x8000)
     cpu.powerUp()
 
     expect(cpu.getRegister(CPU_REGISTERS.P)).toBe(0x34)
@@ -157,8 +157,8 @@ describe('Tests for CPU module.', () => {
 
     expect(cpu.load(0x4015)).toBe(0x00)
     expect(cpu.load(0x4017)).toBe(0x00)
-    expect(cpu.getMemorySection(0x4000, 0x400f).equals(Buffer.alloc(0x10, 0x00))).toBe(true)
-    expect(cpu.getMemorySection(0x4010, 0x4013).equals(Buffer.alloc(0x04, 0x00))).toBe(true)
+    expect(cpu.getMemorySection(0x4000, 0x400f)).toEqual(new Uint8Array(0x10))
+    expect(cpu.getMemorySection(0x4010, 0x4013)).toEqual(new Uint8Array(0x04))
   })
 
   test('should reset the cpu', () => {
@@ -181,7 +181,7 @@ describe('Tests for CPU module.', () => {
 
     cpu.store(0x4015, dummyByte)
     cpu.store(0x4017, dummyByte)
-    cpu.storeWord(CPU_MEMORY_MAP.RESET_Vector, 0x8000)
+    cpu.storeWord(CPU_MEMORY_MAP.Reset_Vector, 0x8000)
 
     const previousInternalMemory = cpu.getMemorySection(0x0000, 0x07ff)
 
@@ -196,6 +196,6 @@ describe('Tests for CPU module.', () => {
 
     expect(cpu.load(0x4015)).toBe(0x00)
     expect(cpu.load(0x4017)).toBe(dummyByte)
-    expect(previousInternalMemory.equals(cpu.getMemorySection(0x0000, 0x07ff))).toBe(true)
+    expect(previousInternalMemory).toEqual(cpu.getMemorySection(0x0000, 0x07ff))
   })
 })
