@@ -28,6 +28,11 @@ export const CPU = () => {
     P: 0x00
   }
 
+  const debug = () => {
+    _setDebugMode(true)
+    return nesDebugger
+  }
+
   const execute = (instruction) => {
     instructions.execute(instruction)
     _updateCtrl()
@@ -147,11 +152,6 @@ export const CPU = () => {
     }
   }
 
-  const pauseWhen = (conditions) => {
-    _setDebugMode(true)
-    debug.setConditions(conditions)
-  }
-
   const powerUp = () => {
     setRegister(CPU_REGISTERS.P, 0x34)
     setRegister(CPU_REGISTERS.A, 0x00)
@@ -184,7 +184,7 @@ export const CPU = () => {
   const _runPRG = () => {
     for (let tick = 0; tick < 256; tick++) {
       if (cpuController.debugMode) {
-        debug.validate()
+        nesDebugger.validate()
       }
       if (cpuController.paused) {
         return
@@ -270,6 +270,7 @@ export const CPU = () => {
   }
 
   const cpuApi = {
+    debug,
     execute,
     getCPUController,
     getLastExecuted,
@@ -284,7 +285,6 @@ export const CPU = () => {
     loadAddressByAddressingMode,
     nextPC,
     loadROM,
-    pauseWhen,
     powerUp,
     reset,
     store,
@@ -294,7 +294,7 @@ export const CPU = () => {
 
   let rom = null
   const cpuALU = ALU(cpuApi)
-  const debug = Debugger(cpuApi)
+  const nesDebugger = Debugger(cpuApi)
   const instructions = Instructions(cpuApi, cpuALU)
   const addressingModes = AddressingModes(cpuApi, cpuALU)
 

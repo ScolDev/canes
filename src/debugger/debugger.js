@@ -9,11 +9,17 @@ export const Debugger = (cpu) => {
     memory: []
   }
 
-  const setConditions = (conds) => {
+  const breakOn = (conds) => {
     conditions.instructionsExecuted = conds.instructionsExecuted ?? conditions.instructionsExecuted
     conditions.atResetVector = !!conds.atResetVector
-    conditions.breakpoints = conds.breakpoints ?? conditions.breakpoints
-    conditions.memory = conds.memory ?? conditions.memory
+  }
+
+  const addBreakpoint = (breakpoint) => {
+    conditions.breakpoints.push(breakpoint)
+  }
+
+  const addMemoryBreakpoint = (memoryBreakpoint) => {
+    conditions.memory.push(memoryBreakpoint)
   }
 
   const validate = () => {
@@ -38,6 +44,7 @@ export const Debugger = (cpu) => {
       _pause()
     }
   }
+
   const _validateBreakpoints = () => {
     const currentPC = cpu.getPC()
     for (const breakpoint of conditions.breakpoints) {
@@ -91,7 +98,9 @@ export const Debugger = (cpu) => {
   }
 
   return {
-    setConditions,
+    addBreakpoint,
+    addMemoryBreakpoint,
+    breakOn,
     validate
   }
 }

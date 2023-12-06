@@ -35,7 +35,8 @@ describe('Tests for ROMs executions.', () => {
     ])
     storePRG(prg)
 
-    cpu.pauseWhen({ breakpoints: [0x800c] })
+    const nesDebugger = cpu.debug()
+    nesDebugger.addBreakpoint(0x800c)
     cpu.powerUp()
 
     setTimeout(() => {
@@ -69,7 +70,8 @@ describe('Tests for ROMs executions.', () => {
     ])
     storePRG(prg)
 
-    cpu.pauseWhen({ instructionsExecuted: 21 })
+    const nesDebugger = cpu.debug()
+    nesDebugger.breakOn({ instructionsExecuted: 21 })
     cpu.powerUp()
 
     setTimeout(() => {
@@ -87,9 +89,8 @@ describe('Tests for ROMs executions.', () => {
   test('should stop execution before the first instruction is executed', done => {
     const filePath = './test/__roms__/instr_test-v5/rom_singles/01-basics.nes'
     const romResetVector = 0xe683
-    cpu.pauseWhen({
-      atResetVector: true
-    })
+    const nesDebugger = cpu.debug()
+    nesDebugger.breakOn({ atResetVector: true })
 
     cpu.loadROM({ filePath })
       .then(() => {
@@ -106,12 +107,11 @@ describe('Tests for ROMs executions.', () => {
   test('should stop execution when ROM test status was running (0x80)', done => {
     const filePath = './test/__roms__/instr_test-v5/rom_singles/01-basics.nes'
     const testStatusAddress = 0x6000
-    cpu.pauseWhen({
-      memory: [{
-        address: testStatusAddress,
-        equalsTo: 0x80,
-        onWrite: true
-      }]
+    const nesDebugger = cpu.debug()
+    nesDebugger.addMemoryBreakpoint({
+      address: testStatusAddress,
+      equalsTo: 0x80,
+      onWrite: true
     })
 
     cpu.loadROM({ filePath })
@@ -133,14 +133,12 @@ describe('Tests for ROMs executions.', () => {
   test('should stop execution when ROM test $6001 memory value is between (0x80-0xff) status', done => {
     const filePath = './test/__roms__/instr_test-v5/rom_singles/01-basics.nes'
     const testStatusAddress = 0x6001
-    cpu.pauseWhen({
-      memory: [
-        {
-          address: testStatusAddress,
-          greaterThanOrEquals: 0x80,
-          lessThanOrEquals: 0xff,
-          onWrite: true
-        }]
+    const nesDebugger = cpu.debug()
+    nesDebugger.addMemoryBreakpoint({
+      address: testStatusAddress,
+      greaterThanOrEquals: 0x80,
+      lessThanOrEquals: 0xff,
+      onWrite: true
     })
 
     cpu.loadROM({ filePath })
