@@ -1,10 +1,10 @@
 
-import { CPU } from '../../src/cpu/cpu'
+import { CPU } from '../../src/core/cpu/cpu'
 
-import { CPU_REGISTERS } from '../../src/cpu/consts/registers'
-import { ALU } from '../../src/cpu/alu'
-import { CPU_FLAGS } from '../../src/cpu/consts/flags'
-import { CPU_MEMORY_MAP } from '../../src/cpu/consts/memory-map'
+import { CPU_REGISTERS } from '../../src/core/cpu/consts/registers'
+import { ALU } from '../../src/core/cpu/alu'
+import { CPU_FLAGS } from '../../src/core/cpu/consts/flags'
+import { CPU_MEMORY_MAP } from '../../src/core/cpu/consts/memory-map'
 
 describe('Tests for the PC register after instrucions executions.', () => {
   let cpu

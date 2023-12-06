@@ -8,8 +8,8 @@ import { ALU } from './alu'
 import { CPU_FLAGS } from './consts/flags'
 import { MEMORY_MIRRORS } from './consts/memory-mirros'
 import { Debugger } from '../debugger/debugger'
-import { FileLoader } from '../utils/file-loader'
 import { ROM } from '../rom/rom'
+import { FileLoader } from '../../shared/utils/file-loader'
 
 export const CPU = () => {
   const cpuController = {

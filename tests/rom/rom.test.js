@@ -1,9 +1,9 @@
-import { ROM } from '../../src/rom/rom'
-import { FileLoader } from '../../src/utils/file-loader'
+import { ROM } from '../../src/core/rom/rom'
+import { FileLoader } from '../../src/shared/utils/file-loader'
 
 describe('Tests for the ROM module.', () => {
   test('should allow to load a valid .nes ROM file: NROM', async () => {
-    const testROMFile = './test/__roms__/nestest.nes'
+    const testROMFile = './tests/__roms__/nestest.nes'
     const fileLoader = FileLoader(testROMFile)
 
     const rom = await ROM(fileLoader)
@@ -26,7 +26,7 @@ describe('Tests for the ROM module.', () => {
   })
 
   test('should allow to load a valid .nes ROM file: MMC1', async () => {
-    const testROMFile = './test/__roms__/instr_test-v3/official_only.nes'
+    const testROMFile = './tests/__roms__/instr_test-v3/official_only.nes'
     const fileLoader = FileLoader(testROMFile)
 
     const rom = await ROM(fileLoader)
@@ -49,7 +49,7 @@ describe('Tests for the ROM module.', () => {
   })
 
   test('should build an invalid INES header when load an malformed .nes ROM', async () => {
-    const testROMFile = './test/__roms__/invalid_rom.nes'
+    const testROMFile = './tests/__roms__/invalid_rom.nes'
     const fileLoader = FileLoader(testROMFile)
 
     const rom = await ROM(fileLoader)
@@ -61,7 +61,7 @@ describe('Tests for the ROM module.', () => {
   })
 
   test('should throw an error when load an non-existent .nes ROM', async () => {
-    const testROMFile = './test/__roms__/non_existent.nes'
+    const testROMFile = './tests/__roms__/non_existent.nes'
     const fileLoader = FileLoader(testROMFile)
 
     try {
@@ -73,7 +73,7 @@ describe('Tests for the ROM module.', () => {
   })
 
   test('should get an empty ROM buffer from an invalid .nes ROM', async () => {
-    const testROMFile = './test/__roms__/invalid_rom.nes'
+    const testROMFile = './tests/__roms__/invalid_rom.nes'
     const fileLoader = FileLoader(testROMFile)
 
     const rom = await ROM(fileLoader)
@@ -85,7 +85,7 @@ describe('Tests for the ROM module.', () => {
 
   test('should build the ROM buffer: NROM-128', async () => {
     // NROM with a single PRG bank (16k). Mirroring needed
-    const testROMFile = './test/__roms__/nestest.nes'
+    const testROMFile = './tests/__roms__/nestest.nes'
     const fileLoader = FileLoader(testROMFile)
     const prgFirstBytes = new Uint8Array([0x4c, 0xf5, 0xc5, 0x60, 0x78, 0xd8])
     const prgLastBytes = new Uint8Array([0xaf, 0xc5, 0x04, 0xc0, 0xf4, 0xc5])
@@ -102,7 +102,7 @@ describe('Tests for the ROM module.', () => {
 
   test('should build the ROM buffer: NROM-256', async () => {
     // NROM with two PRG bank (32k). Mirroring not needed
-    const testROMFile = './test/__roms__/cpu_reset/registers.nes'
+    const testROMFile = './tests/__roms__/cpu_reset/registers.nes'
     const fileLoader = FileLoader(testROMFile)
 
     const rom = await ROM(fileLoader)

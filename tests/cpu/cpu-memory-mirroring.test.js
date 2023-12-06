@@ -1,5 +1,5 @@
 
-import { CPU } from '../../src/cpu/cpu'
+import { CPU } from '../../src/core/cpu/cpu'
 
 describe('Tests for CPU memory mirroring.', () => {
   let cpu

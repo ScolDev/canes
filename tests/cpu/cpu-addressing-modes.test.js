@@ -1,7 +1,7 @@
-import { CPU } from '../../src/cpu/cpu'
-import { CPU_ADDRESSING_MODES } from '../../src/cpu/consts/addressing-modes'
-import { CPU_REGISTERS } from '../../src/cpu/consts/registers'
-import { CPU_MEMORY_MAP } from '../../src/cpu/consts/memory-map'
+import { CPU } from '../../src/core/cpu/cpu'
+import { CPU_ADDRESSING_MODES } from '../../src/core/cpu/consts/addressing-modes'
+import { CPU_REGISTERS } from '../../src/core/cpu/consts/registers'
+import { CPU_MEMORY_MAP } from '../../src/core/cpu/consts/memory-map'
 
 describe('Test for CPU Addressing Modes', () => {
   let cpu

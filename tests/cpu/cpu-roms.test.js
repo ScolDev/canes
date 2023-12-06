@@ -1,6 +1,6 @@
 
-import { CPU_MEMORY_MAP } from '../../src/cpu/consts/memory-map'
-import { CPU } from '../../src/cpu/cpu'
+import { CPU } from '../../src/core/cpu/cpu'
+import { CPU_MEMORY_MAP } from '../../src/core/cpu/consts/memory-map'
 
 describe('Tests for ROMs executions.', () => {
   let cpu
@@ -87,7 +87,7 @@ describe('Tests for ROMs executions.', () => {
   })
 
   test('should stop execution before the first instruction is executed', done => {
-    const filePath = './test/__roms__/instr_test-v5/rom_singles/01-basics.nes'
+    const filePath = './tests/__roms__/instr_test-v5/rom_singles/01-basics.nes'
     const romResetVector = 0xe683
     const nesDebugger = cpu.debug()
 
@@ -103,7 +103,7 @@ describe('Tests for ROMs executions.', () => {
   })
 
   test('should stop execution when ROM test status was running (0x80)', done => {
-    const filePath = './test/__roms__/instr_test-v5/rom_singles/01-basics.nes'
+    const filePath = './tests/__roms__/instr_test-v5/rom_singles/01-basics.nes'
     const testStatusAddress = 0x6000
     const nesDebugger = cpu.debug()
 
@@ -127,7 +127,7 @@ describe('Tests for ROMs executions.', () => {
   })
 
   test('should stop execution when ROM test $6001 memory value is between (0x80-0xff) status', done => {
-    const filePath = './test/__roms__/instr_test-v5/rom_singles/01-basics.nes'
+    const filePath = './tests/__roms__/instr_test-v5/rom_singles/01-basics.nes'
     const testStatusAddress = 0x6001
     const nesDebugger = cpu.debug()
 
