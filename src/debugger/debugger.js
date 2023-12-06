@@ -2,6 +2,9 @@ import { CPU_MEMORY_MAP } from '../cpu/consts/memory-map'
 
 export const Debugger = (cpu) => {
   const cpuController = cpu.getCPUController()
+  const eventQueue = {
+    pause: []
+  }
   const conditions = {
     instructionsExecuted: -1,
     atResetVector: false,
@@ -29,6 +32,13 @@ export const Debugger = (cpu) => {
     _validateSingleConditions()
     _validateBreakpoints()
     _validateMemoryConditions()
+  }
+
+  const on = (event, cb) => {
+    if (eventQueue[event]) {
+      const callbacks = eventQueue[event]
+      callbacks.push(cb)
+    }
   }
 
   const _validateAtResetVector = () => {
@@ -95,12 +105,23 @@ export const Debugger = (cpu) => {
 
   const _pause = () => {
     cpuController.paused = true
+    const onPauseCallbacks = eventQueue.pause
+    const event = {
+      cpuController,
+      pc: cpu.getPC(),
+      lastExecuted: cpu.getLastExecuted()
+    }
+
+    for (const cb of onPauseCallbacks) {
+      cb(event)
+    }
   }
 
   return {
     addBreakpoint,
     addMemoryBreakpoint,
     breakOn,
-    validate
+    validate,
+    on
   }
 }

@@ -39,16 +39,16 @@ describe('Tests for ROMs executions.', () => {
     nesDebugger.addBreakpoint(0x800c)
     cpu.powerUp()
 
-    setTimeout(() => {
-      const { opcode, asm } = cpu.getLastExecuted()
+    nesDebugger.on('pause', ({ cpuController, pc, lastExecuted }) => {
+      const { opcode, asm } = lastExecuted
 
       expect(asm).toBe('lda #$00')
-      expect(cpu.getPC()).toBe(0x800c)
       expect(opcode).toBe(0xa9)
-      expect(cpu.getCPUController().paused).toBe(true)
+      expect(pc).toBe(0x800c)
+      expect(cpuController.paused).toBe(true)
 
       done()
-    }, 100)
+    })
   })
 
   test('should execute the PRG code with branching after power-up', done => {
@@ -74,86 +74,80 @@ describe('Tests for ROMs executions.', () => {
     nesDebugger.breakOn({ instructionsExecuted: 21 })
     cpu.powerUp()
 
-    setTimeout(() => {
-      const { opcode, asm } = cpu.getLastExecuted()
+    nesDebugger.on('pause', ({ cpuController, pc, lastExecuted }) => {
+      const { opcode, asm } = lastExecuted
 
       expect(asm).toBe('lda $2002')
-      expect(cpu.getPC()).toBe(0x8008)
       expect(opcode).toBe(0xad)
-      expect(cpu.getCPUController().paused).toBe(true)
+      expect(pc).toBe(0x8008)
+      expect(cpuController.paused).toBe(true)
 
       done()
-    }, 100)
+    })
   })
 
   test('should stop execution before the first instruction is executed', done => {
     const filePath = './test/__roms__/instr_test-v5/rom_singles/01-basics.nes'
     const romResetVector = 0xe683
     const nesDebugger = cpu.debug()
+
     nesDebugger.breakOn({ atResetVector: true })
-
     cpu.loadROM({ filePath })
-      .then(() => {
-        setTimeout(() => {
-          const pc = cpu.getPC()
-          expect(pc).toBe(romResetVector)
-          expect(cpu.getCPUController().paused).toBe(true)
 
-          done()
-        }, 0)
-      })
+    nesDebugger.on('pause', ({ cpuController, pc }) => {
+      expect(pc).toBe(romResetVector)
+      expect(cpuController.paused).toBe(true)
+
+      done()
+    })
   })
 
   test('should stop execution when ROM test status was running (0x80)', done => {
     const filePath = './test/__roms__/instr_test-v5/rom_singles/01-basics.nes'
     const testStatusAddress = 0x6000
     const nesDebugger = cpu.debug()
+
     nesDebugger.addMemoryBreakpoint({
       address: testStatusAddress,
       equalsTo: 0x80,
       onWrite: true
     })
-
     cpu.loadROM({ filePath })
-      .then(() => {
-        setTimeout(() => {
-          const pc = cpu.getPC()
-          const memoryValue = cpu.load(testStatusAddress)
 
-          expect(cpu.getCPUController().paused).toBe(true)
-          expect(memoryValue).toBe(0x80)
-          expect(pc).toBeLessThanOrEqual(0xffff)
-          expect(pc).toBeGreaterThanOrEqual(0x8000)
+    nesDebugger.on('pause', ({ cpuController, pc }) => {
+      const memoryValue = cpu.load(testStatusAddress)
 
-          done()
-        }, 400)
-      })
+      expect(cpuController.paused).toBe(true)
+      expect(memoryValue).toBe(0x80)
+      expect(pc).toBeLessThanOrEqual(0xffff)
+      expect(pc).toBeGreaterThanOrEqual(0x8000)
+
+      done()
+    })
   })
 
   test('should stop execution when ROM test $6001 memory value is between (0x80-0xff) status', done => {
     const filePath = './test/__roms__/instr_test-v5/rom_singles/01-basics.nes'
     const testStatusAddress = 0x6001
     const nesDebugger = cpu.debug()
+
     nesDebugger.addMemoryBreakpoint({
       address: testStatusAddress,
       greaterThanOrEquals: 0x80,
       lessThanOrEquals: 0xff,
       onWrite: true
     })
-
     cpu.loadROM({ filePath })
-      .then(() => {
-        setTimeout(() => {
-          const pc = cpu.getPC()
-          const memoryValue = cpu.load(testStatusAddress)
 
-          expect(cpu.getCPUController().paused).toBe(true)
-          expect(memoryValue).toBe(0xde)
-          expect(pc).toBeGreaterThanOrEqual(0x8000)
-          expect(pc).toBeLessThanOrEqual(0xffff)
+    nesDebugger.on('pause', ({ cpuController, pc }) => {
+      const memoryValue = cpu.load(testStatusAddress)
 
-          done()
-        }, 400)
-      })
+      expect(cpuController.paused).toBe(true)
+      expect(memoryValue).toBe(0xde)
+      expect(pc).toBeGreaterThanOrEqual(0x8000)
+      expect(pc).toBeLessThanOrEqual(0xffff)
+
+      done()
+    })
   })
 })
