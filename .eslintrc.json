@@ -5,13 +5,23 @@
     "jest/globals": true
   },
   "extends": [
-    "standard"
+    "standard",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended"
   ],
-  "plugins": ["jest"],
+  "ignorePatterns": ["dist", ".eslintrc.cjs"],
   "parserOptions": {
-    "ecmaVersion": 12,
+    "ecmaVersion": "latest",
     "sourceType": "module"
   },
+  "settings": {
+    "react": {
+      "version": "18.2"
+    }
+  },
+  "plugins": ["jest", "react-refresh"],
   "rules": {
   }
 }
