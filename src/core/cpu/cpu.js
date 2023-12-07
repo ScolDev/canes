@@ -7,7 +7,6 @@ import { CPU_MEMORY_MAP } from './consts/memory-map'
 import { ALU } from './alu'
 import { CPU_FLAGS } from './consts/flags'
 import { MEMORY_MIRRORS } from './consts/memory-mirros'
-import { Debugger } from '../debugger/debugger'
 import { ROM } from '../rom/rom'
 import { FileLoader } from '../../shared/utils/file-loader'
 
@@ -15,7 +14,7 @@ export const CPU = () => {
   const cpuController = {
     paused: false,
     debugMode: false,
-    instructionsExecuted: 0,
+    insExecuted: 0,
     lastWrite: { address: -1, value: -1 }
   }
   const MEM = new Uint8Array(CPU_MEMORY_MAP.Size)
@@ -28,9 +27,9 @@ export const CPU = () => {
     P: 0x00
   }
 
-  const debug = () => {
+  const debug = (_debugger) => {
+    nesDebugger = _debugger
     _setDebugMode(true)
-    return nesDebugger
   }
 
   const execute = (instruction) => {
@@ -266,7 +265,7 @@ export const CPU = () => {
   }
 
   const _updateCtrl = () => {
-    cpuController.instructionsExecuted++
+    cpuController.insExecuted++
   }
 
   const cpuApi = {
@@ -293,8 +292,8 @@ export const CPU = () => {
   }
 
   let rom = null
+  let nesDebugger = null
   const cpuALU = ALU(cpuApi)
-  const nesDebugger = Debugger(cpuApi)
   const instructions = Instructions(cpuApi, cpuALU)
   const addressingModes = AddressingModes(cpuApi, cpuALU)
 

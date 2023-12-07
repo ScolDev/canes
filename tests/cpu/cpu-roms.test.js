@@ -1,9 +1,11 @@
 
 import { CPU } from '../../src/core/cpu/cpu'
+import { Debugger } from '../../src/core/debugger/debugger'
 import { CPU_MEMORY_MAP } from '../../src/core/cpu/consts/memory-map'
 
 describe('Tests for ROMs executions.', () => {
   let cpu
+  let nesDebugger
 
   function storePRG (prg) {
     cpu.storeWord(CPU_MEMORY_MAP.Reset_Vector, 0x8000)
@@ -14,6 +16,9 @@ describe('Tests for ROMs executions.', () => {
 
   beforeEach(() => {
     cpu = CPU()
+    nesDebugger = Debugger()
+
+    nesDebugger.attach(cpu)
   })
 
   test('should execute the PRG code after power-up', done => {
@@ -35,9 +40,8 @@ describe('Tests for ROMs executions.', () => {
     ])
     storePRG(prg)
 
-    const nesDebugger = cpu.debug()
     nesDebugger.addBreakpoint(0x800c)
-    cpu.powerUp()
+    nesDebugger.run()
 
     nesDebugger.on('pause', ({ cpuController, pc, lastExecuted }) => {
       const { opcode, asm } = lastExecuted
@@ -70,9 +74,8 @@ describe('Tests for ROMs executions.', () => {
     ])
     storePRG(prg)
 
-    const nesDebugger = cpu.debug()
-    nesDebugger.breakOn({ instructionsExecuted: 21 })
-    cpu.powerUp()
+    nesDebugger.breakOn({ insExecuted: 21 })
+    nesDebugger.run()
 
     nesDebugger.on('pause', ({ cpuController, pc, lastExecuted }) => {
       const { opcode, asm } = lastExecuted
@@ -89,7 +92,6 @@ describe('Tests for ROMs executions.', () => {
   test('should stop execution before the first instruction is executed', done => {
     const filePath = './tests/__roms__/instr_test-v5/rom_singles/01-basics.nes'
     const romResetVector = 0xe683
-    const nesDebugger = cpu.debug()
 
     nesDebugger.breakOn({ atResetVector: true })
     cpu.loadROM({ filePath })
@@ -105,7 +107,6 @@ describe('Tests for ROMs executions.', () => {
   test('should stop execution when ROM test status was running (0x80)', done => {
     const filePath = './tests/__roms__/instr_test-v5/rom_singles/01-basics.nes'
     const testStatusAddress = 0x6000
-    const nesDebugger = cpu.debug()
 
     nesDebugger.addMemoryBreakpoint({
       address: testStatusAddress,
@@ -129,7 +130,6 @@ describe('Tests for ROMs executions.', () => {
   test('should stop execution when ROM test $6001 memory value is between (0x80-0xff) status', done => {
     const filePath = './tests/__roms__/instr_test-v5/rom_singles/01-basics.nes'
     const testStatusAddress = 0x6001
-    const nesDebugger = cpu.debug()
 
     nesDebugger.addMemoryBreakpoint({
       address: testStatusAddress,
