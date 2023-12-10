@@ -1,8 +1,11 @@
 import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 import { CPU_REGISTERS } from '../consts/registers'
 
-export default (cpu, cpuALU) => {
-  const addressingModes = {
+export class Lda {
+  #cpu = null
+  #cpuALU = null
+
+  addressingModes = {
     0xa9: CPU_ADDRESSING_MODES.Immediate,
     0xa5: CPU_ADDRESSING_MODES.ZeroPage,
     0xb5: CPU_ADDRESSING_MODES.ZeroPageX,
@@ -13,29 +16,28 @@ export default (cpu, cpuALU) => {
     0xb1: CPU_ADDRESSING_MODES.IndirectIndexed
   }
 
-  const execute = (opcode, operand) => {
-    const addressingMode = addressingModes[opcode]
-    const memoryValue = cpu.loadByAddressingMode(addressingMode, operand)
-
-    cpu.setRegister(CPU_REGISTERS.A, memoryValue)
-    updateStatus(cpu.getRegister(CPU_REGISTERS.A))
-    cpu.nextPC(addressingMode)
+  constructor (cpu, cpuALU) {
+    this.#cpu = cpu
+    this.#cpuALU = cpuALU
   }
 
-  const updateStatus = (result) => {
-    cpuALU.updateZeroFlag(result)
-    cpuALU.updateNegativeFlag(result)
+  execute (opcode, operand) {
+    const addressingMode = this.addressingModes[opcode]
+    const memoryValue = this.#cpu.loadByAddressingMode(addressingMode, operand)
+
+    this.#cpu.setRegister(CPU_REGISTERS.A, memoryValue)
+    this.updateStatus(this.#cpu.getRegister(CPU_REGISTERS.A))
+    this.#cpu.nextPC(addressingMode)
   }
 
-  const getASM = (instruction) => {
+  updateStatus (result) {
+    this.#cpuALU.updateZeroFlag(result)
+    this.#cpuALU.updateNegativeFlag(result)
+  }
+
+  getASM (instruction) {
     const [opcode, operand] = instruction
-    const addressingMode = addressingModes[opcode]
+    const addressingMode = this.addressingModes[opcode]
     return `lda${getASMByAddrMode(addressingMode, operand)}`
-  }
-
-  return {
-    execute,
-    getASM,
-    addressingModes
   }
 }

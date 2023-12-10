@@ -7,7 +7,7 @@ describe('Test for CPU Addressing Modes', () => {
   let cpu
 
   beforeEach(() => {
-    cpu = CPU()
+    cpu = new CPU()
   })
 
   test('should get data from Acumulator addressing mode.', () => {

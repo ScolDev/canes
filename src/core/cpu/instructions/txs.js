@@ -1,34 +1,36 @@
 import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 import { CPU_REGISTERS } from '../consts/registers'
 
-export default (cpu, cpuALU) => {
-  const addressingModes = {
+export class Txs {
+  #cpu = null
+  #cpuALU = null
+
+  addressingModes = {
     0x9a: CPU_ADDRESSING_MODES.Implied
   }
 
-  const execute = (opcode) => {
-    const addressingMode = addressingModes[opcode]
-    const currentXRegister = cpu.getRegister(CPU_REGISTERS.X)
-
-    cpu.setRegister(CPU_REGISTERS.SP, currentXRegister)
-    updateStatus(cpu.getRegister(CPU_REGISTERS.SP))
-    cpu.nextPC(addressingMode)
+  constructor (cpu, cpuALU) {
+    this.#cpu = cpu
+    this.#cpuALU = cpuALU
   }
 
-  const updateStatus = (result) => {
-    cpuALU.updateZeroFlag(result)
-    cpuALU.updateNegativeFlag(result)
+  execute (opcode) {
+    const addressingMode = this.addressingModes[opcode]
+    const currentXRegister = this.#cpu.getRegister(CPU_REGISTERS.X)
+
+    this.#cpu.setRegister(CPU_REGISTERS.SP, currentXRegister)
+    this.updateStatus(this.#cpu.getRegister(CPU_REGISTERS.SP))
+    this.#cpu.nextPC(addressingMode)
   }
 
-  const getASM = (instruction) => {
+  updateStatus (result) {
+    this.#cpuALU.updateZeroFlag(result)
+    this.#cpuALU.updateNegativeFlag(result)
+  }
+
+  getASM (instruction) {
     const [opcode, operand] = instruction
-    const addressingMode = addressingModes[opcode]
+    const addressingMode = this.addressingModes[opcode]
     return `txs${getASMByAddrMode(addressingMode, operand)}`
-  }
-
-  return {
-    execute,
-    getASM,
-    addressingModes
   }
 }

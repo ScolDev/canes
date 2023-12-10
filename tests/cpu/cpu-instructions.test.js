@@ -11,8 +11,8 @@ describe('CPU Instructions', () => {
   let cpuALU
 
   beforeEach(() => {
-    cpu = CPU()
-    cpuALU = ALU(cpu)
+    cpu = new CPU()
+    cpuALU = new ALU(cpu)
   })
 
   test('Emulate the AND instruction for Inmediate', () => {

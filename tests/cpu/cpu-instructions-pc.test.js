@@ -1,4 +1,3 @@
-
 import { CPU } from '../../src/core/cpu/cpu'
 
 import { CPU_REGISTERS } from '../../src/core/cpu/consts/registers'
@@ -11,8 +10,8 @@ describe('Tests for the PC register after instrucions executions.', () => {
   let cpuALU
 
   beforeEach(() => {
-    cpu = CPU()
-    cpuALU = ALU(cpu)
+    cpu = new CPU()
+    cpuALU = new ALU(cpu)
   })
 
   test('should increase the PC register after ADC instructions has been executed', () => {

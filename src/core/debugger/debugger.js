@@ -1,112 +1,113 @@
 import { CPU_MEMORY_MAP } from '../cpu/consts/memory-map'
 
-export const Debugger = () => {
-  let cpu = null
-  const eventQueue = {
+export class Debugger {
+  #cpu = null
+  #eventQueue = {
     pause: []
   }
-  const state = {
+
+  #state = {
     cpuController: null,
     conditions: null
   }
 
-  const attach = (attachedCPU) => {
-    cpu = attachedCPU
+  attach (attachedCPU) {
+    this.#cpu = attachedCPU
 
-    cpu.debug(debug)
-    _init()
+    this.#cpu.debug(this)
+    this.#init()
   }
 
-  const run = () => {
-    cpu.powerUp()
+  run () {
+    this.#cpu.powerUp()
   }
 
-  const breakOn = (config) => {
+  breakOn (config) {
     const { insExecuted, atResetVector } = config
 
-    state.conditions.insExecuted = Number.isInteger(insExecuted)
+    this.#state.conditions.insExecuted = Number.isInteger(insExecuted)
       ? insExecuted
-      : state.conditions.insExecuted
-    state.conditions.atResetVector = !!atResetVector
+      : this.#state.conditions.insExecuted
+    this.#state.conditions.atResetVector = !!atResetVector
   }
 
-  const addBreakpoint = (breakpoint) => {
-    state.conditions.breakpoints.push(breakpoint)
+  addBreakpoint (breakpoint) {
+    this.#state.conditions.breakpoints.push(breakpoint)
   }
 
-  const addMemoryBreakpoint = (memoryBreakpoint) => {
-    state.conditions.memory.push(memoryBreakpoint)
+  addMemoryBreakpoint (memoryBreakpoint) {
+    this.#state.conditions.memory.push(memoryBreakpoint)
   }
 
-  const validate = () => {
-    if (state.cpuController?.paused) return
+  validate () {
+    if (this.#state.cpuController?.paused) return
 
-    _validateAtResetVector()
-    _validateSingleConditions()
-    _validateBreakpoints()
-    _validateMemoryConditions()
+    this.#validateAtResetVector()
+    this.#validateSingleConditions()
+    this.#validateBreakpoints()
+    this.#validateMemoryConditions()
   }
 
-  const on = (event, cb) => {
-    if (eventQueue[event]) {
-      const callbacks = eventQueue[event]
+  on (event, cb) {
+    if (this.#eventQueue[event]) {
+      const callbacks = this.#eventQueue[event]
       callbacks.push(cb)
     }
   }
 
-  const _validateAtResetVector = () => {
-    const currentPC = cpu.getPC()
-    const resetVector = cpu.loadWord(CPU_MEMORY_MAP.Reset_Vector)
-    if (state.conditions.atResetVector && currentPC === resetVector) {
-      _pause()
+  #validateAtResetVector () {
+    const currentPC = this.#cpu.getPC()
+    const resetVector = this.#cpu.loadWord(CPU_MEMORY_MAP.Reset_Vector)
+    if (this.#state.conditions.atResetVector && currentPC === resetVector) {
+      this.#pause()
     }
   }
 
-  const _validateSingleConditions = () => {
-    if (state.cpuController.insExecuted === state.conditions.insExecuted) {
-      _pause()
+  #validateSingleConditions () {
+    if (this.#state.cpuController.insExecuted === this.#state.conditions.insExecuted) {
+      this.#pause()
     }
   }
 
-  const _validateBreakpoints = () => {
-    const currentPC = cpu.getPC()
-    for (const breakpoint of state.conditions.breakpoints) {
+  #validateBreakpoints () {
+    const currentPC = this.#cpu.getPC()
+    for (const breakpoint of this.#state.conditions.breakpoints) {
       if (currentPC === breakpoint) {
-        _pause()
+        this.#pause()
         return
       }
     }
   }
 
-  const _validateMemoryConditions = () => {
-    const { lastWrite } = state.cpuController
+  #validateMemoryConditions () {
+    const { lastWrite } = this.#state.cpuController
     let match = false
 
-    for (const condition of state.conditions.memory) {
+    for (const condition of this.#state.conditions.memory) {
       if (!Number.isInteger(condition.address)) continue
 
       const { address, value } = lastWrite
       const didWrite = condition.onWrite && condition.address === address
 
       if (didWrite) {
-        match = _equalsTo(value, condition.equalsTo) || match
-        match = _expressions(value, condition) || match
+        match = this.#equalsTo(value, condition.equalsTo) || match
+        match = this.#expressions(value, condition) || match
       }
 
       if (match) {
-        return _pause()
+        return this.#pause()
       }
     }
   }
 
-  const _equalsTo = (memoryValue, equalsTo) => {
+  #equalsTo (memoryValue, equalsTo) {
     if (!Number.isInteger(equalsTo)) {
       return false
     }
     return memoryValue === equalsTo
   }
 
-  const _expressions = (memoryValue, condition) => {
+  #expressions (memoryValue, condition) {
     const { greaterThanOrEquals, lessThanOrEquals } = condition
 
     if (!Number.isInteger(greaterThanOrEquals) || !Number.isInteger(lessThanOrEquals)) {
@@ -116,13 +117,13 @@ export const Debugger = () => {
     return memoryValue >= greaterThanOrEquals && memoryValue <= lessThanOrEquals
   }
 
-  const _pause = () => {
-    const { cpuController } = state
-    const onPauseCallbacks = eventQueue.pause
+  #pause () {
+    const { cpuController } = this.#state
+    const onPauseCallbacks = this.#eventQueue.pause
     const event = {
       cpuController,
-      pc: cpu.getPC(),
-      lastExecuted: cpu.getLastExecuted()
+      pc: this.#cpu.getPC(),
+      lastExecuted: this.#cpu.getLastExecuted()
     }
 
     cpuController.paused = true
@@ -131,10 +132,10 @@ export const Debugger = () => {
     }
   }
 
-  const _init = () => {
-    if (cpu) {
-      state.cpuController = cpu.getCPUController()
-      state.conditions = {
+  #init () {
+    if (this.#cpu) {
+      this.#state.cpuController = this.#cpu.getCPUController()
+      this.#state.conditions = {
         insExecuted: -1,
         atResetVector: false,
         breakpoints: [],
@@ -142,16 +143,4 @@ export const Debugger = () => {
       }
     }
   }
-
-  const debug = {
-    attach,
-    addBreakpoint,
-    addMemoryBreakpoint,
-    breakOn,
-    validate,
-    on,
-    run
-  }
-
-  return debug
 }

@@ -1,32 +1,32 @@
 import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 import { CPU_REGISTERS } from '../consts/registers'
 
-export default (cpu) => {
-  const addressingModes = {
+export class Pha {
+  #cpu = null
+
+  addressingModes = {
     0x48: CPU_ADDRESSING_MODES.Implied
   }
 
-  const execute = (opcode) => {
-    const addressingMode = addressingModes[opcode]
-    const accumulator = cpu.getRegister(CPU_REGISTERS.A)
-    const currentSP = cpu.getRegister(CPU_REGISTERS.SP)
+  constructor (cpu) {
+    this.#cpu = cpu
+  }
+
+  execute (opcode) {
+    const addressingMode = this.addressingModes[opcode]
+    const accumulator = this.#cpu.getRegister(CPU_REGISTERS.A)
+    const currentSP = this.#cpu.getRegister(CPU_REGISTERS.SP)
 
     const stackMemoryAddress = 0x100 + currentSP
 
-    cpu.store(stackMemoryAddress, accumulator)
-    cpu.setRegister(CPU_REGISTERS.SP, currentSP - 1)
-    cpu.nextPC(addressingMode)
+    this.#cpu.store(stackMemoryAddress, accumulator)
+    this.#cpu.setRegister(CPU_REGISTERS.SP, currentSP - 1)
+    this.#cpu.nextPC(addressingMode)
   }
 
-  const getASM = (instruction) => {
+  getASM (instruction) {
     const [opcode, operand] = instruction
-    const addressingMode = addressingModes[opcode]
+    const addressingMode = this.addressingModes[opcode]
     return `pha${getASMByAddrMode(addressingMode, operand)}`
-  }
-
-  return {
-    execute,
-    getASM,
-    addressingModes
   }
 }

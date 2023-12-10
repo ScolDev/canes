@@ -10,8 +10,8 @@ describe('Tests for CPU module.', () => {
   let cpuALU
 
   beforeEach(() => {
-    cpu = CPU()
-    cpuALU = ALU(cpu)
+    cpu = new CPU()
+    cpuALU = new ALU(cpu)
   })
 
   test('should load CPU module.', () => {

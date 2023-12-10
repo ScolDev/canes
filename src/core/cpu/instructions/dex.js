@@ -1,35 +1,37 @@
 import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 import { CPU_REGISTERS } from '../consts/registers'
 
-export default (cpu, cpuALU) => {
-  const addressingModes = {
+export class Dex {
+  #cpu = null
+  #cpuALU = null
+
+  addressingModes = {
     0xca: CPU_ADDRESSING_MODES.Implied
   }
 
-  const execute = (opcode) => {
-    const addressingMode = addressingModes[opcode]
-    const registerValue = cpu.getRegister(CPU_REGISTERS.X)
+  constructor (cpu, cpuALU) {
+    this.#cpu = cpu
+    this.#cpuALU = cpuALU
+  }
+
+  execute (opcode) {
+    const addressingMode = this.addressingModes[opcode]
+    const registerValue = this.#cpu.getRegister(CPU_REGISTERS.X)
     const resultValue = (registerValue - 1) & 0xff
 
-    cpu.setRegister(CPU_REGISTERS.X, resultValue)
-    updateStatus(resultValue)
-    cpu.nextPC(addressingMode)
+    this.#cpu.setRegister(CPU_REGISTERS.X, resultValue)
+    this.updateStatus(resultValue)
+    this.#cpu.nextPC(addressingMode)
   }
 
-  const updateStatus = (result) => {
-    cpuALU.updateZeroFlag(result)
-    cpuALU.updateNegativeFlag(result)
+  updateStatus (result) {
+    this.#cpuALU.updateZeroFlag(result)
+    this.#cpuALU.updateNegativeFlag(result)
   }
 
-  const getASM = (instruction) => {
+  getASM (instruction) {
     const [opcode, operand] = instruction
-    const addressingMode = addressingModes[opcode]
+    const addressingMode = this.addressingModes[opcode]
     return `dex${getASMByAddrMode(addressingMode, operand)}`
-  }
-
-  return {
-    execute,
-    getASM,
-    addressingModes
   }
 }

@@ -1,24 +1,24 @@
 import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 
-export default (cpu) => {
-  const addressingModes = {
+export class Nop {
+  #cpu = null
+
+  addressingModes = {
     0xea: CPU_ADDRESSING_MODES.Implied
   }
 
-  const execute = (opcode) => {
-    const addressingMode = addressingModes[opcode]
-    cpu.nextPC(addressingMode)
+  constructor (cpu) {
+    this.#cpu = cpu
   }
 
-  const getASM = (instruction) => {
+  execute (opcode) {
+    const addressingMode = this.addressingModes[opcode]
+    this.#cpu.nextPC(addressingMode)
+  }
+
+  getASM (instruction) {
     const [opcode, operand] = instruction
-    const addressingMode = addressingModes[opcode]
+    const addressingMode = this.addressingModes[opcode]
     return `nop${getASMByAddrMode(addressingMode, operand)}`
-  }
-
-  return {
-    execute,
-    getASM,
-    addressingModes
   }
 }

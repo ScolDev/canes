@@ -1,31 +1,31 @@
 import { CPU_REGISTERS } from '../consts/registers'
 import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 
-export default (cpu) => {
-  const addressingModes = {
+export class Rti {
+  #cpu = null
+
+  addressingModes = {
     0x40: CPU_ADDRESSING_MODES.Implied
   }
 
-  const execute = (opcode, operand) => {
-    const currentSP = cpu.getRegister(CPU_REGISTERS.SP)
+  constructor (cpu) {
+    this.#cpu = cpu
+  }
+
+  execute () {
+    const currentSP = this.#cpu.getRegister(CPU_REGISTERS.SP)
     const stackMemoryAddress = 0x100 + currentSP
-    const processorStatus = cpu.load(stackMemoryAddress)
-    const pc = cpu.loadWord(stackMemoryAddress + 1)
+    const processorStatus = this.#cpu.load(stackMemoryAddress)
+    const pc = this.#cpu.loadWord(stackMemoryAddress + 1)
 
-    cpu.setRegister(CPU_REGISTERS.P, processorStatus)
-    cpu.setRegister(CPU_REGISTERS.SP, currentSP + 2)
-    cpu.setPC(pc)
+    this.#cpu.setRegister(CPU_REGISTERS.P, processorStatus)
+    this.#cpu.setRegister(CPU_REGISTERS.SP, currentSP + 2)
+    this.#cpu.setPC(pc)
   }
 
-  const getASM = (instruction) => {
+  getASM (instruction) {
     const [opcode, operand] = instruction
-    const addressingMode = addressingModes[opcode]
+    const addressingMode = this.addressingModes[opcode]
     return `rti${getASMByAddrMode(addressingMode, operand)}`
-  }
-
-  return {
-    execute,
-    getASM,
-    addressingModes
   }
 }

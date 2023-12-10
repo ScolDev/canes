@@ -1,47 +1,46 @@
-
 import { AddressingModeSize } from './consts/addressing-modes'
 import InstructionsTable from './instructions/instructions-table'
 
-export const Instructions = (cpu, cpuALU) => {
-  const context = {
+export class Instructions {
+  #cpu = null
+  #cpuALU = null
+  #instructionsTable = null
+  #context = {
     lastExecuted: {
       opcode: 0x00,
       asm: ''
     }
   }
 
-  const execute = (instruction) => {
-    _decodeAndExecute(instruction)
+  constructor (cpu, cpuALU) {
+    this.#cpu = cpu
+    this.#cpuALU = cpuALU
+    this.#instructionsTable = InstructionsTable(this.#cpu, this.#cpuALU)
   }
 
-  const getLastExecuted = () => {
-    return context.lastExecuted
+  execute = (instruction) => {
+    this.#decodeAndExecute(instruction)
   }
 
-  const getInstructionSize = (opcode) => {
-    const instruction = instructionsTable[opcode]
+  getLastExecuted () {
+    return this.#context.lastExecuted
+  }
+
+  getInstructionSize (opcode) {
+    const instruction = this.#instructionsTable[opcode]
     const addressingMode = instruction.addressingModes[opcode]
 
     return AddressingModeSize.get(addressingMode)
   }
 
-  const _decodeAndExecute = (instruction) => {
+  #decodeAndExecute (instruction) {
     const [opcode, operand] = instruction
-    const decodedInstruction = instructionsTable[opcode]
+    const decodedInstruction = this.#instructionsTable[opcode]
 
     decodedInstruction.execute(opcode, operand)
-
-    context.lastExecuted = {
+    this.#context.lastExecuted = {
       opcode,
       asm: decodedInstruction.getASM(instruction)
     }
-  }
-
-  const instructionsTable = InstructionsTable(cpu, cpuALU)
-
-  return {
-    execute,
-    getLastExecuted,
-    getInstructionSize
   }
 }

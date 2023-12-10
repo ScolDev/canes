@@ -1,11 +1,10 @@
-
 import { CPU } from '../../src/core/cpu/cpu'
 
 describe('Tests for CPU memory mirroring.', () => {
   let cpu
 
   beforeEach(() => {
-    cpu = CPU()
+    cpu = new CPU()
   })
 
   test('should mirror the internal RAM: Storing and loading single bytes', () => {

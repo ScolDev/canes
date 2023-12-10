@@ -2,8 +2,11 @@ import { CPU_FLAGS } from '../consts/flags'
 import { CPU_REGISTERS } from '../consts/registers'
 import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 
-export default (cpu, cpuALU) => {
-  const addressingModes = {
+export class Adc {
+  #cpu = null
+  #cpuALU = null
+
+  addressingModes = {
     0x69: CPU_ADDRESSING_MODES.Immediate,
     0x65: CPU_ADDRESSING_MODES.ZeroPage,
     0x75: CPU_ADDRESSING_MODES.ZeroPageX,
@@ -14,37 +17,36 @@ export default (cpu, cpuALU) => {
     0x71: CPU_ADDRESSING_MODES.IndirectIndexed
   }
 
-  const execute = (opcode, operand) => {
-    const addressingMode = addressingModes[opcode]
-    const carryFlag = cpuALU.getFlag(CPU_FLAGS.CarryFlag)
-    const operandA = cpu.loadByAddressingMode(addressingMode, operand)
-    const operandB = cpu.getRegister(CPU_REGISTERS.A)
-
-    const result = cpu.getRegister(CPU_REGISTERS.A) + operandA + carryFlag
-    cpu.setRegister(CPU_REGISTERS.A, result & 0xff)
-
-    updateStatus(result, operandA, operandB)
-    cpu.nextPC(addressingMode)
+  constructor (cpu, cpuALU) {
+    this.#cpu = cpu
+    this.#cpuALU = cpuALU
   }
 
-  const updateStatus = (result, operandA, operandB) => {
+  execute (opcode, operand) {
+    const addressingMode = this.addressingModes[opcode]
+    const carryFlag = this.#cpuALU.getFlag(CPU_FLAGS.CarryFlag)
+    const operandA = this.#cpu.loadByAddressingMode(addressingMode, operand)
+    const operandB = this.#cpu.getRegister(CPU_REGISTERS.A)
+
+    const result = this.#cpu.getRegister(CPU_REGISTERS.A) + operandA + carryFlag
+    this.#cpu.setRegister(CPU_REGISTERS.A, result & 0xff)
+
+    this.updateStatus(result, operandA, operandB)
+    this.#cpu.nextPC(addressingMode)
+  }
+
+  updateStatus (result, operandA, operandB) {
     const carryFlag = result > 0xff ? 1 : 0
 
-    cpuALU.setFlag(CPU_FLAGS.CarryFlag, carryFlag)
-    cpuALU.updateZeroFlag(result)
-    cpuALU.updateNegativeFlag(result)
-    cpuALU.updateOverflowFlag(result, operandA, operandB)
+    this.#cpuALU.setFlag(CPU_FLAGS.CarryFlag, carryFlag)
+    this.#cpuALU.updateZeroFlag(result)
+    this.#cpuALU.updateNegativeFlag(result)
+    this.#cpuALU.updateOverflowFlag(result, operandA, operandB)
   }
 
-  const getASM = (instruction) => {
+  getASM (instruction) {
     const [opcode, operand] = instruction
-    const addressingMode = addressingModes[opcode]
+    const addressingMode = this.addressingModes[opcode]
     return `adc${getASMByAddrMode(addressingMode, operand)}`
-  }
-
-  return {
-    execute,
-    getASM,
-    addressingModes
   }
 }

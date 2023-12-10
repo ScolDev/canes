@@ -1,153 +1,177 @@
 import { CPU_MEMORY_MAP } from './consts/memory-map'
 import { CPU_REGISTERS } from './consts/registers'
 
-export const AddressingModes = (cpu, cpuALU) => {
-  const acumulator = {
-    get: () => cpu.getRegister(CPU_REGISTERS.A),
-    set: (value, operand) => (cpu.setRegister(CPU_REGISTERS.A, value))
+export class AddressingModes {
+  #cpu = null
+  #cpuALU = null
+
+  #acumulator = {
+    get: () => this.#cpu.getRegister(CPU_REGISTERS.A),
+    set: (value) => (this.#cpu.setRegister(CPU_REGISTERS.A, value))
   }
 
-  const immediate = {
+  #immediate = {
     get: (operand) => (operand & 0xff)
   }
 
-  const zeroPage = {
+  #zeroPage = {
     get: (operand) => {
       const memoryAddress = CPU_MEMORY_MAP.ZeroPage + (operand & 0xff)
-      return cpu.load(memoryAddress)
+      return this.#cpu.load(memoryAddress)
     },
     set: (value, operand) => {
       const memoryAddress = CPU_MEMORY_MAP.ZeroPage + (operand & 0xff)
-      cpu.store(memoryAddress, value)
-      _setLastWrite(memoryAddress, value)
+
+      this.#cpu.store(memoryAddress, value)
+      this.#setLastWrite(memoryAddress, value)
     }
   }
 
-  const zeroPageX = {
+  #zeroPageX = {
     get: (operand) => {
-      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.getRegister(CPU_REGISTERS.X) + operand) & 0xff)
-      return cpu.load(memoryAddress)
+      const xRegister = this.#cpu.getRegister(CPU_REGISTERS.X)
+      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((xRegister + operand) & 0xff)
+
+      return this.#cpu.load(memoryAddress)
     },
     set: (value, operand) => {
-      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.getRegister(CPU_REGISTERS.X) + operand) & 0xff)
-      cpu.store(memoryAddress, value)
-      _setLastWrite(memoryAddress, value)
+      const xRegister = this.#cpu.getRegister(CPU_REGISTERS.X)
+      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((xRegister + operand) & 0xff)
+
+      this.#cpu.store(memoryAddress, value)
+      this.#setLastWrite(memoryAddress, value)
     }
   }
 
-  const zeroPageY = {
+  #zeroPageY = {
     get: (operand) => {
-      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.getRegister(CPU_REGISTERS.Y) + operand) & 0xff)
-      return cpu.load(memoryAddress)
+      const yRegister = this.#cpu.getRegister(CPU_REGISTERS.Y)
+      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((yRegister + operand) & 0xff)
+
+      return this.#cpu.load(memoryAddress)
     },
     set: (value, operand) => {
-      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((cpu.getRegister(CPU_REGISTERS.Y) + operand) & 0xff)
-      cpu.store(memoryAddress, value)
-      _setLastWrite(memoryAddress, value)
+      const yRegister = this.#cpu.getRegister(CPU_REGISTERS.Y)
+      const memoryAddress = CPU_MEMORY_MAP.ZeroPage + ((yRegister + operand) & 0xff)
+
+      this.#cpu.store(memoryAddress, value)
+      this.#setLastWrite(memoryAddress, value)
     }
   }
 
-  const relative = {
-    get: (operand) => cpuALU.getSignedByte(operand)
+  #relative = {
+    get: (operand) => this.#cpuALU.getSignedByte(operand)
   }
 
-  const aboslute = {
-    get: (operand) => cpu.load(operand),
+  #aboslute = {
+    get: (operand) => this.#cpu.load(operand),
     set: (value, memoryAddress) => {
-      cpu.store(memoryAddress, value)
-      _setLastWrite(memoryAddress, value)
+      this.#cpu.store(memoryAddress, value)
+      this.#setLastWrite(memoryAddress, value)
     }
   }
 
-  const absoluteX = {
-    get: (operand) => cpu.load((operand + cpu.getRegister(CPU_REGISTERS.X))),
-    set: (value, operand) => {
-      const memoryAddress = operand + cpu.getRegister(CPU_REGISTERS.X)
-      cpu.store(memoryAddress, value)
-      _setLastWrite(memoryAddress, value)
-    }
-  }
-
-  const absoluteY = {
-    get: (operand) => cpu.load((operand + cpu.getRegister(CPU_REGISTERS.Y))),
-    set: (value, operand) => {
-      const memoryAddress = operand + cpu.getRegister(CPU_REGISTERS.Y)
-      cpu.store(memoryAddress, value)
-      _setLastWrite(memoryAddress, value)
-    }
-  }
-
-  const indirect = {
-    get: (operand) => cpu.loadWord(operand)
-  }
-
-  const indexedIndirect = {
+  #absoluteX = {
     get: (operand) => {
-      const zeroPageOffset = (operand + cpu.getRegister(CPU_REGISTERS.X)) & 0xff
-
-      const memoryAddress = cpu.load(zeroPageOffset) +
-                  (cpu.load((zeroPageOffset + 1) & 0xff) << 8)
-
-      return cpu.load(memoryAddress)
+      const xRegister = this.#cpu.getRegister(CPU_REGISTERS.X)
+      return this.#cpu.load(operand + xRegister)
     },
     set: (value, operand) => {
-      const zeroPageOffset = (operand + cpu.getRegister(CPU_REGISTERS.X)) & 0xff
-
-      const memoryAddress = cpu.load(zeroPageOffset) +
-                  (cpu.load((zeroPageOffset + 1) & 0xff) << 8)
-      cpu.store(memoryAddress, value)
-      _setLastWrite(memoryAddress, value)
+      const xRegister = this.#cpu.getRegister(CPU_REGISTERS.X)
+      const memoryAddress = operand + xRegister
+      this.#cpu.store(memoryAddress, value)
+      this.#setLastWrite(memoryAddress, value)
     }
   }
 
-  const indirectIndexed = {
+  #absoluteY = {
     get: (operand) => {
-      const memoryAddress = cpu.load(operand) +
-                  (cpu.load((operand + 1) & 0xff) << 8)
-      return cpu.load(memoryAddress + cpu.getRegister(CPU_REGISTERS.Y))
+      const yRegister = this.#cpu.getRegister(CPU_REGISTERS.Y)
+      return this.#cpu.load((operand + yRegister))
     },
     set: (value, operand) => {
-      const memoryAddress = cpu.load(operand) +
-                  (cpu.load((operand + 1) & 0xff) << 8) +
-                  cpu.getRegister(CPU_REGISTERS.Y)
-      cpu.store(memoryAddress, value)
-      _setLastWrite(memoryAddress, value)
+      const yRegister = this.#cpu.getRegister(CPU_REGISTERS.Y)
+      const memoryAddress = operand + yRegister
+
+      this.#cpu.store(memoryAddress, value)
+      this.#setLastWrite(memoryAddress, value)
     }
   }
 
-  const get = (addressingMode, operand) => {
-    return CPU_ADDRESSING_MODES[addressingMode].get(operand)
+  #indirect = {
+    get: (operand) => this.#cpu.loadWord(operand)
   }
 
-  const set = (addressingMode, value, operand) => {
-    return CPU_ADDRESSING_MODES[addressingMode].set(value, operand)
+  #indexedIndirect = {
+    get: (operand) => {
+      const xRegister = this.#cpu.getRegister(CPU_REGISTERS.X)
+      const zeroPageOffset = (operand + xRegister) & 0xff
+      const memoryAddress = this.#cpu.load(zeroPageOffset) +
+            (this.#cpu.load((zeroPageOffset + 1) & 0xff) << 8)
+
+      return this.#cpu.load(memoryAddress)
+    },
+    set: (value, operand) => {
+      const xRegister = this.#cpu.getRegister(CPU_REGISTERS.X)
+      const zeroPageOffset = (operand + xRegister) & 0xff
+      const memoryAddress = this.#cpu.load(zeroPageOffset) +
+                  (this.#cpu.load((zeroPageOffset + 1) & 0xff) << 8)
+
+      this.#cpu.store(memoryAddress, value)
+      this.#setLastWrite(memoryAddress, value)
+    }
   }
 
-  const _setLastWrite = (address, value) => {
-    const cpuController = cpu.getCPUController()
+  #indirectIndexed = {
+    get: (operand) => {
+      const yRegister = this.#cpu.getRegister(CPU_REGISTERS.Y)
+      const memoryAddress = this.#cpu.load(operand) +
+                  (this.#cpu.load((operand + 1) & 0xff) << 8)
+      return this.#cpu.load(memoryAddress + yRegister)
+    },
+    set: (value, operand) => {
+      const memoryAddress = this.#cpu.load(operand) +
+                  (this.#cpu.load((operand + 1) & 0xff) << 8) +
+                  this.#cpu.getRegister(CPU_REGISTERS.Y)
+      this.#cpu.store(memoryAddress, value)
+      this.#setLastWrite(memoryAddress, value)
+    }
+  }
+
+  #AddressingModes = [
+    this.#acumulator,
+    this.#immediate,
+    this.#zeroPage,
+    this.#zeroPageX,
+    this.#zeroPageY,
+    this.#relative,
+    this.#aboslute,
+    this.#absoluteX,
+    this.#absoluteY,
+    this.#indirect,
+    this.#indexedIndirect,
+    this.#indirectIndexed
+  ]
+
+  constructor (cpu, cpuALU) {
+    this.#cpu = cpu
+    this.#cpuALU = cpuALU
+  }
+
+  get (addressingMode, operand) {
+    return this.#AddressingModes[addressingMode].get(operand)
+  }
+
+  set (addressingMode, value, operand) {
+    return this.#AddressingModes[addressingMode].set(value, operand)
+  }
+
+  #setLastWrite (address, value) {
+    const cpuController = this.#cpu.getCPUController()
+
     if (cpuController.debugMode) {
       cpuController.lastWrite.address = address
       cpuController.lastWrite.value = value
     }
-  }
-
-  const CPU_ADDRESSING_MODES = [
-    acumulator,
-    immediate,
-    zeroPage,
-    zeroPageX,
-    zeroPageY,
-    relative,
-    aboslute,
-    absoluteX,
-    absoluteY,
-    indirect,
-    indexedIndirect,
-    indirectIndexed
-  ]
-
-  return {
-    get,
-    set
   }
 }

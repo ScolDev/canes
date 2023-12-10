@@ -7,10 +7,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "lint": "npx eslint . --fix",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "prepare": "husky install",
-    "pre-commit": "npx standard --fix && git add . && npm t",
+    "pre-commit": "npm run lint && git add . && npm t",
     "preview": "vite preview"
   },
   "standard": {
@@ -42,13 +43,13 @@
     "@vitejs/plugin-react": "^4.2.0",
     "babel-jest": "^27.0.6",
     "eslint": "^8.53.0",
+    "eslint-plugin-jest": "^27.6.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
-    "eslint-plugin-jest": "^24.3.6",
-    "jest": "^27.0.6",
-    "standard": "^16.0.3",
     "husky": "^8.0.0",
+    "jest": "^27.0.6",
+    "standard": "^17.1.0",
     "vite": "^5.0.0"
   }
 }

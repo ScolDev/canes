@@ -1,29 +1,39 @@
 import { CPU_FLAGS } from './consts/flags'
 import { CPU_REGISTERS } from './consts/registers'
 
-export const ALU = (cpu) => {
-  const setFlag = (flag, bitValue = 0x01) => {
+export class ALU {
+  #cpu = null
+
+  constructor (cpu) {
+    this.#cpu = cpu
+  }
+
+  setFlag (flag, bitValue = 0x01) {
     const flagMask = (0x01 << flag) ^ 0xff
     const valueMask = bitValue << flag
-    const registerValue = valueMask + (cpu.getRegister(CPU_REGISTERS.P) & flagMask)
+    const pRegister = this.#cpu.getRegister(CPU_REGISTERS.P)
+    const registerValue = valueMask + (pRegister & flagMask)
 
-    cpu.setRegister(CPU_REGISTERS.P, registerValue)
+    this.#cpu.setRegister(CPU_REGISTERS.P, registerValue)
   }
 
-  const clearFlag = (flag) => {
+  clearFlag (flag) {
     const byteMaskOff = (0x01 << flag) ^ 0xff
-    cpu.setRegister(CPU_REGISTERS.P, cpu.getRegister(CPU_REGISTERS.P) & byteMaskOff)
+    const pRegister = this.#cpu.getRegister(CPU_REGISTERS.P)
+
+    this.#cpu.setRegister(CPU_REGISTERS.P, pRegister & byteMaskOff)
   }
 
-  const getFlag = (flag) => {
-    return getBitValue(flag, cpu.getRegister(CPU_REGISTERS.P))
+  getFlag (flag) {
+    const pRegister = this.#cpu.getRegister(CPU_REGISTERS.P)
+    return this.getBitValue(flag, pRegister)
   }
 
-  const getBitValue = (bit, byteNumber) => {
+  getBitValue (bit, byteNumber) {
     return (byteNumber & (2 ** bit)) >> bit
   }
 
-  const getSignedByte = (byte) => {
+  getSignedByte (byte) {
     byte = byte & 0xff
     const value = byte & 0x7f
     const isNegative = !!((byte & 0x80) >> 7)
@@ -34,39 +44,27 @@ export const ALU = (cpu) => {
     return value
   }
 
-  const getTwoComplement = (value) => {
+  getTwoComplement (value) {
     return (0x100 - value) & 0xff
   }
 
-  const updateZeroFlag = (result) => {
+  updateZeroFlag (result) {
     (result & 0xff) === 0x00
-      ? setFlag(CPU_FLAGS.ZeroFlag)
-      : clearFlag(CPU_FLAGS.ZeroFlag)
+      ? this.setFlag(CPU_FLAGS.ZeroFlag)
+      : this.clearFlag(CPU_FLAGS.ZeroFlag)
   }
 
-  const updateOverflowFlag = (result, operandA, operandB) => {
+  updateOverflowFlag (result, operandA, operandB) {
     const operandABit7 = operandA >> 7
     const operandBBit7 = operandB >> 7
     const resultBit7 = (result & 0xff) >> 7
 
     operandABit7 === operandBBit7 && resultBit7 !== operandABit7
-      ? setFlag(CPU_FLAGS.OverflowFlag)
-      : clearFlag(CPU_FLAGS.OverflowFlag)
+      ? this.setFlag(CPU_FLAGS.OverflowFlag)
+      : this.clearFlag(CPU_FLAGS.OverflowFlag)
   }
 
-  const updateNegativeFlag = (result) => {
-    setFlag(CPU_FLAGS.NegativeFlag, getBitValue(0x07, result))
-  }
-
-  return {
-    getFlag,
-    setFlag,
-    clearFlag,
-    getBitValue,
-    getSignedByte,
-    getTwoComplement,
-    updateZeroFlag,
-    updateOverflowFlag,
-    updateNegativeFlag
+  updateNegativeFlag (result) {
+    this.setFlag(CPU_FLAGS.NegativeFlag, this.getBitValue(0x07, result))
   }
 }

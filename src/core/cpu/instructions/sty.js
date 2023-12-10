@@ -1,30 +1,30 @@
 import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 import { CPU_REGISTERS } from '../consts/registers'
 
-export default (cpu) => {
-  const addressingModes = {
+export class Sty {
+  #cpu = null
+
+  addressingModes = {
     0x84: CPU_ADDRESSING_MODES.ZeroPage,
     0x94: CPU_ADDRESSING_MODES.ZeroPageX,
     0x8c: CPU_ADDRESSING_MODES.Absolute
   }
 
-  const execute = (opcode, operand) => {
-    const addressingMode = addressingModes[opcode]
-    const yRegister = cpu.getRegister(CPU_REGISTERS.Y)
-
-    cpu.storeByAddressingMode(addressingMode, yRegister, operand)
-    cpu.nextPC(addressingMode)
+  constructor (cpu) {
+    this.#cpu = cpu
   }
 
-  const getASM = (instruction) => {
+  execute (opcode, operand) {
+    const addressingMode = this.addressingModes[opcode]
+    const yRegister = this.#cpu.getRegister(CPU_REGISTERS.Y)
+
+    this.#cpu.storeByAddressingMode(addressingMode, yRegister, operand)
+    this.#cpu.nextPC(addressingMode)
+  }
+
+  getASM (instruction) {
     const [opcode, operand] = instruction
-    const addressingMode = addressingModes[opcode]
+    const addressingMode = this.addressingModes[opcode]
     return `sty${getASMByAddrMode(addressingMode, operand)}`
-  }
-
-  return {
-    execute,
-    getASM,
-    addressingModes
   }
 }

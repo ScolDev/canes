@@ -1,4 +1,3 @@
-
 import { CPU } from '../../src/core/cpu/cpu'
 import { Debugger } from '../../src/core/debugger/debugger'
 import { CPU_MEMORY_MAP } from '../../src/core/cpu/consts/memory-map'
@@ -15,8 +14,8 @@ describe('Tests for ROMs executions.', () => {
   }
 
   beforeEach(() => {
-    cpu = CPU()
-    nesDebugger = Debugger()
+    cpu = new CPU()
+    nesDebugger = new Debugger()
 
     nesDebugger.attach(cpu)
   })

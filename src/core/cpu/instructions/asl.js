@@ -1,8 +1,11 @@
 import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 import { CPU_FLAGS } from '../consts/flags'
 
-export default (cpu, cpuALU) => {
-  const addressingModes = {
+export class Asl {
+  #cpu = null
+  #cpuALU = null
+
+  addressingModes = {
     0x0a: CPU_ADDRESSING_MODES.Acumulator,
     0x06: CPU_ADDRESSING_MODES.ZeroPage,
     0x16: CPU_ADDRESSING_MODES.ZeroPageX,
@@ -10,33 +13,32 @@ export default (cpu, cpuALU) => {
     0x1e: CPU_ADDRESSING_MODES.AbsoluteX
   }
 
-  const execute = (opcode, operand) => {
-    const addressingMode = addressingModes[opcode]
-    const operandValue = cpu.loadByAddressingMode(addressingMode, operand)
+  constructor (cpu, cpuALU) {
+    this.#cpu = cpu
+    this.#cpuALU = cpuALU
+  }
+
+  execute (opcode, operand) {
+    const addressingMode = this.addressingModes[opcode]
+    const operandValue = this.#cpu.loadByAddressingMode(addressingMode, operand)
     const result = (operandValue << 1) & 0xff
 
-    cpu.storeByAddressingMode(addressingMode, result, operand)
-    updateStatus(result, operandValue)
-    cpu.nextPC(addressingMode)
+    this.#cpu.storeByAddressingMode(addressingMode, result, operand)
+    this.updateStatus(result, operandValue)
+    this.#cpu.nextPC(addressingMode)
   }
 
-  const updateStatus = (result, operandValue) => {
-    const carryFlag = cpuALU.getBitValue(7, operandValue)
+  updateStatus (result, operandValue) {
+    const carryFlag = this.#cpuALU.getBitValue(7, operandValue)
 
-    cpuALU.setFlag(CPU_FLAGS.CarryFlag, carryFlag)
-    cpuALU.updateZeroFlag(result)
-    cpuALU.updateNegativeFlag(result)
+    this.#cpuALU.setFlag(CPU_FLAGS.CarryFlag, carryFlag)
+    this.#cpuALU.updateZeroFlag(result)
+    this.#cpuALU.updateNegativeFlag(result)
   }
 
-  const getASM = (instruction) => {
+  getASM (instruction) {
     const [opcode, operand] = instruction
-    const addressingMode = addressingModes[opcode]
+    const addressingMode = this.addressingModes[opcode]
     return `asl${getASMByAddrMode(addressingMode, operand)}`
-  }
-
-  return {
-    execute,
-    getASM,
-    addressingModes
   }
 }

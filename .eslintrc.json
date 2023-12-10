@@ -1,15 +1,15 @@
 {
   "env": {
     "browser": true,
-    "es2021": true,
+    "es2022": true,
     "jest/globals": true
   },
   "extends": [
-    "standard",
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
-    "plugin:react-hooks/recommended"
+    "plugin:react-hooks/recommended",
+    "standard"
   ],
   "ignorePatterns": ["dist", ".eslintrc.cjs"],
   "parserOptions": {
@@ -23,5 +23,6 @@
   },
   "plugins": ["jest", "react-refresh"],
   "rules": {
-  }
+    "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }]
+}
 }

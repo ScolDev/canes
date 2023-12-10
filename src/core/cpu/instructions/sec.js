@@ -1,27 +1,29 @@
 import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-modes'
 import { CPU_FLAGS } from '../consts/flags'
 
-export default (cpu, cpuALU) => {
-  const addressingModes = {
+export class Sec {
+  #cpu = null
+  #cpuALU = null
+
+  addressingModes = {
     0x38: CPU_ADDRESSING_MODES.Implied
   }
 
-  const execute = (opcode, operand) => {
-    const addressingMode = addressingModes[opcode]
-
-    cpuALU.setFlag(CPU_FLAGS.CarryFlag)
-    cpu.nextPC(addressingMode)
+  constructor (cpu, cpuALU) {
+    this.#cpu = cpu
+    this.#cpuALU = cpuALU
   }
 
-  const getASM = (instruction) => {
+  execute (opcode) {
+    const addressingMode = this.addressingModes[opcode]
+
+    this.#cpuALU.setFlag(CPU_FLAGS.CarryFlag)
+    this.#cpu.nextPC(addressingMode)
+  }
+
+  getASM (instruction) {
     const [opcode, operand] = instruction
-    const addressingMode = addressingModes[opcode]
+    const addressingMode = this.addressingModes[opcode]
     return `sec${getASMByAddrMode(addressingMode, operand)}`
-  }
-
-  return {
-    execute,
-    getASM,
-    addressingModes
   }
 }

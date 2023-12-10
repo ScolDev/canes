@@ -8,8 +8,8 @@ describe('Tests for ALU module.', () => {
   let cpuALU
 
   beforeEach(() => {
-    cpu = CPU()
-    cpuALU = ALU(cpu)
+    cpu = new CPU()
+    cpuALU = new ALU(cpu)
   })
 
   test('should get signed byte numbers.', () => {

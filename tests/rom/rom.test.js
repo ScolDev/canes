@@ -6,7 +6,9 @@ describe('Tests for the ROM module.', () => {
     const testROMFile = './tests/__roms__/nestest.nes'
     const fileLoader = FileLoader(testROMFile)
 
-    const rom = await ROM(fileLoader)
+    const rom = new ROM(fileLoader)
+    await rom.load()
+
     const romInfo = rom.getHeader()
 
     expect(romInfo).toEqual({
@@ -29,7 +31,9 @@ describe('Tests for the ROM module.', () => {
     const testROMFile = './tests/__roms__/instr_test-v3/official_only.nes'
     const fileLoader = FileLoader(testROMFile)
 
-    const rom = await ROM(fileLoader)
+    const rom = new ROM(fileLoader)
+    await rom.load()
+
     const romInfo = rom.getHeader()
 
     expect(romInfo).toEqual({
@@ -52,7 +56,9 @@ describe('Tests for the ROM module.', () => {
     const testROMFile = './tests/__roms__/invalid_rom.nes'
     const fileLoader = FileLoader(testROMFile)
 
-    const rom = await ROM(fileLoader)
+    const rom = new ROM(fileLoader)
+    await rom.load()
+
     const romInfo = rom.getHeader()
 
     expect(romInfo).toEqual({
@@ -65,7 +71,9 @@ describe('Tests for the ROM module.', () => {
     const fileLoader = FileLoader(testROMFile)
 
     try {
-      await ROM(fileLoader)
+      const rom = new ROM(fileLoader)
+      await rom.load()
+
       expect(true).toBe(false)
     } catch (error) {
       expect(error.message).toBe('Cannot load the rom file')
@@ -76,7 +84,9 @@ describe('Tests for the ROM module.', () => {
     const testROMFile = './tests/__roms__/invalid_rom.nes'
     const fileLoader = FileLoader(testROMFile)
 
-    const rom = await ROM(fileLoader)
+    const rom = new ROM(fileLoader)
+    await rom.load()
+
     const { buffer, size } = rom.getPRG()
 
     expect(size).toBe(0x00)
@@ -90,7 +100,9 @@ describe('Tests for the ROM module.', () => {
     const prgFirstBytes = new Uint8Array([0x4c, 0xf5, 0xc5, 0x60, 0x78, 0xd8])
     const prgLastBytes = new Uint8Array([0xaf, 0xc5, 0x04, 0xc0, 0xf4, 0xc5])
 
-    const rom = await ROM(fileLoader)
+    const rom = new ROM(fileLoader)
+    await rom.load()
+
     const { buffer, size } = rom.getPRG()
     const firstBytes = buffer.subarray(0x0000, 0x0006)
     const lastBytes = buffer.subarray(0x7ffa, 0x8000)
@@ -105,7 +117,9 @@ describe('Tests for the ROM module.', () => {
     const testROMFile = './tests/__roms__/cpu_reset/registers.nes'
     const fileLoader = FileLoader(testROMFile)
 
-    const rom = await ROM(fileLoader)
+    const rom = new ROM(fileLoader)
+    await rom.load()
+
     const { buffer, size } = rom.getPRG()
     const bufferA = buffer.subarray(0x0000, 0x4000)
     const bufferB = buffer.subarray(0x4000, 0x8000)
