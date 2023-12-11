@@ -25,7 +25,7 @@ export class Cmp {
   execute (opcode, operand) {
     const addressingMode = this.addressingModes[opcode]
     const accumulator = this.#cpu.getRegister(CPU_REGISTERS.A)
-    const memoryValue = this.#cpu.loadByAddressingMode(addressingMode, operand)
+    const memoryValue = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
 
     const result = 0x100 + accumulator - memoryValue
 

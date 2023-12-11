@@ -3,7 +3,7 @@ import { CPU } from '../../src/core/cpu/cpu'
 import { CPU_REGISTERS } from '../../src/core/cpu/consts/registers'
 import { ALU } from '../../src/core/cpu/alu'
 import { CPU_FLAGS } from '../../src/core/cpu/consts/flags'
-import { CPU_MEMORY_MAP } from '../../src/core/cpu/consts/memory-map'
+import { CPU_MEMORY_MAP } from '../../src/core/memory/consts/memory-map'
 
 describe('Tests for the PC register after instrucions executions.', () => {
   let cpu
@@ -204,7 +204,7 @@ describe('Tests for the PC register after instrucions executions.', () => {
     cpu.setRegister(CPU_REGISTERS.PC, 0x8000)
 
     const instruction = [0x00]
-    cpu.storeWord(CPU_MEMORY_MAP.IRQ_Vector, 0x1234)
+    cpu.memory.storeWord(CPU_MEMORY_MAP.IRQ_Vector, 0x1234)
     cpu.execute(instruction)
 
     expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x1234)
@@ -452,7 +452,7 @@ describe('Tests for the PC register after instrucions executions.', () => {
     expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x1234)
 
     instruction = [0x6c, 0x1234]
-    cpu.storeWord(0x1234, 0x5678)
+    cpu.memory.storeWord(0x1234, 0x5678)
     cpu.execute(instruction)
     expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x5678)
   })
@@ -702,7 +702,7 @@ describe('Tests for the PC register after instrucions executions.', () => {
 
     const instruction = [0x40]
     cpu.setRegister(CPU_REGISTERS.SP, 0xfc)
-    cpu.storeWord(0x01fd, 0x1234)
+    cpu.memory.storeWord(0x01fd, 0x1234)
     cpu.execute(instruction)
 
     expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x1234)
@@ -713,7 +713,7 @@ describe('Tests for the PC register after instrucions executions.', () => {
 
     const instruction = [0x60]
     cpu.setRegister(CPU_REGISTERS.SP, 0xfc)
-    cpu.storeWord(0x01fd, 0x5432)
+    cpu.memory.storeWord(0x01fd, 0x5432)
     cpu.execute(instruction)
 
     expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x5433)

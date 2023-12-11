@@ -1,4 +1,4 @@
-import { CPU_MEMORY_MAP } from '../cpu/consts/memory-map'
+import { CPU_MEMORY_MAP } from '../memory/consts/memory-map'
 
 export class Debugger {
   #cpu = null
@@ -57,7 +57,7 @@ export class Debugger {
 
   #validateAtResetVector () {
     const currentPC = this.#cpu.getPC()
-    const resetVector = this.#cpu.loadWord(CPU_MEMORY_MAP.Reset_Vector)
+    const resetVector = this.#cpu.memory.loadWord(CPU_MEMORY_MAP.Reset_Vector)
     if (this.#state.conditions.atResetVector && currentPC === resetVector) {
       this.#pause()
     }

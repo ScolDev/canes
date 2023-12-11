@@ -18,7 +18,7 @@ export class Sty {
     const addressingMode = this.addressingModes[opcode]
     const yRegister = this.#cpu.getRegister(CPU_REGISTERS.Y)
 
-    this.#cpu.storeByAddressingMode(addressingMode, yRegister, operand)
+    this.#cpu.memory.storeByAddressingMode(addressingMode, yRegister, operand)
     this.#cpu.nextPC(addressingMode)
   }
 

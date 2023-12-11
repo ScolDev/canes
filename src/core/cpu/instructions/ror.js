@@ -20,12 +20,12 @@ export class Ror {
 
   execute (opcode, operand) {
     const addressingMode = this.addressingModes[opcode]
-    const operandValue = this.#cpu.loadByAddressingMode(addressingMode, operand)
+    const operandValue = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
     const carryFlag = this.#cpuALU.getFlag(CPU_FLAGS.CarryFlag)
 
     const result = (operandValue >> 1) + (carryFlag << 7)
 
-    this.#cpu.storeByAddressingMode(addressingMode, result, operand)
+    this.#cpu.memory.storeByAddressingMode(addressingMode, result, operand)
     this.updateStatus(result, operandValue)
     this.#cpu.nextPC(addressingMode)
   }

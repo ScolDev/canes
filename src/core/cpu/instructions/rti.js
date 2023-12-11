@@ -15,8 +15,8 @@ export class Rti {
   execute () {
     const currentSP = this.#cpu.getRegister(CPU_REGISTERS.SP)
     const stackMemoryAddress = 0x100 + currentSP
-    const processorStatus = this.#cpu.load(stackMemoryAddress)
-    const pc = this.#cpu.loadWord(stackMemoryAddress + 1)
+    const processorStatus = this.#cpu.memory.load(stackMemoryAddress)
+    const pc = this.#cpu.memory.loadWord(stackMemoryAddress + 1)
 
     this.#cpu.setRegister(CPU_REGISTERS.P, processorStatus)
     this.#cpu.setRegister(CPU_REGISTERS.SP, currentSP + 2)

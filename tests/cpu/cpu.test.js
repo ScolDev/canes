@@ -3,7 +3,7 @@ import { CPU } from '../../src/core/cpu/cpu'
 import { CPU_REGISTERS } from '../../src/core/cpu/consts/registers'
 import { CPU_FLAGS } from '../../src/core/cpu/consts/flags'
 import { ALU } from '../../src/core/cpu/alu'
-import { CPU_MEMORY_MAP } from '../../src/core/cpu/consts/memory-map'
+import { CPU_MEMORY_MAP } from '../../src/core/memory/consts/memory-map'
 
 describe('Tests for CPU module.', () => {
   let cpu
@@ -145,7 +145,7 @@ describe('Tests for CPU module.', () => {
   })
 
   test('should power-up the cpu', () => {
-    cpu.storeWord(CPU_MEMORY_MAP.Reset_Vector, 0x8000)
+    cpu.memory.storeWord(CPU_MEMORY_MAP.Reset_Vector, 0x8000)
     cpu.powerUp()
 
     expect(cpu.getRegister(CPU_REGISTERS.P)).toBe(0x34)
@@ -155,10 +155,10 @@ describe('Tests for CPU module.', () => {
     expect(cpu.getRegister(CPU_REGISTERS.SP)).toBe(0xfd)
     expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x8000)
 
-    expect(cpu.load(0x4015)).toBe(0x00)
-    expect(cpu.load(0x4017)).toBe(0x00)
-    expect(cpu.getMemorySection(0x4000, 0x400f)).toEqual(new Uint8Array(0x10))
-    expect(cpu.getMemorySection(0x4010, 0x4013)).toEqual(new Uint8Array(0x04))
+    expect(cpu.memory.load(0x4015)).toBe(0x00)
+    expect(cpu.memory.load(0x4017)).toBe(0x00)
+    expect(cpu.memory.getMemorySection(0x4000, 0x400f)).toEqual(new Uint8Array(0x10))
+    expect(cpu.memory.getMemorySection(0x4010, 0x4013)).toEqual(new Uint8Array(0x04))
   })
 
   test('should reset the cpu', () => {
@@ -175,15 +175,15 @@ describe('Tests for CPU module.', () => {
     cpu.setRegister(CPU_REGISTERS.SP, previousSP)
     cpu.setRegister(CPU_REGISTERS.P, previousP)
 
-    cpu.store(0x0000, dummyByte)
-    cpu.store(0x0102, dummyByte)
-    cpu.store(0x07ff, dummyByte)
+    cpu.memory.store(0x0000, dummyByte)
+    cpu.memory.store(0x0102, dummyByte)
+    cpu.memory.store(0x07ff, dummyByte)
 
-    cpu.store(0x4015, dummyByte)
-    cpu.store(0x4017, dummyByte)
-    cpu.storeWord(CPU_MEMORY_MAP.Reset_Vector, 0x8000)
+    cpu.memory.store(0x4015, dummyByte)
+    cpu.memory.store(0x4017, dummyByte)
+    cpu.memory.storeWord(CPU_MEMORY_MAP.Reset_Vector, 0x8000)
 
-    const previousInternalMemory = cpu.getMemorySection(0x0000, 0x07ff)
+    const previousInternalMemory = cpu.memory.getMemorySection(0x0000, 0x07ff)
 
     cpu.reset()
 
@@ -194,8 +194,8 @@ describe('Tests for CPU module.', () => {
     expect(cpu.getRegister(CPU_REGISTERS.P)).toBe(0b11001110)
     expect(cpu.getRegister(CPU_REGISTERS.PC)).toBe(0x8000)
 
-    expect(cpu.load(0x4015)).toBe(0x00)
-    expect(cpu.load(0x4017)).toBe(dummyByte)
-    expect(previousInternalMemory).toEqual(cpu.getMemorySection(0x0000, 0x07ff))
+    expect(cpu.memory.load(0x4015)).toBe(0x00)
+    expect(cpu.memory.load(0x4017)).toBe(dummyByte)
+    expect(previousInternalMemory).toEqual(cpu.memory.getMemorySection(0x0000, 0x07ff))
   })
 })

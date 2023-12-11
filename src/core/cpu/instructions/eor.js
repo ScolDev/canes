@@ -25,7 +25,7 @@ export class Eor {
     const addressingMode = this.addressingModes[opcode]
 
     const acumulatorValue = this.#cpu.getRegister(CPU_REGISTERS.A)
-    const memoryValue = this.#cpu.loadByAddressingMode(addressingMode, operand)
+    const memoryValue = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
     const resultValue = (acumulatorValue ^ memoryValue) & 0xff
 
     this.#cpu.setRegister(CPU_REGISTERS.A, resultValue)

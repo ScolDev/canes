@@ -1,19 +1,18 @@
-import { AddressingModes } from './addressing-modes'
 import { Instructions } from './instructions'
 
-import { AddressingModeSize, CPU_ADDRESSING_MODES } from './consts/addressing-modes'
+import { AddressingModeSize } from './consts/addressing-modes'
 import { CPU_REGISTERS } from './consts/registers'
-import { CPU_MEMORY_MAP } from './consts/memory-map'
+import { CPU_MEMORY_MAP } from '../memory/consts/memory-map'
 import { ALU } from './alu'
 import { CPU_FLAGS } from './consts/flags'
-import { MEMORY_MIRRORS } from './consts/memory-mirros'
 import { ROM } from '../rom/rom'
 import { FileLoader } from '../../shared/utils/file-loader'
+import { Memory } from '../memory/memory'
 
 export class CPU {
   #rom = null
-  #nesDebugger = null
   #cpuALU = null
+  #nesDebugger = null
   #instructions = null
   #addressingModes = null
 
@@ -55,22 +54,6 @@ export class CPU {
     return this.#instructions.getLastExecuted()
   }
 
-  getMemorySection (start, end) {
-    const sectionSize = end - start + 1
-    const endOfMirrors = MEMORY_MIRRORS.PPUIORegisters.end
-    const memorySection = new Uint8Array(sectionSize)
-
-    for (let idxMemory = start, idxSection = 0; idxMemory <= end; idxMemory++, idxSection++) {
-      if (idxMemory < endOfMirrors) {
-        memorySection[idxSection] = this.load(idxMemory)
-      } else {
-        memorySection.set(this.MEM.subarray(idxMemory, end + 1), idxSection)
-        break
-      }
-    }
-    return memorySection
-  }
-
   getRegister (register) {
     if (register === CPU_REGISTERS.PC) {
       return this.REG.PC & 0xffff
@@ -85,54 +68,6 @@ export class CPU {
     } else {
       this.REG[register] = value & 0xff
     }
-  }
-
-  loadAddressByAddressingMode (addressingMode, operand) {
-    if (addressingMode === CPU_ADDRESSING_MODES.Absolute) {
-      return operand
-    }
-
-    if (operand & (0x00ff === 0xff)) {
-      return this.load(operand) + (this.load(operand & 0xff00) << 8)
-    }
-
-    return this.loadByAddressingMode(addressingMode, operand)
-  }
-
-  loadByAddressingMode (addressingMode, operand) {
-    return this.#addressingModes.get(addressingMode, operand)
-  }
-
-  load (memoryAddress) {
-    const mirrors = this.#getMemoryMirrors(memoryAddress)
-    if (mirrors.mirrorSize > 0) {
-      return this.#loadMirror(memoryAddress, mirrors)
-    }
-
-    return this.#loadByte(memoryAddress)
-  }
-
-  loadWord (memoryAddress) {
-    return this.load(memoryAddress) + (this.load(memoryAddress + 1) << 8)
-  }
-
-  store (memoryAddress, memoryValue) {
-    const mirrors = this.#getMemoryMirrors(memoryAddress)
-    if (mirrors.mirrorSize > 0) {
-      this.#storeMirror(memoryAddress, memoryValue, mirrors)
-      return
-    }
-
-    this.#storeByte(memoryAddress, memoryValue)
-  }
-
-  storeWord (memoryAddress, memoryValue) {
-    this.store(memoryAddress, memoryValue)
-    this.store(memoryAddress + 1, (memoryValue & 0xff00) >> 8)
-  }
-
-  storeByAddressingMode (addressingMode, value, operand) {
-    this.#addressingModes.set(addressingMode, value, operand)
   }
 
   async loadROM ({ filePath }) {
@@ -153,8 +88,8 @@ export class CPU {
     this.setRegister(CPU_REGISTERS.Y, 0x00)
     this.setRegister(CPU_REGISTERS.SP, 0xfd)
 
-    this.store(CPU_MEMORY_MAP.SND_CHN, 0x00)
-    this.store(CPU_MEMORY_MAP.JOY2, 0x00)
+    this.memory.store(CPU_MEMORY_MAP.SND_CHN, 0x00)
+    this.memory.store(CPU_MEMORY_MAP.JOY2, 0x00)
 
     this.#loadResetVector()
     this.#run()
@@ -164,7 +99,7 @@ export class CPU {
     const previousSP = this.getRegister(CPU_REGISTERS.SP)
     this.setRegister(CPU_REGISTERS.SP, previousSP - 0x03)
 
-    this.store(CPU_MEMORY_MAP.SND_CHN, 0x00)
+    this.memory.store(CPU_MEMORY_MAP.SND_CHN, 0x00)
     this.#cpuALU.setFlag(CPU_FLAGS.InterruptDisable)
 
     this.#loadResetVector()
@@ -197,14 +132,14 @@ export class CPU {
 
   #fetchInstruction () {
     const pc = this.getPC()
-    const opcode = this.load(pc)
+    const opcode = this.memory.load(pc)
     const instruction = [opcode]
     const instructionSize = this.#instructions.getInstructionSize(opcode)
 
     if (instructionSize === 0x02) {
-      instruction.push(this.load(pc + 1))
+      instruction.push(this.memory.load(pc + 1))
     } else if (instructionSize === 0x03) {
-      instruction.push(this.loadWord(pc + 1))
+      instruction.push(this.memory.loadWord(pc + 1))
     }
 
     return instruction
@@ -212,48 +147,11 @@ export class CPU {
 
   #loadPRG () {
     const { buffer } = this.#rom.getPRG()
-    buffer.copy(this.MEM, CPU_MEMORY_MAP.PRG_ROM)
-  }
-
-  #getMemoryMirrors (memoryAddress) {
-    for (const mirror of Object.values(MEMORY_MIRRORS)) {
-      if (memoryAddress >= mirror.start && memoryAddress < mirror.end) {
-        return {
-          ...mirror
-        }
-      }
-    }
-
-    return { start: 0, end: 0, mirrorSize: 0 }
-  }
-
-  #storeMirror (memoryAddress, value, mirrors) {
-    const { start, mirrorSize } = mirrors
-    const relativeAddress = memoryAddress % mirrorSize
-    const mirroredAddress = start + relativeAddress
-
-    this.#storeByte(mirroredAddress, value)
-  }
-
-  #storeByte (memoryAddress, memoryValue) {
-    memoryAddress &= 0xffff
-    this.MEM[memoryAddress] = memoryValue & 0xff
-  }
-
-  #loadMirror (memoryAddress, mirrors) {
-    const { start, mirrorSize } = mirrors
-    const relativeAddress = memoryAddress % mirrorSize
-    const mirroredAddress = start + relativeAddress
-
-    return this.#loadByte(mirroredAddress)
-  }
-
-  #loadByte (memoryAddress) {
-    return this.MEM[memoryAddress & 0xffff]
+    this.memory.copy(buffer, CPU_MEMORY_MAP.PRG_ROM)
   }
 
   #loadResetVector () {
-    const resetVector = this.loadWord(CPU_MEMORY_MAP.Reset_Vector)
+    const resetVector = this.memory.loadWord(CPU_MEMORY_MAP.Reset_Vector)
     this.setRegister(CPU_REGISTERS.PC, resetVector)
   }
 
@@ -267,8 +165,8 @@ export class CPU {
 
   #initComponents () {
     this.#cpuALU = new ALU(this)
+    this.memory = new Memory(this, this.#cpuALU)
     this.#instructions = new Instructions(this, this.#cpuALU)
-    this.#addressingModes = new AddressingModes(this, this.#cpuALU)
 
     this.cpuController = {
       paused: false,
@@ -276,7 +174,6 @@ export class CPU {
       insExecuted: 0,
       lastWrite: { address: -1, value: -1 }
     }
-    this.MEM = new Uint8Array(CPU_MEMORY_MAP.Size)
     this.REG = {
       PC: 0x0000,
       SP: 0x1ff,

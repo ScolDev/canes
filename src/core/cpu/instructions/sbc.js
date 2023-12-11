@@ -25,7 +25,7 @@ export class Sbc {
   execute (opcode, operand) {
     const addressingMode = this.addressingModes[opcode]
     const carryFlag = this.#cpuALU.getFlag(CPU_FLAGS.CarryFlag)
-    const memoryValue = this.#cpu.loadByAddressingMode(addressingMode, operand)
+    const memoryValue = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
     const currentAccumulator = this.#cpu.getRegister(CPU_REGISTERS.A)
     const twoComplement = this.#cpuALU.getTwoComplement(memoryValue)
 

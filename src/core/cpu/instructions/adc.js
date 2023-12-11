@@ -25,7 +25,7 @@ export class Adc {
   execute (opcode, operand) {
     const addressingMode = this.addressingModes[opcode]
     const carryFlag = this.#cpuALU.getFlag(CPU_FLAGS.CarryFlag)
-    const operandA = this.#cpu.loadByAddressingMode(addressingMode, operand)
+    const operandA = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
     const operandB = this.#cpu.getRegister(CPU_REGISTERS.A)
 
     const result = this.#cpu.getRegister(CPU_REGISTERS.A) + operandA + carryFlag

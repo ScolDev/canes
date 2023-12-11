@@ -19,7 +19,7 @@ export class Php {
 
     const stackMemoryAddress = 0x100 + currentSP
 
-    this.#cpu.store(stackMemoryAddress, processorStatus)
+    this.#cpu.memory.store(stackMemoryAddress, processorStatus)
     this.#cpu.setRegister(CPU_REGISTERS.SP, currentSP - 1)
     this.#cpu.nextPC(addressingMode)
   }

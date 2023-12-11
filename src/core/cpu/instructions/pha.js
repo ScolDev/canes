@@ -19,7 +19,7 @@ export class Pha {
 
     const stackMemoryAddress = 0x100 + currentSP
 
-    this.#cpu.store(stackMemoryAddress, accumulator)
+    this.#cpu.memory.store(stackMemoryAddress, accumulator)
     this.#cpu.setRegister(CPU_REGISTERS.SP, currentSP - 1)
     this.#cpu.nextPC(addressingMode)
   }

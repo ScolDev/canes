@@ -14,7 +14,7 @@ export class Jmp {
 
   execute (opcode, operand) {
     const addressingMode = this.addressingModes[opcode]
-    const addressValue = this.#cpu.loadAddressByAddressingMode(addressingMode, operand)
+    const addressValue = this.#cpu.memory.loadAddressByAddressingMode(addressingMode, operand)
 
     this.#cpu.setPC(addressValue)
   }

@@ -22,7 +22,7 @@ export class Sta {
     const addressingMode = this.addressingModes[opcode]
     const accumulator = this.#cpu.getRegister(CPU_REGISTERS.A)
 
-    this.#cpu.storeByAddressingMode(addressingMode, accumulator, operand)
+    this.#cpu.memory.storeByAddressingMode(addressingMode, accumulator, operand)
     this.#cpu.nextPC(addressingMode)
   }
 

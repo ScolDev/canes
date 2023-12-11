@@ -14,13 +14,13 @@ export class Jsr {
 
   execute (opcode, operand) {
     const addressingMode = this.addressingModes[opcode]
-    const addressValue = this.#cpu.loadAddressByAddressingMode(addressingMode, operand)
+    const addressValue = this.#cpu.memory.loadAddressByAddressingMode(addressingMode, operand)
     const currentPC = this.#cpu.getRegister(CPU_REGISTERS.PC)
     const newStackPointer = this.#cpu.getRegister(CPU_REGISTERS.SP) - 2
     const stackMemoryAddress = (this.#cpu.getRegister(CPU_REGISTERS.SP) - 1) + 0x100
 
     this.#cpu.setRegister(CPU_REGISTERS.SP, newStackPointer)
-    this.#cpu.storeWord(stackMemoryAddress, currentPC + 2)
+    this.#cpu.memory.storeWord(stackMemoryAddress, currentPC + 2)
     this.#cpu.setPC(addressValue)
   }
 

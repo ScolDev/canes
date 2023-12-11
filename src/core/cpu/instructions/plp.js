@@ -16,7 +16,7 @@ export class Plp {
     const addressingMode = this.addressingModes[opcode]
     const currentSP = this.#cpu.getRegister(CPU_REGISTERS.SP)
     const stackMemoryAddress = 0x100 + currentSP
-    const memoryValue = this.#cpu.load(stackMemoryAddress)
+    const memoryValue = this.#cpu.memory.load(stackMemoryAddress)
 
     this.#cpu.setRegister(CPU_REGISTERS.P, memoryValue)
     this.#cpu.setRegister(CPU_REGISTERS.SP, currentSP + 1)

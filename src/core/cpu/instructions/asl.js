@@ -20,10 +20,10 @@ export class Asl {
 
   execute (opcode, operand) {
     const addressingMode = this.addressingModes[opcode]
-    const operandValue = this.#cpu.loadByAddressingMode(addressingMode, operand)
+    const operandValue = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
     const result = (operandValue << 1) & 0xff
 
-    this.#cpu.storeByAddressingMode(addressingMode, result, operand)
+    this.#cpu.memory.storeByAddressingMode(addressingMode, result, operand)
     this.updateStatus(result, operandValue)
     this.#cpu.nextPC(addressingMode)
   }

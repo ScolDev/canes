@@ -18,10 +18,10 @@ export class Inc {
 
   execute (opcode, operand) {
     const addressingMode = this.addressingModes[opcode]
-    const memoryValue = this.#cpu.loadByAddressingMode(addressingMode, operand)
+    const memoryValue = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
     const resultValue = (memoryValue + 1) & 0xff
 
-    this.#cpu.storeByAddressingMode(addressingMode, resultValue, operand)
+    this.#cpu.memory.storeByAddressingMode(addressingMode, resultValue, operand)
     this.updateStatus(resultValue)
     this.#cpu.nextPC(addressingMode)
   }

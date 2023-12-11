@@ -23,7 +23,7 @@ export class Lda {
 
   execute (opcode, operand) {
     const addressingMode = this.addressingModes[opcode]
-    const memoryValue = this.#cpu.loadByAddressingMode(addressingMode, operand)
+    const memoryValue = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
 
     this.#cpu.setRegister(CPU_REGISTERS.A, memoryValue)
     this.updateStatus(this.#cpu.getRegister(CPU_REGISTERS.A))

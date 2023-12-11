@@ -23,7 +23,7 @@ export class And {
 
   execute (opcode, operand) {
     const addressingMode = this.addressingModes[opcode]
-    this.#cpu.setRegister(CPU_REGISTERS.A, this.#cpu.getRegister(CPU_REGISTERS.A) & this.#cpu.loadByAddressingMode(addressingMode, operand))
+    this.#cpu.setRegister(CPU_REGISTERS.A, this.#cpu.getRegister(CPU_REGISTERS.A) & this.#cpu.memory.loadByAddressingMode(addressingMode, operand))
 
     this.updateStatus(this.#cpu.getRegister(CPU_REGISTERS.A))
     this.#cpu.nextPC(addressingMode)

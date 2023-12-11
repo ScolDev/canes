@@ -18,7 +18,7 @@ export class Stx {
     const addressingMode = this.addressingModes[opcode]
     const xRegister = this.#cpu.getRegister(CPU_REGISTERS.X)
 
-    this.#cpu.storeByAddressingMode(addressingMode, xRegister, operand)
+    this.#cpu.memory.storeByAddressingMode(addressingMode, xRegister, operand)
     this.#cpu.nextPC(addressingMode)
   }
 

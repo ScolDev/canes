@@ -15,7 +15,7 @@ export class Rts {
   execute () {
     const newStackPointer = this.#cpu.getRegister(CPU_REGISTERS.SP) + 2
     const stackMemoryAddress = this.#cpu.getRegister(CPU_REGISTERS.SP) + 0x100
-    const loadedPC = this.#cpu.loadWord(stackMemoryAddress + 1)
+    const loadedPC = this.#cpu.memory.loadWord(stackMemoryAddress + 1)
     const newPC = loadedPC + 1
 
     this.#cpu.setRegister(CPU_REGISTERS.SP, newStackPointer)

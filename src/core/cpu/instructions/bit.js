@@ -18,7 +18,7 @@ export class Bit {
 
   execute (opcode, operand) {
     const addressingMode = this.addressingModes[opcode]
-    const memoryValue = this.#cpu.loadByAddressingMode(addressingMode, operand)
+    const memoryValue = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
     const result = this.#cpu.getRegister(CPU_REGISTERS.A) & memoryValue
 
     this.updateStatus(result, memoryValue)

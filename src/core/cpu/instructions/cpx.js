@@ -20,7 +20,7 @@ export class Cpx {
   execute (opcode, operand) {
     const addressingMode = this.addressingModes[opcode]
     const registerValue = this.#cpu.getRegister(CPU_REGISTERS.X)
-    const memoryValue = this.#cpu.loadByAddressingMode(addressingMode, operand)
+    const memoryValue = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
 
     const result = 0x100 + registerValue - memoryValue
 
