@@ -3,24 +3,22 @@ import { CPU_FLAGS } from '../consts/flags'
 
 export class Beq {
   #cpu = null
-  #cpuALU = null
-
   addressingModes = {
     0xf0: CPU_ADDRESSING_MODES.Relative
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
   }
 
   execute (opcode, operand) {
+    const { cpuALU } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
-    const zeroFlag = this.#cpuALU.getFlag(CPU_FLAGS.ZeroFlag)
+    const zeroFlag = cpuALU.getFlag(CPU_FLAGS.ZeroFlag)
     let displacement = 0x00
 
     if (zeroFlag) {
-      displacement = this.#cpuALU.getSignedByte(operand)
+      displacement = cpuALU.getSignedByte(operand)
     }
 
     this.#cpu.nextPC(addressingMode, displacement)

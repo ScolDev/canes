@@ -3,7 +3,6 @@ import { CPU_REGISTERS } from '../consts/registers'
 
 export class Plp {
   #cpu = null
-
   addressingModes = {
     0x28: CPU_ADDRESSING_MODES.Implied
   }
@@ -13,10 +12,11 @@ export class Plp {
   }
 
   execute (opcode) {
+    const { memory } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
     const currentSP = this.#cpu.getRegister(CPU_REGISTERS.SP)
     const stackMemoryAddress = 0x100 + currentSP
-    const memoryValue = this.#cpu.memory.load(stackMemoryAddress)
+    const memoryValue = memory.load(stackMemoryAddress)
 
     this.#cpu.setRegister(CPU_REGISTERS.P, memoryValue)
     this.#cpu.setRegister(CPU_REGISTERS.SP, currentSP + 1)

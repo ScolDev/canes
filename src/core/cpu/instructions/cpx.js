@@ -4,23 +4,21 @@ import { CPU_REGISTERS } from '../consts/registers'
 
 export class Cpx {
   #cpu = null
-  #cpuALU = null
-
   addressingModes = {
     0xe0: CPU_ADDRESSING_MODES.Immediate,
     0xe4: CPU_ADDRESSING_MODES.ZeroPage,
     0xec: CPU_ADDRESSING_MODES.Absolute
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
   }
 
   execute (opcode, operand) {
+    const { memory } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
     const registerValue = this.#cpu.getRegister(CPU_REGISTERS.X)
-    const memoryValue = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
+    const memoryValue = memory.loadByAddressingMode(addressingMode, operand)
 
     const result = 0x100 + registerValue - memoryValue
 
@@ -29,11 +27,12 @@ export class Cpx {
   }
 
   updateStatus (result, operandA, operandB) {
+    const { cpuALU } = this.#cpu.getComponents()
     const carryFlag = operandA >= operandB ? 1 : 0
 
-    this.#cpuALU.setFlag(CPU_FLAGS.CarryFlag, carryFlag)
-    this.#cpuALU.updateZeroFlag(result)
-    this.#cpuALU.updateNegativeFlag(result)
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, carryFlag)
+    cpuALU.updateZeroFlag(result)
+    cpuALU.updateNegativeFlag(result)
   }
 
   getASM (instruction) {

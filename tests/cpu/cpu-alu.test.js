@@ -1,6 +1,5 @@
 import { CPU_REGISTERS } from '../../src/core/cpu/consts/registers'
 import { CPU_FLAGS } from '../../src/core/cpu/consts/flags'
-import { ALU } from '../../src/core/cpu/alu'
 import { CPU } from '../../src/core/cpu/cpu'
 
 describe('Tests for ALU module.', () => {
@@ -8,8 +7,8 @@ describe('Tests for ALU module.', () => {
   let cpuALU
 
   beforeEach(() => {
-    cpu = new CPU()
-    cpuALU = new ALU(cpu)
+    cpu = CPU.create()
+    cpuALU = cpu.getComponents().cpuALU
   })
 
   test('should get signed byte numbers.', () => {

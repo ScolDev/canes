@@ -3,21 +3,19 @@ import { CPU_FLAGS } from '../consts/flags'
 
 export class Sed {
   #cpu = null
-  #cpuALU = null
-
   addressingModes = {
     0xf8: CPU_ADDRESSING_MODES.Implied
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
   }
 
   execute (opcode) {
+    const { cpuALU } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
 
-    this.#cpuALU.setFlag(CPU_FLAGS.DecimalModeFlag)
+    cpuALU.setFlag(CPU_FLAGS.DecimalModeFlag)
     this.#cpu.nextPC(addressingMode)
   }
 

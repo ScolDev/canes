@@ -3,21 +3,19 @@ import { CPU_FLAGS } from '../consts/flags'
 
 export class Sei {
   #cpu = null
-  #cpuALU = null
-
   addressingModes = {
     0x78: CPU_ADDRESSING_MODES.Implied
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
   }
 
   execute (opcode) {
+    const { cpuALU } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
 
-    this.#cpuALU.setFlag(CPU_FLAGS.InterruptDisable)
+    cpuALU.setFlag(CPU_FLAGS.InterruptDisable)
     this.#cpu.nextPC(addressingMode)
   }
 

@@ -56,8 +56,9 @@ export class Debugger {
   }
 
   #validateAtResetVector () {
+    const { memory } = this.#cpu.getComponents()
     const currentPC = this.#cpu.getPC()
-    const resetVector = this.#cpu.memory.loadWord(CPU_MEMORY_MAP.Reset_Vector)
+    const resetVector = memory.loadWord(CPU_MEMORY_MAP.Reset_Vector)
     if (this.#state.conditions.atResetVector && currentPC === resetVector) {
       this.#pause()
     }

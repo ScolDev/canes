@@ -3,24 +3,22 @@ import { CPU_FLAGS } from '../consts/flags'
 
 export class Bvc {
   #cpu = null
-  #cpuALU = null
-
   addressingModes = {
     0x50: CPU_ADDRESSING_MODES.Relative
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
   }
 
   execute (opcode, operand) {
+    const { cpuALU } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
-    const overflowFlag = this.#cpuALU.getFlag(CPU_FLAGS.OverflowFlag)
+    const overflowFlag = cpuALU.getFlag(CPU_FLAGS.OverflowFlag)
     let displacement = 0x00
 
     if (!overflowFlag) {
-      displacement = this.#cpuALU.getSignedByte(operand)
+      displacement = cpuALU.getSignedByte(operand)
     }
 
     this.#cpu.nextPC(addressingMode, displacement)

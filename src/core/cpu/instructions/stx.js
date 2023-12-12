@@ -3,7 +3,6 @@ import { CPU_REGISTERS } from '../consts/registers'
 
 export class Stx {
   #cpu = null
-
   addressingModes = {
     0x86: CPU_ADDRESSING_MODES.ZeroPage,
     0x96: CPU_ADDRESSING_MODES.ZeroPageY,
@@ -15,10 +14,11 @@ export class Stx {
   }
 
   execute (opcode, operand) {
+    const { memory } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
     const xRegister = this.#cpu.getRegister(CPU_REGISTERS.X)
 
-    this.#cpu.memory.storeByAddressingMode(addressingMode, xRegister, operand)
+    memory.storeByAddressingMode(addressingMode, xRegister, operand)
     this.#cpu.nextPC(addressingMode)
   }
 

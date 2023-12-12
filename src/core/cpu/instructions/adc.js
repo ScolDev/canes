@@ -4,8 +4,6 @@ import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-mod
 
 export class Adc {
   #cpu = null
-  #cpuALU = null
-
   addressingModes = {
     0x69: CPU_ADDRESSING_MODES.Immediate,
     0x65: CPU_ADDRESSING_MODES.ZeroPage,
@@ -17,15 +15,15 @@ export class Adc {
     0x71: CPU_ADDRESSING_MODES.IndirectIndexed
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
   }
 
   execute (opcode, operand) {
+    const { cpuALU, memory } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
-    const carryFlag = this.#cpuALU.getFlag(CPU_FLAGS.CarryFlag)
-    const operandA = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
+    const carryFlag = cpuALU.getFlag(CPU_FLAGS.CarryFlag)
+    const operandA = memory.loadByAddressingMode(addressingMode, operand)
     const operandB = this.#cpu.getRegister(CPU_REGISTERS.A)
 
     const result = this.#cpu.getRegister(CPU_REGISTERS.A) + operandA + carryFlag
@@ -36,12 +34,13 @@ export class Adc {
   }
 
   updateStatus (result, operandA, operandB) {
+    const { cpuALU } = this.#cpu.getComponents()
     const carryFlag = result > 0xff ? 1 : 0
 
-    this.#cpuALU.setFlag(CPU_FLAGS.CarryFlag, carryFlag)
-    this.#cpuALU.updateZeroFlag(result)
-    this.#cpuALU.updateNegativeFlag(result)
-    this.#cpuALU.updateOverflowFlag(result, operandA, operandB)
+    cpuALU.setFlag(CPU_FLAGS.CarryFlag, carryFlag)
+    cpuALU.updateZeroFlag(result)
+    cpuALU.updateNegativeFlag(result)
+    cpuALU.updateOverflowFlag(result, operandA, operandB)
   }
 
   getASM (instruction) {

@@ -3,15 +3,12 @@ import { CPU_REGISTERS } from '../consts/registers'
 
 export class Inx {
   #cpu = null
-  #cpuALU = null
-
   addressingModes = {
     0xe8: CPU_ADDRESSING_MODES.Implied
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
   }
 
   execute (opcode) {
@@ -25,8 +22,9 @@ export class Inx {
   }
 
   updateStatus (result) {
-    this.#cpuALU.updateZeroFlag(result)
-    this.#cpuALU.updateNegativeFlag(result)
+    const { cpuALU } = this.#cpu.getComponents()
+    cpuALU.updateZeroFlag(result)
+    cpuALU.updateNegativeFlag(result)
   }
 
   getASM (instruction) {

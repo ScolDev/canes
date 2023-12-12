@@ -67,4 +67,8 @@ export class ALU {
   updateNegativeFlag (result) {
     this.setFlag(CPU_FLAGS.NegativeFlag, this.getBitValue(0x07, result))
   }
+
+  static create (cpu) {
+    return new ALU(cpu)
+  }
 }

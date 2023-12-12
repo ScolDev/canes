@@ -9,11 +9,14 @@ export class Memory {
   #MEM = null
   #addressingModes = null
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
+    this.#cpuALU = cpu.getComponents().cpuALU
     this.#MEM = new Uint8Array(CPU_MEMORY_MAP.Size)
-    this.#addressingModes = new AddressingModes(this.#cpu, this.#cpuALU)
+  }
+
+  initComponents () {
+    this.#addressingModes = AddressingModes.create(this.#cpu)
   }
 
   copy (buffer, offset) {
@@ -119,5 +122,9 @@ export class Memory {
     const mirroredAddress = start + relativeAddress
 
     this.#storeByte(mirroredAddress, value)
+  }
+
+  static create (cpu) {
+    return new Memory(cpu)
   }
 }

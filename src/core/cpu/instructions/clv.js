@@ -3,21 +3,19 @@ import { CPU_FLAGS } from '../consts/flags'
 
 export class Clv {
   #cpu = null
-  #cpuALU = null
-
   addressingModes = {
     0xb8: CPU_ADDRESSING_MODES.Implied
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
   }
 
   execute (opcode) {
+    const { cpuALU } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
 
-    this.#cpuALU.clearFlag(CPU_FLAGS.OverflowFlag)
+    cpuALU.clearFlag(CPU_FLAGS.OverflowFlag)
     this.#cpu.nextPC(addressingMode)
   }
 

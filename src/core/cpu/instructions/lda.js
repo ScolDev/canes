@@ -3,8 +3,6 @@ import { CPU_REGISTERS } from '../consts/registers'
 
 export class Lda {
   #cpu = null
-  #cpuALU = null
-
   addressingModes = {
     0xa9: CPU_ADDRESSING_MODES.Immediate,
     0xa5: CPU_ADDRESSING_MODES.ZeroPage,
@@ -16,14 +14,14 @@ export class Lda {
     0xb1: CPU_ADDRESSING_MODES.IndirectIndexed
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
   }
 
   execute (opcode, operand) {
+    const { memory } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
-    const memoryValue = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
+    const memoryValue = memory.loadByAddressingMode(addressingMode, operand)
 
     this.#cpu.setRegister(CPU_REGISTERS.A, memoryValue)
     this.updateStatus(this.#cpu.getRegister(CPU_REGISTERS.A))
@@ -31,8 +29,9 @@ export class Lda {
   }
 
   updateStatus (result) {
-    this.#cpuALU.updateZeroFlag(result)
-    this.#cpuALU.updateNegativeFlag(result)
+    const { cpuALU } = this.#cpu.getComponents()
+    cpuALU.updateZeroFlag(result)
+    cpuALU.updateNegativeFlag(result)
   }
 
   getASM (instruction) {

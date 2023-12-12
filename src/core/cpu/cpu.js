@@ -10,14 +10,42 @@ import { FileLoader } from '../../shared/utils/file-loader'
 import { Memory } from '../memory/memory'
 
 export class CPU {
+  static instance = null
+
   #rom = null
   #cpuALU = null
+  #memory = null
   #nesDebugger = null
   #instructions = null
   #addressingModes = null
 
-  constructor () {
-    this.#initComponents()
+  initComponents () {
+    this.#cpuALU = ALU.create(this)
+    this.#instructions = Instructions.create(this)
+    this.#memory = Memory.create(this)
+    this.#memory.initComponents()
+
+    this.cpuController = {
+      paused: false,
+      debugMode: false,
+      insExecuted: 0,
+      lastWrite: { address: -1, value: -1 }
+    }
+    this.REG = {
+      PC: 0x0000,
+      SP: 0x1ff,
+      A: 0x00,
+      X: 0x00,
+      Y: 0x00,
+      P: 0x00
+    }
+  }
+
+  getComponents () {
+    return {
+      cpuALU: this.#cpuALU,
+      memory: this.#memory
+    }
   }
 
   debug (_debugger) {
@@ -88,8 +116,8 @@ export class CPU {
     this.setRegister(CPU_REGISTERS.Y, 0x00)
     this.setRegister(CPU_REGISTERS.SP, 0xfd)
 
-    this.memory.store(CPU_MEMORY_MAP.SND_CHN, 0x00)
-    this.memory.store(CPU_MEMORY_MAP.JOY2, 0x00)
+    this.#memory.store(CPU_MEMORY_MAP.SND_CHN, 0x00)
+    this.#memory.store(CPU_MEMORY_MAP.JOY2, 0x00)
 
     this.#loadResetVector()
     this.#run()
@@ -99,7 +127,7 @@ export class CPU {
     const previousSP = this.getRegister(CPU_REGISTERS.SP)
     this.setRegister(CPU_REGISTERS.SP, previousSP - 0x03)
 
-    this.memory.store(CPU_MEMORY_MAP.SND_CHN, 0x00)
+    this.#memory.store(CPU_MEMORY_MAP.SND_CHN, 0x00)
     this.#cpuALU.setFlag(CPU_FLAGS.InterruptDisable)
 
     this.#loadResetVector()
@@ -132,14 +160,14 @@ export class CPU {
 
   #fetchInstruction () {
     const pc = this.getPC()
-    const opcode = this.memory.load(pc)
+    const opcode = this.#memory.load(pc)
     const instruction = [opcode]
     const instructionSize = this.#instructions.getInstructionSize(opcode)
 
     if (instructionSize === 0x02) {
-      instruction.push(this.memory.load(pc + 1))
+      instruction.push(this.#memory.load(pc + 1))
     } else if (instructionSize === 0x03) {
-      instruction.push(this.memory.loadWord(pc + 1))
+      instruction.push(this.#memory.loadWord(pc + 1))
     }
 
     return instruction
@@ -147,11 +175,11 @@ export class CPU {
 
   #loadPRG () {
     const { buffer } = this.#rom.getPRG()
-    this.memory.copy(buffer, CPU_MEMORY_MAP.PRG_ROM)
+    this.#memory.copy(buffer, CPU_MEMORY_MAP.PRG_ROM)
   }
 
   #loadResetVector () {
-    const resetVector = this.memory.loadWord(CPU_MEMORY_MAP.Reset_Vector)
+    const resetVector = this.#memory.loadWord(CPU_MEMORY_MAP.Reset_Vector)
     this.setRegister(CPU_REGISTERS.PC, resetVector)
   }
 
@@ -163,24 +191,10 @@ export class CPU {
     this.cpuController.insExecuted++
   }
 
-  #initComponents () {
-    this.#cpuALU = new ALU(this)
-    this.memory = new Memory(this, this.#cpuALU)
-    this.#instructions = new Instructions(this, this.#cpuALU)
+  static create () {
+    const cpu = new CPU()
+    cpu.initComponents()
 
-    this.cpuController = {
-      paused: false,
-      debugMode: false,
-      insExecuted: 0,
-      lastWrite: { address: -1, value: -1 }
-    }
-    this.REG = {
-      PC: 0x0000,
-      SP: 0x1ff,
-      A: 0x00,
-      X: 0x00,
-      Y: 0x00,
-      P: 0x00
-    }
+    return cpu
   }
 }

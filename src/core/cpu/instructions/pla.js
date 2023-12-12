@@ -3,22 +3,20 @@ import { CPU_REGISTERS } from '../consts/registers'
 
 export class Pla {
   #cpu = null
-  #cpuALU = null
-
   addressingModes = {
     0x68: CPU_ADDRESSING_MODES.Implied
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
   }
 
   execute (opcode) {
+    const { memory } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
     const currentSP = this.#cpu.getRegister(CPU_REGISTERS.SP)
     const stackMemoryAddress = 0x100 + currentSP
-    const memoryValue = this.#cpu.memory.load(stackMemoryAddress)
+    const memoryValue = memory.load(stackMemoryAddress)
 
     this.#cpu.setRegister(CPU_REGISTERS.A, memoryValue)
     this.#cpu.setRegister(CPU_REGISTERS.SP, currentSP + 1)
@@ -28,8 +26,9 @@ export class Pla {
   }
 
   updateStatus (result) {
-    this.#cpuALU.updateZeroFlag(result)
-    this.#cpuALU.updateNegativeFlag(result)
+    const { cpuALU } = this.#cpu.getComponents()
+    cpuALU.updateZeroFlag(result)
+    cpuALU.updateNegativeFlag(result)
   }
 
   getASM (instruction) {

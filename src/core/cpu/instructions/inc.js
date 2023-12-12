@@ -2,8 +2,6 @@ import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-mod
 
 export class Inc {
   #cpu = null
-  #cpuALU = null
-
   addressingModes = {
     0xe6: CPU_ADDRESSING_MODES.ZeroPage,
     0xf6: CPU_ADDRESSING_MODES.ZeroPageX,
@@ -11,24 +9,25 @@ export class Inc {
     0xfe: CPU_ADDRESSING_MODES.AbsoluteX
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
   }
 
   execute (opcode, operand) {
+    const { memory } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
-    const memoryValue = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
+    const memoryValue = memory.loadByAddressingMode(addressingMode, operand)
     const resultValue = (memoryValue + 1) & 0xff
 
-    this.#cpu.memory.storeByAddressingMode(addressingMode, resultValue, operand)
+    memory.storeByAddressingMode(addressingMode, resultValue, operand)
     this.updateStatus(resultValue)
     this.#cpu.nextPC(addressingMode)
   }
 
   updateStatus (result) {
-    this.#cpuALU.updateZeroFlag(result)
-    this.#cpuALU.updateNegativeFlag(result)
+    const { cpuALU } = this.#cpu.getComponents()
+    cpuALU.updateZeroFlag(result)
+    cpuALU.updateNegativeFlag(result)
   }
 
   getASM (instruction) {

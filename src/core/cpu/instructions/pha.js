@@ -3,7 +3,6 @@ import { CPU_REGISTERS } from '../consts/registers'
 
 export class Pha {
   #cpu = null
-
   addressingModes = {
     0x48: CPU_ADDRESSING_MODES.Implied
   }
@@ -13,13 +12,14 @@ export class Pha {
   }
 
   execute (opcode) {
+    const { memory } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
     const accumulator = this.#cpu.getRegister(CPU_REGISTERS.A)
     const currentSP = this.#cpu.getRegister(CPU_REGISTERS.SP)
 
     const stackMemoryAddress = 0x100 + currentSP
 
-    this.#cpu.memory.store(stackMemoryAddress, accumulator)
+    memory.store(stackMemoryAddress, accumulator)
     this.#cpu.setRegister(CPU_REGISTERS.SP, currentSP - 1)
     this.#cpu.nextPC(addressingMode)
   }

@@ -3,7 +3,6 @@ import { CPU_REGISTERS } from '../consts/registers'
 
 export class Php {
   #cpu = null
-
   addressingModes = {
     0x08: CPU_ADDRESSING_MODES.Implied
   }
@@ -13,13 +12,14 @@ export class Php {
   }
 
   execute (opcode) {
+    const { memory } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
     const processorStatus = this.#cpu.getRegister(CPU_REGISTERS.P)
     const currentSP = this.#cpu.getRegister(CPU_REGISTERS.SP)
 
     const stackMemoryAddress = 0x100 + currentSP
 
-    this.#cpu.memory.store(stackMemoryAddress, processorStatus)
+    memory.store(stackMemoryAddress, processorStatus)
     this.#cpu.setRegister(CPU_REGISTERS.SP, currentSP - 1)
     this.#cpu.nextPC(addressingMode)
   }

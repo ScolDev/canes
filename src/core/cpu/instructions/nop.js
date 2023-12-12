@@ -2,7 +2,6 @@ import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-mod
 
 export class Nop {
   #cpu = null
-
   addressingModes = {
     0xea: CPU_ADDRESSING_MODES.Implied
   }

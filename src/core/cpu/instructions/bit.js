@@ -4,21 +4,19 @@ import { CPU_REGISTERS } from '../consts/registers'
 
 export class Bit {
   #cpu = null
-  #cpuALU = null
-
   addressingModes = {
     0x24: CPU_ADDRESSING_MODES.ZeroPage,
     0x2c: CPU_ADDRESSING_MODES.Absolute
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
   }
 
   execute (opcode, operand) {
+    const { memory } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
-    const memoryValue = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
+    const memoryValue = memory.loadByAddressingMode(addressingMode, operand)
     const result = this.#cpu.getRegister(CPU_REGISTERS.A) & memoryValue
 
     this.updateStatus(result, memoryValue)
@@ -26,11 +24,12 @@ export class Bit {
   }
 
   updateStatus (result, operand) {
-    const overflowFlag = this.#cpuALU.getBitValue(6, operand)
+    const { cpuALU } = this.#cpu.getComponents()
+    const overflowFlag = cpuALU.getBitValue(6, operand)
 
-    this.#cpuALU.updateZeroFlag(result)
-    this.#cpuALU.setFlag(CPU_FLAGS.OverflowFlag, overflowFlag)
-    this.#cpuALU.updateNegativeFlag(operand)
+    cpuALU.updateZeroFlag(result)
+    cpuALU.setFlag(CPU_FLAGS.OverflowFlag, overflowFlag)
+    cpuALU.updateNegativeFlag(operand)
   }
 
   getASM (instruction) {

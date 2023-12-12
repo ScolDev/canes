@@ -3,7 +3,6 @@ import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-mod
 
 export class Rts {
   #cpu = null
-
   addressingModes = {
     0x60: CPU_ADDRESSING_MODES.Implied
   }
@@ -13,9 +12,10 @@ export class Rts {
   }
 
   execute () {
+    const { memory } = this.#cpu.getComponents()
     const newStackPointer = this.#cpu.getRegister(CPU_REGISTERS.SP) + 2
     const stackMemoryAddress = this.#cpu.getRegister(CPU_REGISTERS.SP) + 0x100
-    const loadedPC = this.#cpu.memory.loadWord(stackMemoryAddress + 1)
+    const loadedPC = memory.loadWord(stackMemoryAddress + 1)
     const newPC = loadedPC + 1
 
     this.#cpu.setRegister(CPU_REGISTERS.SP, newStackPointer)

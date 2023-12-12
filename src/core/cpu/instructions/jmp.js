@@ -2,7 +2,6 @@ import { getASMByAddrMode, CPU_ADDRESSING_MODES } from '../consts/addressing-mod
 
 export class Jmp {
   #cpu = null
-
   addressingModes = {
     0x4c: CPU_ADDRESSING_MODES.Absolute,
     0x6c: CPU_ADDRESSING_MODES.Indirect
@@ -13,8 +12,9 @@ export class Jmp {
   }
 
   execute (opcode, operand) {
+    const { memory } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
-    const addressValue = this.#cpu.memory.loadAddressByAddressingMode(addressingMode, operand)
+    const addressValue = memory.loadAddressByAddressingMode(addressingMode, operand)
 
     this.#cpu.setPC(addressValue)
   }

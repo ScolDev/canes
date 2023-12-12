@@ -3,24 +3,22 @@ import { CPU_FLAGS } from '../consts/flags'
 
 export class Bpl {
   #cpu = null
-  #cpuALU = null
-
   addressingModes = {
     0x10: CPU_ADDRESSING_MODES.Relative
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
   }
 
   execute (opcode, operand) {
+    const { cpuALU } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
-    const negativeFlag = this.#cpuALU.getFlag(CPU_FLAGS.NegativeFlag)
+    const negativeFlag = cpuALU.getFlag(CPU_FLAGS.NegativeFlag)
     let displacement = 0x00
 
     if (!negativeFlag) {
-      displacement = this.#cpuALU.getSignedByte(operand)
+      displacement = cpuALU.getSignedByte(operand)
     }
 
     this.#cpu.nextPC(addressingMode, displacement)

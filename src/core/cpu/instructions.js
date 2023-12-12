@@ -3,7 +3,6 @@ import InstructionsTable from './instructions/instructions-table'
 
 export class Instructions {
   #cpu = null
-  #cpuALU = null
   #instructionsTable = null
   #context = {
     lastExecuted: {
@@ -12,10 +11,9 @@ export class Instructions {
     }
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
-    this.#instructionsTable = InstructionsTable(this.#cpu, this.#cpuALU)
+    this.#instructionsTable = InstructionsTable(cpu)
   }
 
   execute = (instruction) => {
@@ -42,5 +40,9 @@ export class Instructions {
       opcode,
       asm: decodedInstruction.getASM(instruction)
     }
+  }
+
+  static create (cpu) {
+    return new Instructions(cpu)
   }
 }

@@ -3,8 +3,6 @@ import { CPU_REGISTERS } from '../consts/registers'
 
 export class Eor {
   #cpu = null
-  #cpuALU = null
-
   addressingModes = {
     0x49: CPU_ADDRESSING_MODES.Immediate,
     0x45: CPU_ADDRESSING_MODES.ZeroPage,
@@ -16,16 +14,16 @@ export class Eor {
     0x51: CPU_ADDRESSING_MODES.IndirectIndexed
   }
 
-  constructor (cpu, cpuALU) {
+  constructor (cpu) {
     this.#cpu = cpu
-    this.#cpuALU = cpuALU
   }
 
   execute (opcode, operand) {
+    const { memory } = this.#cpu.getComponents()
     const addressingMode = this.addressingModes[opcode]
 
     const acumulatorValue = this.#cpu.getRegister(CPU_REGISTERS.A)
-    const memoryValue = this.#cpu.memory.loadByAddressingMode(addressingMode, operand)
+    const memoryValue = memory.loadByAddressingMode(addressingMode, operand)
     const resultValue = (acumulatorValue ^ memoryValue) & 0xff
 
     this.#cpu.setRegister(CPU_REGISTERS.A, resultValue)
@@ -34,8 +32,9 @@ export class Eor {
   }
 
   updateStatus (result) {
-    this.#cpuALU.updateZeroFlag(result)
-    this.#cpuALU.updateNegativeFlag(result)
+    const { cpuALU } = this.#cpu.getComponents()
+    cpuALU.updateZeroFlag(result)
+    cpuALU.updateNegativeFlag(result)
   }
 
   getASM (instruction) {

@@ -4,19 +4,21 @@ import { CPU_MEMORY_MAP } from '../../src/core/memory/consts/memory-map'
 
 describe('Tests for ROMs executions.', () => {
   let cpu
+  let memory
   let nesDebugger
 
   function storePRG (prg) {
-    cpu.memory.storeWord(CPU_MEMORY_MAP.Reset_Vector, 0x8000)
+    memory.storeWord(CPU_MEMORY_MAP.Reset_Vector, 0x8000)
     for (let address = 0x8000, index = 0; index < prg.length; address++, index++) {
-      cpu.memory.store(address, prg[index])
+      memory.store(address, prg[index])
     }
   }
 
   beforeEach(() => {
-    cpu = new CPU()
-    nesDebugger = new Debugger()
+    cpu = CPU.create()
+    memory = cpu.getComponents().memory
 
+    nesDebugger = new Debugger()
     nesDebugger.attach(cpu)
   })
 
@@ -115,7 +117,7 @@ describe('Tests for ROMs executions.', () => {
     cpu.loadROM({ filePath })
 
     nesDebugger.on('pause', ({ cpuController, pc }) => {
-      const memoryValue = cpu.memory.load(testStatusAddress)
+      const memoryValue = memory.load(testStatusAddress)
 
       expect(cpuController.paused).toBe(true)
       expect(memoryValue).toBe(0x80)
@@ -139,7 +141,7 @@ describe('Tests for ROMs executions.', () => {
     cpu.loadROM({ filePath })
 
     nesDebugger.on('pause', ({ cpuController, pc }) => {
-      const memoryValue = cpu.memory.load(testStatusAddress)
+      const memoryValue = memory.load(testStatusAddress)
 
       expect(cpuController.paused).toBe(true)
       expect(memoryValue).toBe(0xde)
