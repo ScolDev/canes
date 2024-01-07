@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 import { readFile } from 'fs/promises'
-import { type ROMLoader } from '../../core/rom/types'
+import { type ROMLoader } from '../../nes/components/rom/types'
 
 export const FileLoader = (filePath: string): ROMLoader => {
   const getBytes = async (): Promise<Uint8Array> => {

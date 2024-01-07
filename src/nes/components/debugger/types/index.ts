@@ -1,9 +1,9 @@
+import { type CPUState } from '../../../core/cpu/types'
 import { type ReverseMap } from '../../../shared/types'
-import { type NESCpuModule, type CPUState } from '../../cpu/types'
 import { type DebugEvents } from '../consts/events'
 
 export interface DebugState {
-  cpuState: CPUState | null
+  cpuState: CPUState
   conditions: DebugBreakConditions
 }
 

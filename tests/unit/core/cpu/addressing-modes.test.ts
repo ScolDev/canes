@@ -1,9 +1,9 @@
-import { CPUAddressingModes } from '../../src/core/cpu/consts/addressing-modes'
-import { CPURegisters } from '../../src/core/cpu/consts/registers'
-import { CPU } from '../../src/core/cpu/cpu'
-import { type NESCpuModule } from '../../src/core/cpu/types'
-import { CPUMemoryMap } from '../../src/core/memory/consts/memory-map'
-import { type NESMemory } from '../../src/core/memory/types'
+import { CPUAddressingModes } from '../../../../src/core/cpu/consts/addressing-modes'
+import { CPURegisters } from '../../../../src/core/cpu/consts/registers'
+import { CPU } from '../../../../src/core/cpu/cpu'
+import { type NESCpuModule } from '../../../../src/core/cpu/types'
+import { CPUMemoryMap } from '../../../../src/core/memory/consts/memory-map'
+import { type NESMemory } from '../../../../src/core/memory/types'
 
 describe('Test for CPU Addressing Modes', () => {
   let cpu: NESCpuModule

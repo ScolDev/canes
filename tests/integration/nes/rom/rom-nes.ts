@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
-import { CPU } from '../../src/core/cpu/cpu'
-import { type NESCpuModule } from '../../src/core/cpu/types'
-import { Debugger } from '../../src/core/debugger/debugger'
-import { type NESDebugger } from '../../src/core/debugger/types'
-import { CPUMemoryMap } from '../../src/core/memory/consts/memory-map'
-import { type NESMemory } from '../../src/core/memory/types'
-import { DebugEvents } from '../../src/core/debugger/consts/events'
+import { CPU } from '../../../../src/core/cpu/cpu'
+import { type NESCpuModule } from '../../../../src/core/cpu/types'
+import { CPUMemoryMap } from '../../../../src/core/memory/consts/memory-map'
+import { type NESMemory } from '../../../../src/core/memory/types'
+import { DebugEvents } from '../../../../src/nes/components/debugger/consts/events'
+import { Debugger } from '../../../../src/nes/components/debugger/debugger'
+import { NESDebugger } from '../../../../src/nes/components/debugger/types'
 
 describe('Tests for ROMs executions.', () => {
   let cpu: NESCpuModule
@@ -101,7 +101,7 @@ describe('Tests for ROMs executions.', () => {
   })
 
   test('should stop execution before the first instruction is executed', (done) => {
-    const filePath = './tests/__roms__/instr_test-v5/rom_singles/01-basics.nes'
+    const filePath = './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
     const romResetVector = 0xe683
 
     nesDebugger.breakOn({ atResetVector: true })
@@ -119,7 +119,7 @@ describe('Tests for ROMs executions.', () => {
   })
 
   test('should stop execution when ROM test status was running (0x80)', (done) => {
-    const filePath = './tests/__roms__/instr_test-v5/rom_singles/01-basics.nes'
+    const filePath = './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
     const testStatusAddress = 0x6000
 
     nesDebugger.addMemoryBreakpoint({
@@ -144,7 +144,7 @@ describe('Tests for ROMs executions.', () => {
   })
 
   test('should stop execution when ROM test $6001 memory value is between (0x80-0xff) status', (done) => {
-    const filePath = './tests/__roms__/instr_test-v5/rom_singles/01-basics.nes'
+    const filePath = './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
     const testStatusAddress = 0x6001
 
     nesDebugger.addMemoryBreakpoint({

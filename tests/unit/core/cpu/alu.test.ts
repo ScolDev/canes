@@ -1,7 +1,7 @@
-import { CPURegisters } from '../../src/core/cpu/consts/registers'
-import { CPUFlags } from '../../src/core/cpu/consts/flags'
-import { CPU } from '../../src/core/cpu/cpu'
-import { type NESAlu, type NESCpuModule } from '../../src/core/cpu/types'
+import { CPURegisters } from '../../../../src/core/cpu/consts/registers'
+import { CPUFlags } from '../../../../src/core/cpu/consts/flags'
+import { CPU } from '../../../../src/core/cpu/cpu'
+import { type NESAlu, type NESCpuModule } from '../../../../src/core/cpu/types'
 
 describe('Tests for ALU module.', () => {
   let cpu: NESCpuModule

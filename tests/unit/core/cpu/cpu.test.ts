@@ -1,9 +1,9 @@
-import { CPUFlags } from '../../src/core/cpu/consts/flags'
-import { CPURegisters } from '../../src/core/cpu/consts/registers'
-import { CPU } from '../../src/core/cpu/cpu'
-import { type NESAlu, type NESCpuModule } from '../../src/core/cpu/types'
-import { CPUMemoryMap } from '../../src/core/memory/consts/memory-map'
-import { type NESMemory } from '../../src/core/memory/types'
+import { CPUFlags } from '../../../../src/core/cpu/consts/flags'
+import { CPURegisters } from '../../../../src/core/cpu/consts/registers'
+import { CPU } from '../../../../src/core/cpu/cpu'
+import { type NESAlu, type NESCpuModule } from '../../../../src/core/cpu/types'
+import { CPUMemoryMap } from '../../../../src/core/memory/consts/memory-map'
+import { type NESMemory } from '../../../../src/core/memory/types'
 
 describe('Tests for CPU module.', () => {
   let cpuALU: NESAlu

@@ -1,14 +1,14 @@
-import { CPUAddressingModes } from '../../src/core/cpu/consts/addressing-modes'
-import { CPUFlags } from '../../src/core/cpu/consts/flags'
-import { CPURegisters } from '../../src/core/cpu/consts/registers'
-import { CPU } from '../../src/core/cpu/cpu'
+import { CPUAddressingModes } from '../../../../src/core/cpu/consts/addressing-modes'
+import { CPUFlags } from '../../../../src/core/cpu/consts/flags'
+import { CPURegisters } from '../../../../src/core/cpu/consts/registers'
+import { CPU } from '../../../../src/core/cpu/cpu'
 import {
   type CPUInstruction,
   type NESAlu,
   type NESCpuModule
-} from '../../src/core/cpu/types'
-import { CPUMemoryMap } from '../../src/core/memory/consts/memory-map'
-import { type NESMemory } from '../../src/core/memory/types'
+} from '../../../../src/core/cpu/types'
+import { CPUMemoryMap } from '../../../../src/core/memory/consts/memory-map'
+import { type NESMemory } from '../../../../src/core/memory/types'
 
 describe('CPU Instructions', () => {
   let cpuALU: NESAlu

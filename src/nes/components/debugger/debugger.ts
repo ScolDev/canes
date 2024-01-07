@@ -1,4 +1,4 @@
-import { CPUMemoryMap } from '../memory/consts/memory-map'
+import { CPUMemoryMap } from '../../../core/memory/consts/memory-map'
 import { DebugEvents } from './consts/events'
 import { type DebugState, type DebugQueues, type DebugSingleConditions, type DebugBreakpoint, type DebugMemoryBreakpoint, type DebugEventType, type DebugEventCallback, type DebugConditionExpresion, type DebugCpu, type NESDebuggerModule } from './types'
 
@@ -46,7 +46,7 @@ export class Debugger implements NESDebuggerModule {
   }
 
   validate (): void {
-    if (this.state.cpuState !== null && this.state.cpuState.paused) return
+    if (this.state.cpuState.paused) return
 
     this.validateAtResetVector()
     this.validateSingleConditions()
@@ -91,7 +91,7 @@ export class Debugger implements NESDebuggerModule {
   }
 
   private validateMemoryConditions (): void {
-    if (this.state.cpuState === null) return
+    if (this.state.cpuState === undefined) return
 
     const { lastWrite } = this.state.cpuState
 

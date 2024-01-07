@@ -1,12 +1,11 @@
-interface ROMLoaderProps {
-  getBytes: () => Promise<Uint8Array>
-}
-
 interface ROMFileSource {
   filePath: string
 }
 
 export type ROMSource = ROMFileSource
+export interface ROMLoader {
+  getBytes: () => Promise<Uint8Array>
+}
 
 interface ROMHeaderProps {
   numOfPRG: number
@@ -22,7 +21,6 @@ export interface ROMBankOffset {
   start: number
 }
 
-export type ROMLoader = ROMLoaderProps
 export type ROMHeader = ROMHeaderProps | null
 
 export interface ROMBuffer {
