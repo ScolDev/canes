@@ -20,7 +20,6 @@ import {
   type NESComponents,
   type CPUInstruction,
   type CPUAddrMode,
-  type CPULastExecuted,
   type CPURegister
 } from './types'
 
@@ -89,20 +88,12 @@ export class CPU implements NESCpuModule {
     return this.cpuState
   }
 
-  getLastExecuted (): CPULastExecuted {
-    return this.cpuState.lastExecuted
-  }
-
   getRegister (register: CPURegister): number {
     if (register === CPURegisters.PC) {
       return this.REG.PC & 0xffff
     }
 
     return this.REG[register] & 0xff
-  }
-
-  setLastExecuted (lastExecuted: CPULastExecuted): void {
-    this.cpuState.lastExecuted = lastExecuted
   }
 
   setRegister (register: CPURegister, value: number): void {
@@ -160,10 +151,13 @@ export class CPU implements NESCpuModule {
       if (this.cpuState.debugMode) {
         this.nesDebugger.validate()
       }
-      if (this.cpuState.paused) {
-        return
+
+      if (!this.cpuState.paused) {
+        this.executeCurrent()
+      } else {
+        this.setLastExecuted()
+        break
       }
-      this.executeCurrent()
     }
     this.run()
   }
@@ -200,6 +194,16 @@ export class CPU implements NESCpuModule {
 
   private setDebugMode (status: boolean): void {
     this.cpuState.debugMode = status
+  }
+
+  private setLastExecuted (): void {
+    const lastExecuted = this.instruction.getLastExecuted()
+    if (lastExecuted === undefined) return
+
+    this.cpuState.lastExecuted = {
+      opcode: lastExecuted.bytes[0],
+      asm: lastExecuted.module.getASM(lastExecuted.bytes)
+    }
   }
 
   private updateCtrl (): void {

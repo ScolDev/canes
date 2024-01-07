@@ -71,6 +71,12 @@ export type NESAddrModes = NESAddrModesModule | undefined
 export interface NESInstructionModule {
   execute: (instruction: CPUInstruction) => void
   getInstructionSize: (opcode: number) => number
+  getLastExecuted: () => LastExecutedInstruction
+}
+
+export interface LastExecutedInstruction {
+  bytes: CPUInstruction
+  module: BaseInstruction
 }
 
 export type NESInstruction = NESInstructionModule | undefined
@@ -84,9 +90,7 @@ export interface NESCpuModule {
   setPC: (address: number) => void
   getPC: () => number
   getCPUState: () => CPUState
-  getLastExecuted: () => CPULastExecuted
   getRegister: (register: CPURegister) => number
-  setLastExecuted: (lastExecuted: CPULastExecuted) => void
   setRegister: (register: CPURegister, value: number) => void
   loadROM: (romSource: ROMSource) => Promise<void>
   powerUp: () => void
@@ -108,7 +112,6 @@ NESCpuModule,
 | 'setRegister'
 | 'nextPC'
 | 'setPC'
-| 'setLastExecuted'
 >
 export type InstructionsAlu = NESAluModule | undefined
 export type InstructionsMemory =

@@ -137,7 +137,7 @@ export class Debugger implements NESDebuggerModule {
 
     cpuState.paused = true
     for (const cb of onPauseCallbacks) {
-      cb(event)
+      setTimeout(() => { cb(event) }, 0)
     }
   }
 

@@ -3,16 +3,16 @@ import {
   type CPUInstructionTable,
   type CPUInstruction,
   type InstructionsCpu,
-  type NESInstructionModule
+  type NESInstructionModule,
+  type LastExecutedInstruction
 } from '../../types'
 import { CPUInstructionSize } from '../../consts/instructions'
 
 export class Instruction implements NESInstructionModule {
-  private readonly cpu: InstructionsCpu
   private readonly instructionsTable: CPUInstructionTable
+  private lastExecuted: LastExecutedInstruction
 
   private constructor (cpu: InstructionsCpu) {
-    this.cpu = cpu
     this.instructionsTable = InstructionsTable(cpu)
   }
 
@@ -27,15 +27,19 @@ export class Instruction implements NESInstructionModule {
     return CPUInstructionSize[addressingMode]
   }
 
+  getLastExecuted (): LastExecutedInstruction {
+    return this.lastExecuted
+  }
+
   private decodeAndExecute (instruction: CPUInstruction): void {
     const [opcode, operand] = instruction
     const decodedInstruction = this.instructionsTable[opcode]
 
     decodedInstruction.execute(opcode, operand)
-    this.cpu.setLastExecuted({
-      opcode,
-      asm: decodedInstruction.getASM(instruction)
-    })
+    this.lastExecuted = {
+      bytes: instruction,
+      module: decodedInstruction
+    }
   }
 
   static create (cpu: InstructionsCpu): NESInstructionModule {
