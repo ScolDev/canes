@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
-import { CPU } from '../../../../src/core/cpu/cpu'
-import { type NESCpuModule } from '../../../../src/core/cpu/types'
-import { CPUMemoryMap } from '../../../../src/core/memory/consts/memory-map'
-import { type NESMemory } from '../../../../src/core/memory/types'
-import { DebugEvents } from '../../../../src/nes/components/debugger/consts/events'
-import { Debugger } from '../../../../src/nes/components/debugger/debugger'
-import { NESDebugger } from '../../../../src/nes/components/debugger/types'
+import { type NESCpuComponent } from '../../../src/core/cpu/types'
+import { CPUMemoryMap } from '../../../src/core/memory/consts/memory-map'
+import { type NESMemory } from '../../../src/core/memory/types'
+import { DebugEvents } from '../../../src/nes/components/debugger/consts/events'
+import { Debugger } from '../../../src/nes/components/debugger/debugger'
+import { type NESDebugger } from '../../../src/nes/components/debugger/types'
+import { NES } from '../../../src/nes/nes'
+import { type NESModule } from '../../../src/nes/types'
 
-describe('Tests for ROMs executions.', () => {
-  let cpu: NESCpuModule
+describe('Tests for NES ROMs executions.', () => {
+  let nes: NESModule
+  let cpu: NESCpuComponent
   let memory: NESMemory
   let nesDebugger: NESDebugger
 
@@ -25,8 +27,9 @@ describe('Tests for ROMs executions.', () => {
   }
 
   beforeEach(() => {
-    cpu = CPU.create()
-    memory = cpu.getComponents().memory
+    nes = NES.create()
+    cpu = nes.getComponents().cpu
+    memory = nes.getComponents().memory
 
     nesDebugger = new Debugger()
     nesDebugger.attach(cpu)
@@ -105,7 +108,7 @@ describe('Tests for ROMs executions.', () => {
     const romResetVector = 0xe683
 
     nesDebugger.breakOn({ atResetVector: true })
-    cpu.loadROM({ filePath })
+    nes.loadROM({ filePath })
 
     nesDebugger.on('pause', ({ type, data }) => {
       const { paused } = data.cpuState
@@ -127,7 +130,7 @@ describe('Tests for ROMs executions.', () => {
       equalsTo: 0x80,
       onWrite: true
     })
-    cpu.loadROM({ filePath })
+    nes.loadROM({ filePath })
 
     nesDebugger.on('pause', ({ type, data }) => {
       const { paused } = data.cpuState
@@ -153,7 +156,7 @@ describe('Tests for ROMs executions.', () => {
       lessThanOrEquals: 0xff,
       onWrite: true
     })
-    cpu.loadROM({ filePath })
+    nes.loadROM({ filePath })
 
     nesDebugger.on('pause', ({ type, data }) => {
       const { paused } = data.cpuState

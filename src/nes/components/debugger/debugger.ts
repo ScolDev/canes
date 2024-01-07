@@ -1,8 +1,8 @@
 import { CPUMemoryMap } from '../../../core/memory/consts/memory-map'
 import { DebugEvents } from './consts/events'
-import { type DebugState, type DebugQueues, type DebugSingleConditions, type DebugBreakpoint, type DebugMemoryBreakpoint, type DebugEventType, type DebugEventCallback, type DebugConditionExpresion, type DebugCpu, type NESDebuggerModule } from './types'
+import { type DebugState, type DebugQueues, type DebugSingleConditions, type DebugBreakpoint, type DebugMemoryBreakpoint, type DebugEventType, type DebugEventCallback, type DebugConditionExpresion, type DebugCpu, type NESDebuggerComponent } from './types'
 
-export class Debugger implements NESDebuggerModule {
+export class Debugger implements NESDebuggerComponent {
   private cpu: DebugCpu
   private readonly state: DebugState = {
     cpuState: null,

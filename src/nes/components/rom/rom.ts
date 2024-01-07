@@ -3,14 +3,14 @@ import {
   type ROMMapper,
   type ROMHeader,
   type ROMLoader,
-  type NESRomModule,
+  type NESRomComponent,
   type ROMBuffer
 } from './types/'
 import { Buffer } from 'buffer'
 import { MapperCodes, MapperNames } from './consts/mapper'
 import { ROMFile } from './consts/rom-file'
 
-export class ROM implements NESRomModule {
+export class ROM implements NESRomComponent {
   private readonly romLoader: ROMLoader
   private header: ROMHeader = null
   private romFileBuffer = new Uint8Array([])

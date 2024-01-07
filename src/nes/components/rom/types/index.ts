@@ -40,10 +40,10 @@ export interface ROMNESBanks {
   chr?: ROMBank[]
 }
 
-export interface NESRomModule {
+export interface NESRomComponent {
   load: () => Promise<void>
   getHeader: () => ROMHeader
   getPRG: () => ROMBuffer
 }
 
-export type NESRom = NESRomModule | undefined
+export type NESRom = NESRomComponent | undefined

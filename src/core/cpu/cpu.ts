@@ -1,8 +1,4 @@
-import { type Debugger } from '../../nes/components/debugger/debugger'
 import { type NESDebugger } from '../../nes/components/debugger/types'
-import { ROM } from '../../nes/components/rom/rom'
-import { type NESRom, type ROMSource } from '../../nes/components/rom/types'
-import { FileLoader } from '../../shared/utils/file-loader'
 import { CPUMemoryMap } from '../memory/consts/memory-map'
 import { Memory } from '../memory/memory'
 import { type NESMemory } from '../memory/types'
@@ -13,19 +9,18 @@ import { CPUInstructionSize } from './consts/instructions'
 import { CPURegisters } from './consts/registers'
 import { InitialCPUState } from './consts/state'
 import {
-  type NESCpuModule,
+  type NESCpuComponent,
   type NESAlu,
   type NESInstruction,
   type CPUState,
-  type NESComponents,
   type CPUInstruction,
   type CPUAddrMode,
-  type CPURegister
+  type CPURegister,
+  type NESCpuComponents
 } from './types'
 
-export class CPU implements NESCpuModule {
+export class CPU implements NESCpuComponent {
   private cpuALU: NESAlu
-  private rom: NESRom
   private memory: NESMemory
   private nesDebugger: NESDebugger
   private instruction: NESInstruction
@@ -51,14 +46,14 @@ export class CPU implements NESCpuModule {
     this.instruction = Instruction.create(this)
   }
 
-  getComponents (): NESComponents {
+  getComponents (): NESCpuComponents {
     return {
       cpuALU: this.cpuALU,
       memory: this.memory
     }
   }
 
-  debug (_debugger: Debugger): void {
+  debug (_debugger: NESDebugger): void {
     this.nesDebugger = _debugger
     this.setDebugMode(true)
   }
@@ -101,17 +96,6 @@ export class CPU implements NESCpuModule {
       this.REG.PC = value & 0xffff
     } else {
       this.REG[register] = value & 0xff
-    }
-  }
-
-  async loadROM ({ filePath }: ROMSource): Promise<void> {
-    const fileLoader = FileLoader(filePath)
-    this.rom = new ROM(fileLoader)
-    await this.rom.load()
-
-    if (this.rom.getHeader() !== null) {
-      this.loadPRG()
-      this.powerUp()
     }
   }
 
@@ -182,11 +166,6 @@ export class CPU implements NESCpuModule {
     return instruction
   }
 
-  private loadPRG (): void {
-    const { buffer } = this.rom.getPRG()
-    this.memory.copy(buffer, CPUMemoryMap.PRG_ROM)
-  }
-
   private loadResetVector (): void {
     const resetVector = this.memory.loadWord(CPUMemoryMap.Reset_Vector)
     this.setRegister(CPURegisters.PC, resetVector)
@@ -210,7 +189,7 @@ export class CPU implements NESCpuModule {
     this.cpuState.insExecuted++
   }
 
-  static create (): NESCpuModule {
+  static create (): NESCpuComponent {
     const cpu = new CPU()
     cpu.initComponents()
 

@@ -1,4 +1,4 @@
-import { type CPUAddrMode, type NESCpuModule } from '../../cpu/types'
+import { type CPUAddrMode, type NESCpuComponent } from '../../cpu/types'
 
 export interface MemoryMirror {
   start: number
@@ -6,7 +6,7 @@ export interface MemoryMirror {
   mirrorSize: number
 }
 
-export interface NESMemoryModule {
+export interface NESMemoryComponent {
   initComponents: () => void
   copy: (buffer: Uint8Array, offset: number) => void
   getMemorySection: (start: number, end: number) => Uint8Array
@@ -29,5 +29,5 @@ export interface NESMemoryModule {
   ) => void
 }
 
-export type NESMemory = NESMemoryModule | undefined
-export type MemoryCpu = NESCpuModule
+export type NESMemory = NESMemoryComponent | undefined
+export type MemoryCpu = NESCpuComponent

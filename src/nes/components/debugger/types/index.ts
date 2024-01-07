@@ -1,5 +1,5 @@
-import { type CPUState } from '../../../core/cpu/types'
-import { type ReverseMap } from '../../../shared/types'
+import { type CPUState, type NESCpuComponent } from '../../../../core/cpu/types'
+import { type ReverseMap } from '../../../../shared/types'
 import { type DebugEvents } from '../consts/events'
 
 export interface DebugState {
@@ -40,7 +40,7 @@ export interface DebugEvent {
   }
 }
 
-export interface NESDebuggerModule {
+export interface NESDebuggerComponent {
   attach: (cpuToAttach: DebugCpu) => void
   run: () => void
   breakOn: (conditions: DebugSingleConditions) => void
@@ -50,6 +50,6 @@ export interface NESDebuggerModule {
   on: (event: DebugEventType, cb: DebugEventCallback) => void
 }
 
-export type NESDebugger = NESDebuggerModule | undefined
+export type NESDebugger = NESDebuggerComponent | undefined
 
-export type DebugCpu = Pick<NESCpuModule, 'debug' | 'getComponents' | 'getCPUState' | 'getPC' | 'powerUp'> | undefined
+export type DebugCpu = Pick<NESCpuComponent, 'debug' | 'getComponents' | 'getCPUState' | 'getPC' | 'powerUp'> | undefined

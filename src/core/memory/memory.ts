@@ -3,17 +3,17 @@ import { CPUAddressingModes } from '../cpu/consts/addressing-modes'
 import {
   type NESAddrModes,
   type CPUAddrMode,
-  type NESCpuModule
+  type NESCpuComponent
 } from '../cpu/types'
 import { CPUMemoryMap } from './consts/memory-map'
 import { MemoryMirrors } from './consts/memory-mirrors'
 import {
   type MemoryCpu,
-  type NESMemoryModule,
+  type NESMemoryComponent,
   type MemoryMirror
 } from './types'
 
-export class Memory implements NESMemoryModule {
+export class Memory implements NESMemoryComponent {
   private readonly cpu: MemoryCpu
   private addressingModes: NESAddrModes
   private MEM = new Uint8Array(CPUMemoryMap.Size)
@@ -144,7 +144,7 @@ export class Memory implements NESMemoryModule {
     this.storeByte(mirroredAddress, value)
   }
 
-  static create (cpu: NESCpuModule): NESMemoryModule {
+  static create (cpu: NESCpuComponent): NESMemoryComponent {
     return new Memory(cpu)
   }
 }

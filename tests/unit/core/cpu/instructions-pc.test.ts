@@ -4,7 +4,7 @@ import { CPU } from '../../../../src/core/cpu/cpu'
 import {
   type CPUInstruction,
   type NESAlu,
-  type NESCpuModule
+  type NESCpuComponent
 } from '../../../../src/core/cpu/types'
 import { CPUMemoryMap } from '../../../../src/core/memory/consts/memory-map'
 import { type NESMemory } from '../../../../src/core/memory/types'
@@ -12,7 +12,7 @@ import { type NESMemory } from '../../../../src/core/memory/types'
 describe('Tests for the PC register after instrucions executions.', () => {
   let cpuALU: NESAlu
   let memory: NESMemory
-  let cpu: NESCpuModule
+  let cpu: NESCpuComponent
 
   beforeEach(() => {
     cpu = CPU.create()

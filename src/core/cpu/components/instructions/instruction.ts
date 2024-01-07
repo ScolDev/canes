@@ -3,12 +3,12 @@ import {
   type CPUInstructionTable,
   type CPUInstruction,
   type InstructionsCpu,
-  type NESInstructionModule,
+  type NESInstructionComponent,
   type LastExecutedInstruction
 } from '../../types'
 import { CPUInstructionSize } from '../../consts/instructions'
 
-export class Instruction implements NESInstructionModule {
+export class Instruction implements NESInstructionComponent {
   private readonly instructionsTable: CPUInstructionTable
   private lastExecuted: LastExecutedInstruction
 
@@ -42,7 +42,7 @@ export class Instruction implements NESInstructionModule {
     }
   }
 
-  static create (cpu: InstructionsCpu): NESInstructionModule {
+  static create (cpu: InstructionsCpu): NESInstructionComponent {
     return new Instruction(cpu)
   }
 }

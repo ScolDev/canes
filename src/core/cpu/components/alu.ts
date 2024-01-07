@@ -1,8 +1,8 @@
 import { CPUFlags } from '../consts/flags'
 import { CPURegisters } from '../consts/registers'
-import { type CPUFlag, type ALUCpu, type NESAluModule } from '../types'
+import { type CPUFlag, type ALUCpu, type NESAluComponent } from '../types'
 
-export class ALU implements NESAluModule {
+export class ALU implements NESAluComponent {
   private readonly cpu: ALUCpu
 
   private constructor (cpu: ALUCpu) {
@@ -64,7 +64,7 @@ export class ALU implements NESAluModule {
     this.setFlag(CPUFlags.NegativeFlag, this.getBitValue(0x07, result))
   }
 
-  static create (cpu: ALUCpu): NESAluModule {
+  static create (cpu: ALUCpu): NESAluComponent {
     return new ALU(cpu)
   }
 }

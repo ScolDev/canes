@@ -6,10 +6,10 @@ import {
   type CPUAddrMode,
   type AddrModesCpu,
   type AddrModesAlu,
-  type NESAddrModesModule
+  type NESAddrModesComponent
 } from '../types'
 
-export class AddressingModes implements NESAddrModesModule {
+export class AddressingModes implements NESAddrModesComponent {
   private readonly cpu: AddrModesCpu
   private readonly cpuALU: AddrModesAlu | undefined
   private readonly memory
@@ -240,7 +240,7 @@ export class AddressingModes implements NESAddrModesModule {
     }
   }
 
-  static create (cpu: AddrModesCpu): NESAddrModesModule {
+  static create (cpu: AddrModesCpu): NESAddrModesComponent {
     const addressingModes = new AddressingModes(cpu)
     addressingModes.initComponents()
 
