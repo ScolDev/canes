@@ -1,12 +1,10 @@
-import {
-  CPUAddressingModes,
-  getASMByAddrMode
-} from '../../../consts/addressing-modes'
+import { CPUAddressingModes } from '../../../consts/addressing-modes'
 import { CPURegisters } from '../../../consts/registers'
-import { type CPUAddrModeTable, type CPUInstruction } from '../../../types'
+import { type CPUAddrModeTable } from '../../../types'
 import { BaseInstruction } from '../base-instruction'
 
 export class Rts extends BaseInstruction {
+  readonly name = 'rts'
   readonly AddressingModes: CPUAddrModeTable = {
     0x60: CPUAddressingModes.Implied
   }
@@ -19,11 +17,5 @@ export class Rts extends BaseInstruction {
 
     this.cpu.setRegister(CPURegisters.SP, newStackPointer)
     this.cpu.setPC(newPC)
-  }
-
-  getASM (instruction: CPUInstruction): string {
-    const [opcode, operand] = instruction
-    const addressingMode = this.AddressingModes[opcode]
-    return `rts${getASMByAddrMode(addressingMode, operand)}`
   }
 }

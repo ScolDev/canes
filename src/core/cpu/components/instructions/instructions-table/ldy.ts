@@ -1,12 +1,10 @@
-import {
-  CPUAddressingModes,
-  getASMByAddrMode
-} from '../../../consts/addressing-modes'
+import { CPUAddressingModes } from '../../../consts/addressing-modes'
 import { CPURegisters } from '../../../consts/registers'
-import { type CPUAddrModeTable, type CPUInstruction } from '../../../types'
+import { type CPUAddrModeTable } from '../../../types'
 import { BaseInstruction } from '../base-instruction'
 
 export class Ldy extends BaseInstruction {
+  readonly name = 'ldy'
   readonly AddressingModes: CPUAddrModeTable = {
     0xa0: CPUAddressingModes.Immediate,
     0xa4: CPUAddressingModes.ZeroPage,
@@ -27,11 +25,5 @@ export class Ldy extends BaseInstruction {
   updateStatus (result: number): void {
     this.cpuALU.updateZeroFlag(result)
     this.cpuALU.updateNegativeFlag(result)
-  }
-
-  getASM (instruction: CPUInstruction): string {
-    const [opcode, operand] = instruction
-    const addressingMode = this.AddressingModes[opcode]
-    return `ldy${getASMByAddrMode(addressingMode, operand)}`
   }
 }

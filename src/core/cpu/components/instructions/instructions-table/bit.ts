@@ -1,13 +1,11 @@
-import {
-  CPUAddressingModes,
-  getASMByAddrMode
-} from '../../../consts/addressing-modes'
+import { CPUAddressingModes } from '../../../consts/addressing-modes'
 import { CPUFlags } from '../../../consts/flags'
 import { CPURegisters } from '../../../consts/registers'
-import { type CPUAddrModeTable, type CPUInstruction } from '../../../types'
+import { type CPUAddrModeTable } from '../../../types'
 import { BaseInstruction } from '../base-instruction'
 
 export class Bit extends BaseInstruction {
+  readonly name = 'bit'
   readonly AddressingModes: CPUAddrModeTable = {
     0x24: CPUAddressingModes.ZeroPage,
     0x2c: CPUAddressingModes.Absolute
@@ -29,11 +27,5 @@ export class Bit extends BaseInstruction {
     this.cpuALU.updateZeroFlag(result)
     this.cpuALU.setFlag(CPUFlags.OverflowFlag, overflowFlag)
     this.cpuALU.updateNegativeFlag(operand)
-  }
-
-  getASM (instruction: CPUInstruction): string {
-    const [opcode, operand] = instruction
-    const addressingMode = this.AddressingModes[opcode]
-    return `bit${getASMByAddrMode(addressingMode, operand)}`
   }
 }

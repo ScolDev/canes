@@ -1,14 +1,12 @@
 import { CPUMemoryMap } from '../../../../memory/consts/memory-map'
-import {
-  CPUAddressingModes,
-  getASMByAddrMode
-} from '../../../consts/addressing-modes'
+import { CPUAddressingModes } from '../../../consts/addressing-modes'
 import { CPUFlags } from '../../../consts/flags'
 import { CPURegisters } from '../../../consts/registers'
-import { type CPUAddrModeTable, type CPUInstruction } from '../../../types'
+import { type CPUAddrModeTable } from '../../../types'
 import { BaseInstruction } from '../base-instruction'
 
 export class Brk extends BaseInstruction {
+  readonly name = 'brk'
   readonly AddressingModes: CPUAddrModeTable = {
     0x00: CPUAddressingModes.Implied
   }
@@ -30,11 +28,5 @@ export class Brk extends BaseInstruction {
 
     this.cpu.setRegister(CPURegisters.SP, currentSP - 2)
     this.cpu.setPC(irqInterruptVector)
-  }
-
-  getASM (instruction: CPUInstruction): string {
-    const [opcode, operand] = instruction
-    const addressingMode = this.AddressingModes[opcode]
-    return `brk${getASMByAddrMode(addressingMode, operand)}`
   }
 }

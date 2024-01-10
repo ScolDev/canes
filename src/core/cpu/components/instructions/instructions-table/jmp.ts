@@ -1,11 +1,9 @@
-import {
-  CPUAddressingModes,
-  getASMByAddrMode
-} from '../../../consts/addressing-modes'
-import { type CPUAddrModeTable, type CPUInstruction } from '../../../types'
+import { CPUAddressingModes } from '../../../consts/addressing-modes'
+import { type CPUAddrModeTable } from '../../../types'
 import { BaseInstruction } from '../base-instruction'
 
 export class Jmp extends BaseInstruction {
+  readonly name = 'jmp'
   readonly AddressingModes: CPUAddrModeTable = {
     0x4c: CPUAddressingModes.Absolute,
     0x6c: CPUAddressingModes.Indirect
@@ -16,11 +14,5 @@ export class Jmp extends BaseInstruction {
     const addressValue = this.memory.loadAddressByAddressingMode(addressingMode, operand)
 
     this.cpu.setPC(addressValue)
-  }
-
-  getASM (instruction: CPUInstruction): string {
-    const [opcode, operand] = instruction
-    const addressingMode = this.AddressingModes[opcode]
-    return `jmp${getASMByAddrMode(addressingMode, operand)}`
   }
 }

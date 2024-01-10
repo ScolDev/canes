@@ -1,12 +1,10 @@
-import {
-  CPUAddressingModes,
-  getASMByAddrMode
-} from '../../../consts/addressing-modes'
+import { CPUAddressingModes } from '../../../consts/addressing-modes'
 import { CPURegisters } from '../../../consts/registers'
-import { type CPUAddrModeTable, type CPUInstruction } from '../../../types'
+import { type CPUAddrModeTable } from '../../../types'
 import { BaseInstruction } from '../base-instruction'
 
 export class Php extends BaseInstruction {
+  readonly name = 'php'
   readonly AddressingModes: CPUAddrModeTable = {
     0x08: CPUAddressingModes.Implied
   }
@@ -21,11 +19,5 @@ export class Php extends BaseInstruction {
     this.memory.store(stackMemoryAddress, processorStatus)
     this.cpu.setRegister(CPURegisters.SP, currentSP - 1)
     this.cpu.nextPC(addressingMode)
-  }
-
-  getASM (instruction: CPUInstruction): string {
-    const [opcode, operand] = instruction
-    const addressingMode = this.AddressingModes[opcode]
-    return `php${getASMByAddrMode(addressingMode, operand)}`
   }
 }

@@ -1,12 +1,10 @@
-import {
-  CPUAddressingModes,
-  getASMByAddrMode
-} from '../../../consts/addressing-modes'
+import { CPUAddressingModes } from '../../../consts/addressing-modes'
 import { CPUFlags } from '../../../consts/flags'
-import { type CPUAddrModeTable, type CPUInstruction } from '../../../types'
+import { type CPUAddrModeTable } from '../../../types'
 import { BaseInstruction } from '../base-instruction'
 
 export class Bvs extends BaseInstruction {
+  readonly name = 'bvs'
   readonly AddressingModes: CPUAddrModeTable = {
     0x70: CPUAddressingModes.Relative
   }
@@ -21,11 +19,5 @@ export class Bvs extends BaseInstruction {
     }
 
     this.cpu.nextPC(addressingMode, displacement)
-  }
-
-  getASM (instruction: CPUInstruction): string {
-    const [opcode, operand] = instruction
-    const addressingMode = this.AddressingModes[opcode]
-    return `bvs${getASMByAddrMode(addressingMode, operand)}`
   }
 }

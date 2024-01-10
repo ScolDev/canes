@@ -1,3 +1,4 @@
+import { getASMByAddrMode } from '../../consts/addressing-modes'
 import {
   type CPUInstruction,
   type CPUAddrModeTable,
@@ -20,9 +21,15 @@ export abstract class BaseInstruction {
   }
 
   public abstract readonly AddressingModes: CPUAddrModeTable
+  public abstract readonly name: string
   public abstract execute (...args: CPUInstruction): void
   public updateStatus? (...args: number[]): void
-  public abstract getASM (instruction: CPUInstruction): string
+
+  getASM (instruction: CPUInstruction): string {
+    const [opcode, operand] = instruction
+    const addressingMode = this.AddressingModes[opcode]
+    return `${this.name}${getASMByAddrMode(addressingMode, operand)}`
+  }
 
   protected get cpu (): InstructionsCpu {
     return this._cpu

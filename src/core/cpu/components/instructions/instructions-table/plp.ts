@@ -1,12 +1,10 @@
-import {
-  CPUAddressingModes,
-  getASMByAddrMode
-} from '../../../consts/addressing-modes'
+import { CPUAddressingModes } from '../../../consts/addressing-modes'
 import { CPURegisters } from '../../../consts/registers'
-import { type CPUAddrModeTable, type CPUInstruction } from '../../../types'
+import { type CPUAddrModeTable } from '../../../types'
 import { BaseInstruction } from '../base-instruction'
 
 export class Plp extends BaseInstruction {
+  readonly name = 'plp'
   readonly AddressingModes: CPUAddrModeTable = {
     0x28: CPUAddressingModes.Implied
   }
@@ -20,11 +18,5 @@ export class Plp extends BaseInstruction {
     this.cpu.setRegister(CPURegisters.P, memoryValue)
     this.cpu.setRegister(CPURegisters.SP, currentSP + 1)
     this.cpu.nextPC(addressingMode)
-  }
-
-  getASM (instruction: CPUInstruction): string {
-    const [opcode, operand] = instruction
-    const addressingMode = this.AddressingModes[opcode]
-    return `plp${getASMByAddrMode(addressingMode, operand)}`
   }
 }

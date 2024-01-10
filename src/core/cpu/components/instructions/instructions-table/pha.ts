@@ -1,12 +1,10 @@
-import {
-  CPUAddressingModes,
-  getASMByAddrMode
-} from '../../../consts/addressing-modes'
+import { CPUAddressingModes } from '../../../consts/addressing-modes'
 import { CPURegisters } from '../../../consts/registers'
-import { type CPUAddrModeTable, type CPUInstruction } from '../../../types'
+import { type CPUAddrModeTable } from '../../../types'
 import { BaseInstruction } from '../base-instruction'
 
 export class Pha extends BaseInstruction {
+  readonly name = 'pha'
   readonly AddressingModes: CPUAddrModeTable = {
     0x48: CPUAddressingModes.Implied
   }
@@ -21,11 +19,5 @@ export class Pha extends BaseInstruction {
     this.memory.store(stackMemoryAddress, accumulator)
     this.cpu.setRegister(CPURegisters.SP, currentSP - 1)
     this.cpu.nextPC(addressingMode)
-  }
-
-  getASM (instruction: CPUInstruction): string {
-    const [opcode, operand] = instruction
-    const addressingMode = this.AddressingModes[opcode]
-    return `pha${getASMByAddrMode(addressingMode, operand)}`
   }
 }

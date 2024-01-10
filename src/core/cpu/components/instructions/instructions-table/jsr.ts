@@ -1,12 +1,10 @@
-import {
-  CPUAddressingModes,
-  getASMByAddrMode
-} from '../../../consts/addressing-modes'
+import { CPUAddressingModes } from '../../../consts/addressing-modes'
 import { CPURegisters } from '../../../consts/registers'
-import { type CPUAddrModeTable, type CPUInstruction } from '../../../types'
+import { type CPUAddrModeTable } from '../../../types'
 import { BaseInstruction } from '../base-instruction'
 
 export class Jsr extends BaseInstruction {
+  readonly name = 'jsr'
   readonly AddressingModes: CPUAddrModeTable = {
     0x20: CPUAddressingModes.Absolute
   }
@@ -21,11 +19,5 @@ export class Jsr extends BaseInstruction {
     this.cpu.setRegister(CPURegisters.SP, newStackPointer)
     this.memory.storeWord(stackMemoryAddress, currentPC + 2)
     this.cpu.setPC(addressValue)
-  }
-
-  getASM (instruction: CPUInstruction): string {
-    const [opcode, operand] = instruction
-    const addressingMode = this.AddressingModes[opcode]
-    return `jsr${getASMByAddrMode(addressingMode, operand)}`
   }
 }

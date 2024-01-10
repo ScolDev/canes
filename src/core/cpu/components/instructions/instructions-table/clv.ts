@@ -1,12 +1,10 @@
-import {
-  CPUAddressingModes,
-  getASMByAddrMode
-} from '../../../consts/addressing-modes'
+import { CPUAddressingModes } from '../../../consts/addressing-modes'
 import { CPUFlags } from '../../../consts/flags'
-import { type CPUAddrModeTable, type CPUInstruction } from '../../../types'
+import { type CPUAddrModeTable } from '../../../types'
 import { BaseInstruction } from '../base-instruction'
 
 export class Clv extends BaseInstruction {
+  readonly name = 'clv'
   readonly AddressingModes: CPUAddrModeTable = {
     0xb8: CPUAddressingModes.Implied
   }
@@ -16,11 +14,5 @@ export class Clv extends BaseInstruction {
 
     this.cpuALU.clearFlag(CPUFlags.OverflowFlag)
     this.cpu.nextPC(addressingMode)
-  }
-
-  getASM (instruction: CPUInstruction): string {
-    const [opcode, operand] = instruction
-    const addressingMode = this.AddressingModes[opcode]
-    return `clv${getASMByAddrMode(addressingMode, operand)}`
   }
 }

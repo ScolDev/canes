@@ -1,12 +1,10 @@
-import {
-  CPUAddressingModes,
-  getASMByAddrMode
-} from '../../../consts/addressing-modes'
+import { CPUAddressingModes } from '../../../consts/addressing-modes'
 import { CPUFlags } from '../../../consts/flags'
-import { type CPUAddrModeTable, type CPUInstruction } from '../../../types'
+import { type CPUAddrModeTable } from '../../../types'
 import { BaseInstruction } from '../base-instruction'
 
 export class Asl extends BaseInstruction {
+  readonly name = 'asl'
   readonly AddressingModes: CPUAddrModeTable = {
     0x0a: CPUAddressingModes.Accumulator,
     0x06: CPUAddressingModes.ZeroPage,
@@ -31,11 +29,5 @@ export class Asl extends BaseInstruction {
     this.cpuALU.setFlag(CPUFlags.CarryFlag, carryFlag)
     this.cpuALU.updateZeroFlag(result)
     this.cpuALU.updateNegativeFlag(result)
-  }
-
-  getASM (instruction: CPUInstruction): string {
-    const [opcode, operand] = instruction
-    const addressingMode = this.AddressingModes[opcode]
-    return `asl${getASMByAddrMode(addressingMode, operand)}`
   }
 }

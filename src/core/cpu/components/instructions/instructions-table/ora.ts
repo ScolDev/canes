@@ -1,12 +1,10 @@
-import {
-  CPUAddressingModes,
-  getASMByAddrMode
-} from '../../../consts/addressing-modes'
+import { CPUAddressingModes } from '../../../consts/addressing-modes'
 import { CPURegisters } from '../../../consts/registers'
-import { type CPUAddrModeTable, type CPUInstruction } from '../../../types'
+import { type CPUAddrModeTable } from '../../../types'
 import { BaseInstruction } from '../base-instruction'
 
 export class Ora extends BaseInstruction {
+  readonly name = 'ora'
   readonly AddressingModes: CPUAddrModeTable = {
     0x09: CPUAddressingModes.Immediate,
     0x05: CPUAddressingModes.ZeroPage,
@@ -33,11 +31,5 @@ export class Ora extends BaseInstruction {
   updateStatus (result: number): void {
     this.cpuALU.updateZeroFlag(result)
     this.cpuALU.updateNegativeFlag(result)
-  }
-
-  getASM (instruction: CPUInstruction): string {
-    const [opcode, operand] = instruction
-    const addressingMode = this.AddressingModes[opcode]
-    return `ora${getASMByAddrMode(addressingMode, operand)}`
   }
 }
