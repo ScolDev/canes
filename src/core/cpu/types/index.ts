@@ -19,8 +19,9 @@ export interface CPUAddrModeHandler {
 }
 
 export interface NESCpuComponents {
-  cpuALU: NESAlu
-  memory: NESMemory
+  cpuALU: NESAluComponent
+  memory: NESMemoryComponent
+  instruction: NESInstructionComponent
 }
 
 export interface CPUState {
@@ -39,6 +40,10 @@ export interface CPULastWrite {
 export interface CPULastExecuted {
   opcode: number
   asm: string
+}
+
+export interface CPUExecutor {
+  execute: () => void
 }
 
 export interface NESAluComponent {
@@ -81,10 +86,9 @@ export interface LastExecutedInstruction {
 export type NESInstruction = NESInstructionComponent | undefined
 
 export interface NESCpuComponent {
-  initComponents: () => void
   getComponents: () => NESCpuComponents
-  debug: (_debugger: NESDebuggerComponent) => void
   execute: (instruction: CPUInstruction) => void
+  executeCurrent: () => void
   nextPC: (addressingMode: CPUAddrMode, displacement?: number) => void
   setPC: (address: number) => void
   getPC: () => number
@@ -93,6 +97,8 @@ export interface NESCpuComponent {
   setRegister: (register: CPURegister, value: number) => void
   powerUp: () => void
   reset: () => void
+  setDebugMode: (status: boolean) => void
+  setExecutor: (executor: CPUExecutor) => void
 }
 
 export type ALUCpu = Pick<NESCpuComponent, 'getRegister' | 'setRegister'>

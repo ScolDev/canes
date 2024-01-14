@@ -4,7 +4,6 @@ import { type NESCpuComponent } from '../../../src/core/cpu/types'
 import { CPUMemoryMap } from '../../../src/core/memory/consts/memory-map'
 import { type NESMemory } from '../../../src/core/memory/types'
 import { DebugEvents } from '../../../src/nes/components/debugger/consts/events'
-import { Debugger } from '../../../src/nes/components/debugger/debugger'
 import { type NESDebugger } from '../../../src/nes/components/debugger/types'
 import { NES } from '../../../src/nes/nes'
 import { type NESModule } from '../../../src/nes/types'
@@ -28,11 +27,10 @@ describe('Tests for NES ROMs executions.', () => {
 
   beforeEach(() => {
     nes = NES.create()
+    nesDebugger = nes.debug()
+
     cpu = nes.getComponents().cpu
     memory = nes.getComponents().memory
-
-    nesDebugger = new Debugger()
-    nesDebugger.attach(cpu)
   })
 
   test('should execute the PRG code after power-up', (done) => {

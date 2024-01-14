@@ -16,15 +16,16 @@ import {
   type CPUInstruction,
   type CPUAddrMode,
   type CPURegister,
-  type NESCpuComponents
+  type NESCpuComponents,
+  type CPUExecutor
 } from './types'
 
 export class CPU implements NESCpuComponent {
   private cpuALU: NESAlu
   private memory: NESMemory
-  private nesDebugger: NESDebugger
   private instruction: NESInstruction
   private cpuState: CPUState = InitialCPUState
+  private cpuExecutor: CPUExecutor | null
 
   private readonly REG = {
     PC: 0x0000,
@@ -37,30 +38,22 @@ export class CPU implements NESCpuComponent {
 
   private constructor () {}
 
-  initComponents (): void {
-    this.cpuState = { ...InitialCPUState }
-
-    this.cpuALU = ALU.create(this)
-    this.memory = Memory.create(this)
-    this.memory.initComponents()
-    this.instruction = Instruction.create(this)
-  }
-
   getComponents (): NESCpuComponents {
     return {
       cpuALU: this.cpuALU,
-      memory: this.memory
+      memory: this.memory,
+      instruction: this.instruction
     }
-  }
-
-  debug (_debugger: NESDebugger): void {
-    this.nesDebugger = _debugger
-    this.setDebugMode(true)
   }
 
   execute (instruction: CPUInstruction): void {
     this.instruction.execute(instruction)
     this.updateCtrl()
+  }
+
+  executeCurrent (): void {
+    const instruction = this.fetchInstruction()
+    this.execute(instruction)
   }
 
   nextPC (addressingMode: CPUAddrMode, displacement = 0x00): void {
@@ -108,9 +101,11 @@ export class CPU implements NESCpuComponent {
 
     this.memory.store(CPUMemoryMap.SND_CHN, 0x00)
     this.memory.store(CPUMemoryMap.JOY2, 0x00)
-
     this.loadResetVector()
-    this.run()
+
+    if (this.cpuExecutor !== undefined) {
+      this.cpuExecutor.execute()
+    }
   }
 
   reset (): void {
@@ -121,34 +116,27 @@ export class CPU implements NESCpuComponent {
     this.cpuALU.setFlag(CPUFlags.InterruptDisable)
 
     this.loadResetVector()
-    this.run()
-  }
 
-  private run (): void {
-    setTimeout(() => {
-      this.runPRG()
-    }, 0)
-  }
-
-  private runPRG (): void {
-    for (let tick = 0; tick < 256; tick++) {
-      if (this.cpuState.debugMode) {
-        this.nesDebugger.validate()
-      }
-
-      if (!this.cpuState.paused) {
-        this.executeCurrent()
-      } else {
-        this.setLastExecuted()
-        break
-      }
+    if (this.cpuExecutor !== undefined) {
+      this.cpuExecutor.execute()
     }
-    this.run()
   }
 
-  private executeCurrent (): void {
-    const instruction = this.fetchInstruction()
-    this.execute(instruction)
+  setDebugMode (status: boolean): void {
+    this.cpuState.debugMode = status
+  }
+
+  setExecutor (executor: CPUExecutor): void {
+    this.cpuExecutor = executor
+  }
+
+  private initComponents (): void {
+    this.cpuState = { ...InitialCPUState }
+
+    this.cpuALU = ALU.create(this)
+    this.memory = Memory.create(this)
+    this.memory.initComponents()
+    this.instruction = Instruction.create(this)
   }
 
   private fetchInstruction (): CPUInstruction {
@@ -169,20 +157,6 @@ export class CPU implements NESCpuComponent {
   private loadResetVector (): void {
     const resetVector = this.memory.loadWord(CPUMemoryMap.Reset_Vector)
     this.setRegister(CPURegisters.PC, resetVector)
-  }
-
-  private setDebugMode (status: boolean): void {
-    this.cpuState.debugMode = status
-  }
-
-  private setLastExecuted (): void {
-    const lastExecuted = this.instruction.getLastExecuted()
-    if (lastExecuted === undefined) return
-
-    this.cpuState.lastExecuted = {
-      opcode: lastExecuted.bytes[0],
-      asm: lastExecuted.module.getASM(lastExecuted.bytes)
-    }
   }
 
   private updateCtrl (): void {

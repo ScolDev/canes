@@ -18,10 +18,10 @@ export class Debugger implements NESDebuggerComponent {
     pause: []
   }
 
+  private constructor () {}
+
   attach (cpuToAttach: DebugCpu): void {
     this.cpu = cpuToAttach
-
-    this.cpu.debug(this)
     this.initComponents()
   }
 
@@ -72,8 +72,6 @@ export class Debugger implements NESDebuggerComponent {
   }
 
   private validateSingleConditions (): void {
-    if (this.state.cpuState === null) return
-
     const { insExecuted } = this.state.cpuState
     if (insExecuted === this.state.conditions.insExecuted) {
       this.pause()
@@ -91,8 +89,6 @@ export class Debugger implements NESDebuggerComponent {
   }
 
   private validateMemoryConditions (): void {
-    if (this.state.cpuState === undefined) return
-
     const { lastWrite } = this.state.cpuState
 
     for (const condition of this.state.conditions.memory) {
@@ -100,7 +96,8 @@ export class Debugger implements NESDebuggerComponent {
       const didWrite = condition.onWrite && condition.address === address
 
       if (didWrite && this.expressions(value, condition)) {
-        this.pause(); return
+        this.pause()
+        return
       }
     }
   }
@@ -123,8 +120,6 @@ export class Debugger implements NESDebuggerComponent {
   }
 
   private pause (): void {
-    if (this.state.cpuState === null) return
-
     const { cpuState } = this.state
     const onPauseCallbacks = this.debugQueues.pause
     const event = {
@@ -151,5 +146,9 @@ export class Debugger implements NESDebuggerComponent {
         memory: []
       }
     }
+  }
+
+  static create (): NESDebuggerComponent {
+    return new Debugger()
   }
 }

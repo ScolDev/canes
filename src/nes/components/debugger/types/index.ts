@@ -52,4 +52,4 @@ export interface NESDebuggerComponent {
 
 export type NESDebugger = NESDebuggerComponent | undefined
 
-export type DebugCpu = Pick<NESCpuComponent, 'debug' | 'getComponents' | 'getCPUState' | 'getPC' | 'powerUp'> | undefined
+export type DebugCpu = Pick<NESCpuComponent, 'getComponents' | 'getCPUState' | 'getPC' | 'powerUp'> | undefined
