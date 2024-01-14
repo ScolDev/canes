@@ -29,5 +29,4 @@ export interface NESMemoryComponent {
   ) => void
 }
 
-export type NESMemory = NESMemoryComponent | undefined
 export type MemoryCpu = NESCpuComponent

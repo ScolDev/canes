@@ -1,6 +1,6 @@
 import { type CPUState } from '../types'
 
-export const InitialCPUState: CPUState = {
+export const CPUInitialState: CPUState = {
   paused: false,
   debugMode: false,
   insExecuted: 0,

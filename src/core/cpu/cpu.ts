@@ -1,31 +1,31 @@
-import { type NESDebugger } from '../../nes/components/debugger/types'
 import { CPUMemoryMap } from '../memory/consts/memory-map'
 import { Memory } from '../memory/memory'
-import { type NESMemory } from '../memory/types'
+import { type NESMemoryComponent } from '../memory/types'
 import { ALU } from './components/alu'
 import { Instruction } from './components/instructions/instruction'
 import { CPUFlags } from './consts/flags'
 import { CPUInstructionSize } from './consts/instructions'
 import { CPURegisters } from './consts/registers'
-import { InitialCPUState } from './consts/state'
+import { CPUInitialState } from './consts/state'
 import {
   type NESCpuComponent,
-  type NESAlu,
-  type NESInstruction,
   type CPUState,
   type CPUInstruction,
   type CPUAddrMode,
   type CPURegister,
   type NESCpuComponents,
-  type CPUExecutor
+  type CPUExecutor,
+  type NESAluComponent,
+  type NESInstructionComponent
 } from './types'
 
 export class CPU implements NESCpuComponent {
-  private cpuALU: NESAlu
-  private memory: NESMemory
-  private instruction: NESInstruction
-  private cpuState: CPUState = InitialCPUState
-  private cpuExecutor: CPUExecutor | null
+  private cpuState: CPUState = { ...CPUInitialState }
+  private cpuExecutor: CPUExecutor | null = null
+
+  private cpuALU: NESAluComponent | null
+  private memory: NESMemoryComponent | null
+  private instruction: NESInstructionComponent | null
 
   private readonly REG = {
     PC: 0x0000,
@@ -103,7 +103,7 @@ export class CPU implements NESCpuComponent {
     this.memory.store(CPUMemoryMap.JOY2, 0x00)
     this.loadResetVector()
 
-    if (this.cpuExecutor !== undefined) {
+    if (this.cpuExecutor !== null) {
       this.cpuExecutor.execute()
     }
   }
@@ -117,7 +117,7 @@ export class CPU implements NESCpuComponent {
 
     this.loadResetVector()
 
-    if (this.cpuExecutor !== undefined) {
+    if (this.cpuExecutor !== null) {
       this.cpuExecutor.execute()
     }
   }
@@ -131,7 +131,7 @@ export class CPU implements NESCpuComponent {
   }
 
   private initComponents (): void {
-    this.cpuState = { ...InitialCPUState }
+    this.cpuState = { ...CPUInitialState }
 
     this.cpuALU = ALU.create(this)
     this.memory = Memory.create(this)

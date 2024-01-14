@@ -1,7 +1,7 @@
 import { AddressingModes } from '../cpu/components/addressing-modes'
 import { CPUAddressingModes } from '../cpu/consts/addressing-modes'
 import {
-  type NESAddrModes,
+  type NESAddrModesComponent,
   type CPUAddrMode,
   type NESCpuComponent
 } from '../cpu/types'
@@ -15,7 +15,8 @@ import {
 
 export class Memory implements NESMemoryComponent {
   private readonly cpu: MemoryCpu
-  private addressingModes: NESAddrModes
+  private addressingModes: NESAddrModesComponent | null
+
   private MEM = new Uint8Array(CPUMemoryMap.Size)
 
   private constructor (cpu: MemoryCpu) {

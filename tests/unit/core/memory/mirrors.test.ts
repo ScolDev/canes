@@ -1,10 +1,10 @@
 import { CPU } from '../../../../src/core/cpu/cpu'
 import { type NESCpuComponent } from '../../../../src/core/cpu/types'
-import { type NESMemory } from '../../../../src/core/memory/types'
+import { type NESMemoryComponent } from '../../../../src/core/memory/types'
 
 describe('Tests for CPU memory mirroring.', () => {
   let cpu: NESCpuComponent
-  let memory: NESMemory
+  let memory: NESMemoryComponent
 
   beforeEach(() => {
     cpu = CPU.create()

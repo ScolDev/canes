@@ -1,4 +1,5 @@
 import { CPUMemoryMap } from '../../memory/consts/memory-map'
+import { NESMemoryComponent } from '../../memory/types'
 import { CPUAddressingModes } from '../consts/addressing-modes'
 import { CPURegisters } from '../consts/registers'
 import {
@@ -6,13 +7,15 @@ import {
   type CPUAddrMode,
   type AddrModesCpu,
   type AddrModesAlu,
-  type NESAddrModesComponent
+  type NESAddrModesComponent,
+  type AddrModesMemory
 } from '../types'
 
 export class AddressingModes implements NESAddrModesComponent {
   private readonly cpu: AddrModesCpu
-  private readonly cpuALU: AddrModesAlu | undefined
-  private readonly memory
+  private readonly cpuALU: AddrModesAlu
+  private readonly memory: AddrModesMemory
+
   private readonly AddrModes = new Map<CPUAddrMode, CPUAddrModeHandler>()
 
   private constructor (cpu: AddrModesCpu) {
@@ -21,10 +24,6 @@ export class AddressingModes implements NESAddrModesComponent {
     const { cpuALU, memory } = cpu.getComponents()
     this.cpuALU = cpuALU
     this.memory = memory
-  }
-
-  initComponents (): void {
-    this.loadAddressingModesHandlers()
   }
 
   get (addressingMode: CPUAddrMode, operand: number): number {
@@ -41,6 +40,10 @@ export class AddressingModes implements NESAddrModesComponent {
     if (addr?.set !== undefined) {
       addr.set(value, operand)
     }
+  }
+
+  private initComponents (): void {
+    this.loadAddressingModesHandlers()
   }
 
   private loadAddressingModesHandlers (): void {

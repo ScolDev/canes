@@ -3,8 +3,7 @@ import { type ReverseMap } from '../../../shared/types'
 import { type CPUAddressingModes } from '../consts/addressing-modes'
 import { type CPUFlags } from '../consts/flags'
 import { type BaseInstruction } from '../components/instructions/base-instruction'
-import { type NESMemory, type NESMemoryComponent } from '../../memory/types'
-import { type NESDebuggerComponent } from '../../../nes/components/debugger/types'
+import { type NESMemoryComponent } from '../../memory/types'
 
 export type CPURegister = ReverseMap<typeof CPURegisters>
 export type CPUFlag = ReverseMap<typeof CPUFlags>
@@ -46,6 +45,11 @@ export interface CPUExecutor {
   execute: () => void
 }
 
+export interface LastExecutedInstruction {
+  bytes: CPUInstruction
+  module: BaseInstruction
+}
+
 export interface NESAluComponent {
   setFlag: (flag: CPUFlag, bitValue?: number) => void
   clearFlag: (flag: CPUFlag) => void
@@ -62,28 +66,16 @@ export interface NESAluComponent {
   updateNegativeFlag: (result: number) => void
 }
 
-export type NESAlu = NESAluComponent | undefined
-
 export interface NESAddrModesComponent {
-  initComponents: () => void
   get: (addressingMode: CPUAddrMode, operand?: number) => number
   set: (addressingMode: CPUAddrMode, value: number, operand: number) => void
 }
-
-export type NESAddrModes = NESAddrModesComponent | undefined
 
 export interface NESInstructionComponent {
   execute: (instruction: CPUInstruction) => void
   getInstructionSize: (opcode: number) => number
   getLastExecuted: () => LastExecutedInstruction
 }
-
-export interface LastExecutedInstruction {
-  bytes: CPUInstruction
-  module: BaseInstruction
-}
-
-export type NESInstruction = NESInstructionComponent | undefined
 
 export interface NESCpuComponent {
   getComponents: () => NESCpuComponents
@@ -107,26 +99,23 @@ export type AddrModesCpu = Pick<
 NESCpuComponent,
 'getComponents' | 'getRegister' | 'setRegister' | 'getCPUState'
 >
+
 export type AddrModesAlu = Pick<NESAluComponent, 'getSignedByte'>
+export type AddrModesMemory = Pick<NESMemoryComponent, 'load' | 'loadWord' | 'store'>
 
 export type InstructionsCpu = Pick<
 NESCpuComponent,
-| 'getComponents'
-| 'getRegister'
-| 'setRegister'
-| 'nextPC'
-| 'setPC'
+'getComponents' | 'getRegister' | 'setRegister' | 'nextPC' | 'setPC'
 >
-export type InstructionsAlu = NESAluComponent | undefined
-export type InstructionsMemory =
-  | Pick<
-  NESMemoryComponent,
-  | 'loadAddressByAddressingMode'
-  | 'load'
-  | 'loadByAddressingMode'
-  | 'loadWord'
-  | 'store'
-  | 'storeWord'
-  | 'storeByAddressingMode'
-  >
-  | undefined
+
+export type InstructionsMemory = Pick<
+NESMemoryComponent,
+| 'loadAddressByAddressingMode'
+| 'load'
+| 'loadByAddressingMode'
+| 'loadWord'
+| 'store'
+| 'storeWord'
+| 'storeByAddressingMode'
+>
+| undefined

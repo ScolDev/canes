@@ -9,12 +9,14 @@ import {
 import { Buffer } from 'buffer'
 import { MapperCodes, MapperNames } from './consts/mapper'
 import { ROMFile } from './consts/rom-file'
+import { ROMSignature } from './consts/signature'
 
 export class ROM implements NESRomComponent {
   private readonly romLoader: ROMLoader
-  private header: ROMHeader = null
-  private romFileBuffer = new Uint8Array([])
-  private readonly signature = new Uint8Array([0x4e, 0x45, 0x53, 0x1a])
+  private header: ROMHeader | null
+
+  private romFileBuffer = new Uint8Array()
+  private readonly signature = new Uint8Array(ROMSignature)
 
   constructor (romLoader: ROMLoader) {
     this.romLoader = romLoader
@@ -58,7 +60,7 @@ export class ROM implements NESRomComponent {
   }
 
   private buildHeader (romFileBuffer: Uint8Array): ROMHeader {
-    if (!this.isSignatureValid(romFileBuffer)) {
+    if (!this.isValidSignature(romFileBuffer)) {
       return null
     }
 
@@ -109,7 +111,7 @@ export class ROM implements NESRomComponent {
     }
   }
 
-  private isSignatureValid (compareTo: Uint8Array): boolean {
+  private isValidSignature (compareTo: Uint8Array): boolean {
     return (
       this.signature[0] === compareTo[0] &&
       this.signature[1] === compareTo[1] &&

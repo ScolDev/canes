@@ -7,7 +7,7 @@ export interface ROMLoader {
   getBytes: () => Promise<Uint8Array>
 }
 
-interface ROMHeaderProps {
+export interface ROMHeader {
   numOfPRG: number
   numOfCHR: number
   hasBatteryBacked: boolean
@@ -21,16 +21,16 @@ export interface ROMBankOffset {
   start: number
 }
 
-export type ROMHeader = ROMHeaderProps | null
-
 export interface ROMBuffer {
   buffer: Uint8Array
   size: number
 }
+
 export interface ROMMapper {
   code: number
   name: string
 }
+
 export interface ROMBank {
   data: Uint8Array
 }
@@ -45,5 +45,3 @@ export interface NESRomComponent {
   getHeader: () => ROMHeader
   getPRG: () => ROMBuffer
 }
-
-export type NESRom = NESRomComponent | undefined

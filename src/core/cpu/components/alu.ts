@@ -1,6 +1,6 @@
 import { CPUFlags } from '../consts/flags'
 import { CPURegisters } from '../consts/registers'
-import { type CPUFlag, type ALUCpu, type NESAluComponent } from '../types'
+import { type ALUCpu, type CPUFlag, type NESAluComponent } from '../types'
 
 export class ALU implements NESAluComponent {
   private readonly cpu: ALUCpu

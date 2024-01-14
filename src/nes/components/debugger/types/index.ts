@@ -1,4 +1,7 @@
-import { type CPUState, type NESCpuComponent } from '../../../../core/cpu/types'
+import {
+  type CPUState,
+  type NESCpuComponent
+} from '../../../../core/cpu/types'
 import { type ReverseMap } from '../../../../shared/types'
 import { type DebugEvents } from '../consts/events'
 
@@ -14,8 +17,10 @@ export interface DebugBreakConditions {
   memory: DebugMemoryBreakpoint[]
 }
 
-export type DebugSingleConditions = Partial<Pick<DebugBreakConditions, 'insExecuted' | 'atResetVector'>>
 export type DebugBreakpoint = number
+export type DebugSingleConditions = Partial<
+Pick<DebugBreakConditions, 'insExecuted' | 'atResetVector'>
+>
 export interface DebugMemoryBreakpoint extends DebugConditionExpresion {
   address: number
   onWrite: boolean
@@ -40,6 +45,11 @@ export interface DebugEvent {
   }
 }
 
+export type DebugCpu = Pick<
+NESCpuComponent,
+'getComponents' | 'getCPUState' | 'getPC' | 'powerUp'
+>
+
 export interface NESDebuggerComponent {
   attach: (cpuToAttach: DebugCpu) => void
   run: () => void
@@ -49,7 +59,3 @@ export interface NESDebuggerComponent {
   validate: () => void
   on: (event: DebugEventType, cb: DebugEventCallback) => void
 }
-
-export type NESDebugger = NESDebuggerComponent | undefined
-
-export type DebugCpu = Pick<NESCpuComponent, 'getComponents' | 'getCPUState' | 'getPC' | 'powerUp'> | undefined

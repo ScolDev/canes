@@ -2,17 +2,17 @@
 
 import { type NESCpuComponent } from '../../../src/core/cpu/types'
 import { CPUMemoryMap } from '../../../src/core/memory/consts/memory-map'
-import { type NESMemory } from '../../../src/core/memory/types'
+import { type NESMemoryComponent } from '../../../src/core/memory/types'
 import { DebugEvents } from '../../../src/nes/components/debugger/consts/events'
-import { type NESDebugger } from '../../../src/nes/components/debugger/types'
+import { type NESDebuggerComponent } from '../../../src/nes/components/debugger/types'
 import { NES } from '../../../src/nes/nes'
 import { type NESModule } from '../../../src/nes/types'
 
 describe('Tests for NES ROMs executions.', () => {
   let nes: NESModule
   let cpu: NESCpuComponent
-  let memory: NESMemory
-  let nesDebugger: NESDebugger
+  let memory: NESMemoryComponent
+  let nesDebugger: NESDebuggerComponent
 
   function storePRG (prg: Uint8Array): void {
     memory.storeWord(CPUMemoryMap.Reset_Vector, 0x8000)
@@ -102,7 +102,8 @@ describe('Tests for NES ROMs executions.', () => {
   })
 
   test('should stop execution before the first instruction is executed', (done) => {
-    const filePath = './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
+    const filePath =
+      './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
     const romResetVector = 0xe683
 
     nesDebugger.breakOn({ atResetVector: true })
@@ -120,7 +121,8 @@ describe('Tests for NES ROMs executions.', () => {
   })
 
   test('should stop execution when ROM test status was running (0x80)', (done) => {
-    const filePath = './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
+    const filePath =
+      './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
     const testStatusAddress = 0x6000
 
     nesDebugger.addMemoryBreakpoint({
@@ -145,7 +147,8 @@ describe('Tests for NES ROMs executions.', () => {
   })
 
   test('should stop execution when ROM test $6001 memory value is between (0x80-0xff) status', (done) => {
-    const filePath = './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
+    const filePath =
+      './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
     const testStatusAddress = 0x6001
 
     nesDebugger.addMemoryBreakpoint({

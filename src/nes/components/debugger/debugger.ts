@@ -1,18 +1,22 @@
 import { CPUMemoryMap } from '../../../core/memory/consts/memory-map'
 import { DebugEvents } from './consts/events'
-import { type DebugState, type DebugQueues, type DebugSingleConditions, type DebugBreakpoint, type DebugMemoryBreakpoint, type DebugEventType, type DebugEventCallback, type DebugConditionExpresion, type DebugCpu, type NESDebuggerComponent } from './types'
+import {
+  type DebugState,
+  type DebugQueues,
+  type DebugSingleConditions,
+  type DebugBreakpoint,
+  type DebugMemoryBreakpoint,
+  type DebugEventType,
+  type DebugEventCallback,
+  type DebugConditionExpresion,
+  type DebugCpu,
+  type NESDebuggerComponent
+} from './types'
+import { DebugInitialState } from './consts/state'
 
 export class Debugger implements NESDebuggerComponent {
   private cpu: DebugCpu
-  private readonly state: DebugState = {
-    cpuState: null,
-    conditions: {
-      insExecuted: 0,
-      atResetVector: false,
-      breakpoints: [],
-      memory: []
-    }
-  }
+  private readonly state: DebugState = { ...DebugInitialState }
 
   private readonly debugQueues: DebugQueues = {
     pause: []
@@ -33,7 +37,8 @@ export class Debugger implements NESDebuggerComponent {
     if (this.state === null) return
 
     const { insExecuted, atResetVector } = conditions
-    this.state.conditions.insExecuted = insExecuted ?? this.state.conditions.insExecuted
+    this.state.conditions.insExecuted =
+      insExecuted ?? this.state.conditions.insExecuted
     this.state.conditions.atResetVector = atResetVector ?? false
   }
 
@@ -102,18 +107,21 @@ export class Debugger implements NESDebuggerComponent {
     }
   }
 
-  private expressions (memoryValue: number, condition: DebugConditionExpresion): boolean {
+  private expressions (
+    memoryValue: number,
+    condition: DebugConditionExpresion
+  ): boolean {
     const { equalsTo, greaterThanOrEquals, lessThanOrEquals } = condition
     let match = false
 
     if (equalsTo !== undefined) {
-      match = match || (memoryValue === equalsTo)
+      match = match || memoryValue === equalsTo
     }
     if (greaterThanOrEquals !== undefined) {
       match = match || memoryValue >= greaterThanOrEquals
     }
     if (lessThanOrEquals !== undefined) {
-      match = match || (memoryValue <= lessThanOrEquals)
+      match = match || memoryValue <= lessThanOrEquals
     }
 
     return match
@@ -132,7 +140,9 @@ export class Debugger implements NESDebuggerComponent {
 
     cpuState.paused = true
     for (const cb of onPauseCallbacks) {
-      setTimeout(() => { cb(event) }, 0)
+      setTimeout(() => {
+        cb(event)
+      }, 0)
     }
   }
 
