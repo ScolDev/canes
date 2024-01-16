@@ -51,9 +51,19 @@ export class CPU implements NESCpuComponent {
     this.updateCtrl()
   }
 
-  executeCurrent (): void {
-    const instruction = this.fetchInstruction()
-    this.execute(instruction)
+  fetchInstructionBytes (): CPUInstruction {
+    const pc = this.getPC()
+    const opcode = this.memory.load(pc)
+    const instruction: CPUInstruction = [opcode]
+    const instructionSize = this.instruction.getInstructionSize(opcode)
+
+    if (instructionSize === 0x02) {
+      instruction[1] = this.memory.load(pc + 1)
+    } else if (instructionSize === 0x03) {
+      instruction[1] = this.memory.loadWord(pc + 1)
+    }
+
+    return instruction
   }
 
   nextPC (addressingMode: CPUAddrMode, displacement = 0x00): void {
@@ -137,21 +147,6 @@ export class CPU implements NESCpuComponent {
     this.memory = Memory.create(this)
     this.memory.initComponents()
     this.instruction = Instruction.create(this)
-  }
-
-  private fetchInstruction (): CPUInstruction {
-    const pc = this.getPC()
-    const opcode = this.memory.load(pc)
-    const instruction: CPUInstruction = [opcode]
-    const instructionSize = this.instruction.getInstructionSize(opcode)
-
-    if (instructionSize === 0x02) {
-      instruction[1] = this.memory.load(pc + 1)
-    } else if (instructionSize === 0x03) {
-      instruction[1] = this.memory.loadWord(pc + 1)
-    }
-
-    return instruction
   }
 
   private loadResetVector (): void {

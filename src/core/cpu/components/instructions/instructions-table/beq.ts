@@ -16,6 +16,7 @@ export class Beq extends BaseInstruction {
 
     if (zeroFlag === 0x01) {
       displacement = this.cpuALU.getSignedByte(operand)
+      this.cpuState.clock.lastExtraCycles += 1
     }
 
     this.cpu.nextPC(addressingMode, displacement)

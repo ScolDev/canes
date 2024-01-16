@@ -7,8 +7,10 @@ import {
   type LastExecutedInstruction
 } from '../../types'
 import { CPUInstructionSize } from '../../consts/instructions'
+import { InstructionsCPUCyclesTable } from './consts/instructions-cycles'
 
 export class Instruction implements NESInstructionComponent {
+  private readonly InstructionsCyclesTable = InstructionsCPUCyclesTable
   private readonly instructionsTable: CPUInstructionTable
   private lastExecuted: LastExecutedInstruction
 
@@ -18,6 +20,11 @@ export class Instruction implements NESInstructionComponent {
 
   execute (instruction: CPUInstruction): void {
     this.decodeAndExecute(instruction)
+  }
+
+  getInstructionCycles (instruction: CPUInstruction): number {
+    const opcode = instruction[0]
+    return this.InstructionsCyclesTable[opcode]
   }
 
   getInstructionSize (opcode: number): number {

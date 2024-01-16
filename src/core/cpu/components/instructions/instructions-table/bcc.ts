@@ -16,6 +16,7 @@ export class Bcc extends BaseInstruction {
 
     if (carryFlag === 0x00) {
       displacement = this.cpuALU.getSignedByte(operand)
+      this.cpuState.clock.lastExtraCycles += 1
     }
 
     this.cpu.nextPC(addressingMode, displacement)

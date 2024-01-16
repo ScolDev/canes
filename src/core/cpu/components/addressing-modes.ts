@@ -1,5 +1,4 @@
 import { CPUMemoryMap } from '../../memory/consts/memory-map'
-import { NESMemoryComponent } from '../../memory/types'
 import { CPUAddressingModes } from '../consts/addressing-modes'
 import { CPURegisters } from '../consts/registers'
 import {

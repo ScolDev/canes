@@ -12,6 +12,8 @@ export class DebugCPUExecutor implements CPUExecutor {
   private readonly cpuInstruction: NESInstructionComponent
   private readonly nesDebugger: NESDebuggerComponent
   private readonly cpuState: CPUState
+  private readonly CYCLES_PER_SECOND
+  private nextTickCycles = 0
 
   private constructor (private readonly nes: NESModule) {
     const { cpu, nesDebugger } = this.nes.getComponents()
@@ -21,26 +23,48 @@ export class DebugCPUExecutor implements CPUExecutor {
     this.nesDebugger = nesDebugger
     this.cpuInstruction = instruction
     this.cpuState = this.cpu.getCPUState()
+
+    this.CYCLES_PER_SECOND = this.cpuState.clock.frequency
   }
 
   execute (): void {
+    this.nextTickCycles = this.cpuState.clock.cycles + this.CYCLES_PER_SECOND
+
     setTimeout(() => {
       this.runPRG()
     }, 0)
   }
 
   private runPRG (): void {
-    for (let tick = 0; tick < 256; tick++) {
+    while (this.cpuState.clock.cycles < this.nextTickCycles) {
       this.nesDebugger.validate()
 
-      if (!this.cpuState.paused) {
-        this.cpu.executeCurrent()
-      } else {
-        this.setLastExecuted()
-        break
+      if (this.cpuState.paused) {
+        this.onPause()
+        return
       }
+
+      // Strategy:
+      // execute / counting cycles
+
+      const insBytes = this.cpu.fetchInstructionBytes()
+      const baseCycles = this.cpuInstruction.getInstructionCycles(insBytes)
+
+      this.cpuState.clock.lastExtraCycles = 0
+      this.cpu.execute(insBytes)
+
+      const { lastExtraCycles } = this.cpuState.clock
+      const takenCycles = baseCycles + lastExtraCycles
+
+      this.cpuState.clock.cycles += takenCycles
+      this.cpuState.clock.lastInstructionCycles = takenCycles
     }
+
     this.execute()
+  }
+
+  private onPause (): void {
+    this.setLastExecuted()
   }
 
   private setLastExecuted (): void {

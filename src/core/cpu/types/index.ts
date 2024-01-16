@@ -9,6 +9,7 @@ export type CPURegister = ReverseMap<typeof CPURegisters>
 export type CPUFlag = ReverseMap<typeof CPUFlags>
 export type CPUAddrMode = ReverseMap<typeof CPUAddressingModes>
 export type CPUAddrModeTable = Record<number, CPUAddrMode>
+export type CPUCyclesTable = Record<number, number>
 export type CPUInstruction = [opcode: number, operand?: number]
 export type CPUInstructionTable = Record<number, BaseInstruction>
 
@@ -24,6 +25,12 @@ export interface NESCpuComponents {
 }
 
 export interface CPUState {
+  clock: {
+    frequency: number
+    cycles: number
+    lastExtraCycles: number
+    lastInstructionCycles: number
+  }
   paused: boolean
   debugMode: boolean
   insExecuted: number
@@ -73,6 +80,7 @@ export interface NESAddrModesComponent {
 
 export interface NESInstructionComponent {
   execute: (instruction: CPUInstruction) => void
+  getInstructionCycles: (instructin: CPUInstruction) => number
   getInstructionSize: (opcode: number) => number
   getLastExecuted: () => LastExecutedInstruction
 }
@@ -80,7 +88,7 @@ export interface NESInstructionComponent {
 export interface NESCpuComponent {
   getComponents: () => NESCpuComponents
   execute: (instruction: CPUInstruction) => void
-  executeCurrent: () => void
+  fetchInstructionBytes: () => CPUInstruction
   nextPC: (addressingMode: CPUAddrMode, displacement?: number) => void
   setPC: (address: number) => void
   getPC: () => number
@@ -101,12 +109,22 @@ NESCpuComponent,
 >
 
 export type AddrModesAlu = Pick<NESAluComponent, 'getSignedByte'>
-export type AddrModesMemory = Pick<NESMemoryComponent, 'load' | 'loadWord' | 'store'>
+export type AddrModesMemory = Pick<
+NESMemoryComponent,
+'load' | 'loadWord' | 'store'
+>
 
 export type InstructionsCpu = Pick<
 NESCpuComponent,
-'getComponents' | 'getRegister' | 'setRegister' | 'nextPC' | 'setPC'
+| 'getComponents'
+| 'getCPUState'
+| 'getRegister'
+| 'setRegister'
+| 'nextPC'
+| 'setPC'
 >
+
+export type InstructionsAlu = NESAluComponent
 
 export type InstructionsMemory = Pick<
 NESMemoryComponent,
@@ -118,4 +136,3 @@ NESMemoryComponent,
 | 'storeWord'
 | 'storeByAddressingMode'
 >
-| undefined

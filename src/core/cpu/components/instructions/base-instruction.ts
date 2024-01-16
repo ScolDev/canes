@@ -4,11 +4,13 @@ import {
   type CPUAddrModeTable,
   type InstructionsCpu,
   type InstructionsAlu,
-  type InstructionsMemory
+  type InstructionsMemory,
+  type CPUState
 } from '../../types'
 
 export abstract class BaseInstruction {
   protected readonly _cpu: InstructionsCpu
+  protected readonly _cpuState: CPUState
   protected readonly _cpuALU: InstructionsAlu
   protected readonly _memory: InstructionsMemory
 
@@ -18,10 +20,13 @@ export abstract class BaseInstruction {
     const { cpuALU, memory } = this.cpu.getComponents()
     this._cpuALU = cpuALU
     this._memory = memory
+
+    this._cpuState = cpu.getCPUState()
   }
 
-  public abstract readonly AddressingModes: CPUAddrModeTable
   public abstract readonly name: string
+  public abstract readonly AddressingModes: CPUAddrModeTable
+
   public abstract execute (...args: CPUInstruction): void
   public updateStatus? (...args: number[]): void
 
@@ -33,6 +38,10 @@ export abstract class BaseInstruction {
 
   protected get cpu (): InstructionsCpu {
     return this._cpu
+  }
+
+  protected get cpuState (): CPUState {
+    return this._cpuState
   }
 
   protected get cpuALU (): InstructionsAlu {
