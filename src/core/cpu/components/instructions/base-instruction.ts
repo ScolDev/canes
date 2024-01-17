@@ -36,6 +36,16 @@ export abstract class BaseInstruction {
     return `${this.name}${getASMByAddrMode(addressingMode, operand)}`
   }
 
+  protected addBranchExtraCycles (displacement: number): void {
+    const currentPC = this.cpu.getPC()
+    const hasCrossedPage = this.cpuALU.hasCrossPage(
+      currentPC,
+      currentPC + displacement
+    )
+
+    this.cpuState.clock.lastExtraCycles += hasCrossedPage ? 2 : 1
+  }
+
   protected get cpu (): InstructionsCpu {
     return this._cpu
   }

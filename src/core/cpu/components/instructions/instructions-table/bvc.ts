@@ -16,7 +16,7 @@ export class Bvc extends BaseInstruction {
 
     if (overflowFlag === 0x00) {
       displacement = this.cpuALU.getSignedByte(operand)
-      this.cpuState.clock.lastExtraCycles += 1
+      this.addBranchExtraCycles(displacement)
     }
 
     this.cpu.nextPC(addressingMode, displacement)

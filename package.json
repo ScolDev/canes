@@ -27,6 +27,7 @@
     "testMatch": [
       "**/?(*.test).ts?(x)"
     ],
+    "setupFiles": ["<rootDir>/tests/config.ts"],
     "testEnvironment": "jsdom"
   },
   "keywords": [],

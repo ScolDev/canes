@@ -1,29 +1,18 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
 import { type NESCpuComponent } from '../../../src/core/cpu/types'
-import { CPUMemoryMap } from '../../../src/core/memory/consts/memory-map'
 import { type NESMemoryComponent } from '../../../src/core/memory/types'
 import { DebugEvents } from '../../../src/nes/components/debugger/consts/events'
 import { type NESDebuggerComponent } from '../../../src/nes/components/debugger/types'
 import { NES } from '../../../src/nes/nes'
 import { type NESModule } from '../../../src/nes/types'
+import { storePRG } from '../helpers/memory-helper'
 
 describe('Tests for NES ROMs executions.', () => {
   let nes: NESModule
   let cpu: NESCpuComponent
   let memory: NESMemoryComponent
   let nesDebugger: NESDebuggerComponent
-
-  function storePRG (prg: Uint8Array): void {
-    memory.storeWord(CPUMemoryMap.Reset_Vector, 0x8000)
-    for (
-      let address = 0x8000, index = 0;
-      index < prg.length;
-      address++, index++
-    ) {
-      memory.store(address, prg[index])
-    }
-  }
 
   beforeEach(() => {
     nes = NES.create()
@@ -48,7 +37,7 @@ describe('Tests for NES ROMs executions.', () => {
       0x78, 0xd8, 0xa2, 0x0f, 0x9a, 0xad, 0x02, 0x20, 0x30, 0xfb, 0xa9, 0x00,
       0xea
     ])
-    storePRG(prg)
+    storePRG(memory, prg)
 
     nesDebugger.addBreakpoint(0x800c)
     nesDebugger.run()
@@ -82,7 +71,7 @@ describe('Tests for NES ROMs executions.', () => {
       0x78, 0xd8, 0xa2, 0xff, 0x9a, 0xad, 0x02, 0x20, 0x10, 0xfb, 0xa9, 0x00,
       0xea
     ])
-    storePRG(prg)
+    storePRG(memory, prg)
 
     nesDebugger.breakOn({ insExecuted: 21 })
     nesDebugger.run()

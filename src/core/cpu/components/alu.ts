@@ -9,6 +9,10 @@ export class ALU implements NESAluComponent {
     this.cpu = cpu
   }
 
+  hasCrossPage (actual: number, next: number): boolean {
+    return (actual & 0xff00) !== (next & 0xff00)
+  }
+
   setFlag (flag: CPUFlag, bitValue = 0x01): void {
     const flagMask = (0x01 << flag) ^ 0xff
     const valueMask = bitValue << flag

@@ -58,6 +58,7 @@ export interface LastExecutedInstruction {
 }
 
 export interface NESAluComponent {
+  hasCrossPage: (actual: number, next: number) => boolean
   setFlag: (flag: CPUFlag, bitValue?: number) => void
   clearFlag: (flag: CPUFlag) => void
   getFlag: (flag: CPUFlag) => number
@@ -121,6 +122,7 @@ NESCpuComponent,
 | 'getRegister'
 | 'setRegister'
 | 'nextPC'
+| 'getPC'
 | 'setPC'
 >
 

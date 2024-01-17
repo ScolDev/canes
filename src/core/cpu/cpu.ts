@@ -3,6 +3,7 @@ import { Memory } from '../memory/memory'
 import { type NESMemoryComponent } from '../memory/types'
 import { ALU } from './components/alu'
 import { Instruction } from './components/instructions/instruction'
+import { CPUClock } from './consts/cpu-clock'
 import { CPUFlags } from './consts/flags'
 import { CPUInstructionSize } from './consts/instructions'
 import { CPURegisters } from './consts/registers'
@@ -20,7 +21,7 @@ import {
 } from './types'
 
 export class CPU implements NESCpuComponent {
-  private cpuState: CPUState = { ...CPUInitialState }
+  private cpuState: CPUState = structuredClone(CPUInitialState)
   private cpuExecutor: CPUExecutor | null = null
 
   private cpuALU: NESAluComponent | null
@@ -141,7 +142,7 @@ export class CPU implements NESCpuComponent {
   }
 
   private initComponents (): void {
-    this.cpuState = { ...CPUInitialState }
+    this.cpuState = structuredClone(CPUInitialState)
 
     this.cpuALU = ALU.create(this)
     this.memory = Memory.create(this)
