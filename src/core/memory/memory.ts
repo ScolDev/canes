@@ -1,5 +1,6 @@
 import { AddressingModes } from '../cpu/components/addressing-modes'
 import { CPUAddressingModes } from '../cpu/consts/addressing-modes'
+import { CPURegisters } from '../cpu/consts/registers'
 import {
   type NESAddrModesComponent,
   type CPUAddrMode,
@@ -49,6 +50,33 @@ export class Memory implements NESMemoryComponent {
       }
     }
     return memorySection
+  }
+
+  hasCrossedPage (actual: number, next: number): boolean {
+    return (actual & 0xff00) !== (next & 0xff00)
+  }
+
+  hasExtraCycleByAddressingMode (addrMode: CPUAddrMode, operand: number): boolean {
+    if (addrMode === CPUAddressingModes.AbsoluteX) {
+      const xRegister = this.cpu.getRegister(CPURegisters.X)
+      return this.hasCrossedPage(operand, operand + xRegister)
+    }
+
+    if (addrMode === CPUAddressingModes.AbsoluteY) {
+      const yRegister = this.cpu.getRegister(CPURegisters.Y)
+      return this.hasCrossedPage(operand, operand + yRegister)
+    }
+
+    if (addrMode === CPUAddressingModes.IndirectIndexed) {
+      const yRegister = this.cpu.getRegister(CPURegisters.Y)
+      const memoryAddress =
+          this.load(operand) +
+          (this.load((operand + 1) & 0xff) << 8)
+
+      return this.hasCrossedPage(memoryAddress, memoryAddress + yRegister)
+    }
+
+    return false
   }
 
   loadAddressByAddressingMode (

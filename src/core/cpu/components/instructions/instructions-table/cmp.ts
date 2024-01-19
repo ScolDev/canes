@@ -6,6 +6,7 @@ import { BaseInstruction } from '../base-instruction'
 
 export class Cmp extends BaseInstruction {
   readonly name = 'cmp'
+  readonly opcodesWithExtraCycles = [0xdd, 0xd9, 0xd1]
   readonly AddressingModes: CPUAddrModeTable = {
     0xc9: CPUAddressingModes.Immediate,
     0xc5: CPUAddressingModes.ZeroPage,
@@ -25,6 +26,7 @@ export class Cmp extends BaseInstruction {
 
     const result = 0x100 + accumulator - memoryValue
 
+    this.addInstructionExtraCycles(addressingMode, opcode, operand)
     this.updateStatus(result, accumulator, memoryValue)
     this.cpu.nextPC(addressingMode)
   }

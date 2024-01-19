@@ -5,6 +5,7 @@ import { BaseInstruction } from '../base-instruction'
 
 export class Ora extends BaseInstruction {
   readonly name = 'ora'
+  readonly opcodesWithExtraCycles = [0x1d, 0x19, 0x11]
   readonly AddressingModes: CPUAddrModeTable = {
     0x09: CPUAddressingModes.Immediate,
     0x05: CPUAddressingModes.ZeroPage,
@@ -23,6 +24,7 @@ export class Ora extends BaseInstruction {
     const memoryValue = this.memory.loadByAddressingMode(addressingMode, operand)
     const resultValue = (acumulatorValue | memoryValue) & 0xff
 
+    this.addInstructionExtraCycles(addressingMode, opcode, operand)
     this.cpu.setRegister(CPURegisters.A, resultValue)
     this.updateStatus(resultValue)
     this.cpu.nextPC(addressingMode)

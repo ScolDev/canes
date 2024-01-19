@@ -5,7 +5,8 @@ import {
   type InstructionsCpu,
   type InstructionsAlu,
   type InstructionsMemory,
-  type CPUState
+  type CPUState,
+  type CPUAddrMode
 } from '../../types'
 
 export abstract class BaseInstruction {
@@ -13,6 +14,7 @@ export abstract class BaseInstruction {
   protected readonly _cpuState: CPUState
   protected readonly _cpuALU: InstructionsAlu
   protected readonly _memory: InstructionsMemory
+  protected readonly opcodesWithExtraCycles?: number[]
 
   constructor (cpu: InstructionsCpu) {
     this._cpu = cpu
@@ -38,12 +40,24 @@ export abstract class BaseInstruction {
 
   protected addBranchExtraCycles (displacement: number): void {
     const currentPC = this.cpu.getPC()
-    const hasCrossedPage = this.cpuALU.hasCrossPage(
+    const hasCrossedPage = this.memory.hasCrossedPage(
       currentPC,
       currentPC + displacement
     )
 
     this.cpuState.clock.lastExtraCycles += hasCrossedPage ? 2 : 1
+  }
+
+  protected addInstructionExtraCycles (addrMode: CPUAddrMode, opcode: number, operand: number): void {
+    if (
+      this.opcodesWithExtraCycles === undefined ||
+      !this.opcodesWithExtraCycles.includes(opcode)
+    ) {
+      return
+    }
+
+    const hasExtraCycle = this.memory.hasExtraCycleByAddressingMode(addrMode, operand)
+    this.cpuState.clock.lastExtraCycles += hasExtraCycle ? 1 : 0
   }
 
   protected get cpu (): InstructionsCpu {

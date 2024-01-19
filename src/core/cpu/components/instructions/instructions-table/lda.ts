@@ -5,6 +5,7 @@ import { BaseInstruction } from '../base-instruction'
 
 export class Lda extends BaseInstruction {
   readonly name = 'lda'
+  readonly opcodesWithExtraCycles = [0xbd, 0xb9, 0xb1]
   readonly AddressingModes: CPUAddrModeTable = {
     0xa9: CPUAddressingModes.Immediate,
     0xa5: CPUAddressingModes.ZeroPage,
@@ -20,6 +21,7 @@ export class Lda extends BaseInstruction {
     const addressingMode = this.AddressingModes[opcode]
     const memoryValue = this.memory.loadByAddressingMode(addressingMode, operand)
 
+    this.addInstructionExtraCycles(addressingMode, opcode, operand)
     this.cpu.setRegister(CPURegisters.A, memoryValue)
     this.updateStatus(this.cpu.getRegister(CPURegisters.A))
     this.cpu.nextPC(addressingMode)

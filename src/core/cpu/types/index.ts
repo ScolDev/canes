@@ -58,7 +58,6 @@ export interface LastExecutedInstruction {
 }
 
 export interface NESAluComponent {
-  hasCrossPage: (actual: number, next: number) => boolean
   setFlag: (flag: CPUFlag, bitValue?: number) => void
   clearFlag: (flag: CPUFlag) => void
   getFlag: (flag: CPUFlag) => number
@@ -130,6 +129,8 @@ export type InstructionsAlu = NESAluComponent
 
 export type InstructionsMemory = Pick<
 NESMemoryComponent,
+| 'hasCrossedPage'
+| 'hasExtraCycleByAddressingMode'
 | 'loadAddressByAddressingMode'
 | 'load'
 | 'loadByAddressingMode'

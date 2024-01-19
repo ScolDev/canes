@@ -5,6 +5,7 @@ import { BaseInstruction } from '../base-instruction'
 
 export class Eor extends BaseInstruction {
   readonly name = 'eor'
+  readonly opcodesWithExtraCycles = [0x5d, 0x59, 0x51]
   readonly AddressingModes: CPUAddrModeTable = {
     0x49: CPUAddressingModes.Immediate,
     0x45: CPUAddressingModes.ZeroPage,
@@ -23,6 +24,7 @@ export class Eor extends BaseInstruction {
     const memoryValue = this.memory.loadByAddressingMode(addressingMode, operand)
     const resultValue = (acumulatorValue ^ memoryValue) & 0xff
 
+    this.addInstructionExtraCycles(addressingMode, opcode, operand)
     this.cpu.setRegister(CPURegisters.A, resultValue)
     this.updateStatus(resultValue)
     this.cpu.nextPC(addressingMode)

@@ -6,6 +6,7 @@ import { BaseInstruction } from '../base-instruction'
 
 export class Adc extends BaseInstruction {
   readonly name = 'adc'
+  readonly opcodesWithExtraCycles = [0x7d, 0x79, 0x71]
   readonly AddressingModes: CPUAddrModeTable = {
     0x69: CPUAddressingModes.Immediate,
     0x65: CPUAddressingModes.ZeroPage,
@@ -26,6 +27,7 @@ export class Adc extends BaseInstruction {
     const result = this.cpu.getRegister(CPURegisters.A) + operandA + carryFlag
     this.cpu.setRegister(CPURegisters.A, result & 0xff)
 
+    this.addInstructionExtraCycles(addressingMode, opcode, operand)
     this.updateStatus(result, operandA, operandB)
     this.cpu.nextPC(addressingMode)
   }

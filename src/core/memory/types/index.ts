@@ -10,6 +10,8 @@ export interface NESMemoryComponent {
   initComponents: () => void
   copy: (buffer: Uint8Array, offset: number) => void
   getMemorySection: (start: number, end: number) => Uint8Array
+  hasCrossedPage: (actual: number, next: number) => boolean
+  hasExtraCycleByAddressingMode: (addrMode: CPUAddrMode, operand: number) => boolean
   loadAddressByAddressingMode: (
     addressingMode: CPUAddrMode,
     operand: number

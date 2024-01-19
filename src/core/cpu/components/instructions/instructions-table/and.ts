@@ -5,6 +5,7 @@ import { BaseInstruction } from '../base-instruction'
 
 export class And extends BaseInstruction {
   readonly name = 'and'
+  readonly opcodesWithExtraCycles = [0x3d, 0x39, 0x31]
   readonly AddressingModes: CPUAddrModeTable = {
     0x29: CPUAddressingModes.Immediate,
     0x25: CPUAddressingModes.ZeroPage,
@@ -24,6 +25,7 @@ export class And extends BaseInstruction {
         this.memory.loadByAddressingMode(addressingMode, operand)
     )
 
+    this.addInstructionExtraCycles(addressingMode, opcode, operand)
     this.updateStatus(this.cpu.getRegister(CPURegisters.A))
     this.cpu.nextPC(addressingMode)
   }

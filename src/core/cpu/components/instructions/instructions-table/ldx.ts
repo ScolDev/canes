@@ -5,6 +5,7 @@ import { BaseInstruction } from '../base-instruction'
 
 export class Ldx extends BaseInstruction {
   readonly name = 'ldx'
+  readonly opcodesWithExtraCycles = [0xbe]
   readonly AddressingModes: CPUAddrModeTable = {
     0xa2: CPUAddressingModes.Immediate,
     0xa6: CPUAddressingModes.ZeroPage,
@@ -17,6 +18,7 @@ export class Ldx extends BaseInstruction {
     const addressingMode = this.AddressingModes[opcode]
     const memoryValue = this.memory.loadByAddressingMode(addressingMode, operand)
 
+    this.addInstructionExtraCycles(addressingMode, opcode, operand)
     this.cpu.setRegister(CPURegisters.X, memoryValue)
     this.updateStatus(this.cpu.getRegister(CPURegisters.X))
     this.cpu.nextPC(addressingMode)

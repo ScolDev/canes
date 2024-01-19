@@ -21,7 +21,8 @@ describe('Tests for timings on NES Components.', () => {
     // This PRG tested code before breaking on 0xe847,
     // only contains extra cycles for branch instructions
 
-    const filePath = './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
+    const filePath =
+      './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
     const expectedPC = 0xe847
     const expectedCycles = 46086
     const expectedInsExecuted = 15000
@@ -241,6 +242,282 @@ describe('Tests for timings on NES Components.', () => {
 
     storePRG(memory, prg, resetVector)
     nesDebugger.breakOn({ insExecuted: 2 })
+
+    nesDebugger.run()
+
+    nesDebugger.on('pause', ({ data }) => {
+      const { pc, cpuState } = data
+
+      expect(cpuState.clock.cycles).toBe(expectedCycles)
+      expect(pc).toBe(expectedPC)
+
+      done()
+    })
+  })
+
+  test('should count the extra cpu cycles for ADC instruction when crossing page.', (done) => {
+    /**
+      0x8000  a2ff      ldx #$ff      ; Preconditions to ensure cross page access
+      0x8002  a0ff      ldy #$ff
+      0x8004  a972      lda #$72      ; Store in $0020 the $0472 address
+      0x8006  8520      sta #$20
+      0x8008  a904      lda #$04
+      0x800a  8521      sta #$21
+      0x800c  7d7204    adc $0472, X  ; Execute the extra cycle for ADC instructions
+      0x800f  797204    adc $0472, Y
+      0x8012  7120      adc ($20), Y
+     */
+    const prg = new Uint8Array([
+      0xa2, 0xff, 0xa0, 0xff, 0xa9, 0x72, 0x85, 0x20, 0xa9, 0x04, 0x85, 0x21,
+      0x7d, 0x72, 0x04, 0x79, 0x72, 0x04, 0x71, 0x20
+    ])
+    // 27 + 3 (extra cycles for the ADC instructions)
+    const expectedCycles = 30
+    const expectedPC = 0x8014
+
+    storePRG(memory, prg)
+    nesDebugger.breakOn({ insExecuted: 9 })
+
+    nesDebugger.run()
+
+    nesDebugger.on('pause', ({ data }) => {
+      const { pc, cpuState } = data
+
+      expect(cpuState.clock.cycles).toBe(expectedCycles)
+      expect(pc).toBe(expectedPC)
+
+      done()
+    })
+  })
+
+  test('should count the extra cpu cycles for AND instruction when crossing page.', (done) => {
+    /**
+      0x8000  a2ff      ldx #$ff      ; Preconditions to ensure cross page access
+      0x8002  a0ff      ldy #$ff
+      0x8004  a972      lda #$72      ; Store in $0020 the $0472 address
+      0x8006  8520      sta #$20
+      0x8008  a904      lda #$04
+      0x800a  8521      sta #$21
+      0x800c  3d7204    and $0472, X  ; Execute the extra cycle for AND instructions
+      0x800f  397204    and $0472, Y
+      0x8012  3120      and ($20), Y
+     */
+    const prg = new Uint8Array([
+      0xa2, 0xff, 0xa0, 0xff, 0xa9, 0x72, 0x85, 0x20, 0xa9, 0x04, 0x85, 0x21,
+      0x3d, 0x72, 0x04, 0x39, 0x72, 0x04, 0x31, 0x20
+    ])
+    // 27 + 3 (extra cycles for the AND instructions)
+    const expectedCycles = 30
+    const expectedPC = 0x8014
+
+    storePRG(memory, prg)
+    nesDebugger.breakOn({ insExecuted: 9 })
+
+    nesDebugger.run()
+
+    nesDebugger.on('pause', ({ data }) => {
+      const { pc, cpuState } = data
+
+      expect(cpuState.clock.cycles).toBe(expectedCycles)
+      expect(pc).toBe(expectedPC)
+
+      done()
+    })
+  })
+
+  test('should count the extra cpu cycles for CMP instruction when crossing page.', (done) => {
+    /**
+      0x8000  a2ff      ldx #$ff      ; Preconditions to ensure cross page access
+      0x8002  a0ff      ldy #$ff
+      0x8004  a972      lda #$72      ; Store in $0020 the $0472 address
+      0x8006  8520      sta #$20
+      0x8008  a904      lda #$04
+      0x800a  8521      sta #$21
+      0x800c  dd7204    cmp $0472, X  ; Execute the extra cycle for CMP instructions
+      0x800f  d97204    cmp $0472, Y
+      0x8012  d120      cmp ($20), Y
+     */
+    const prg = new Uint8Array([
+      0xa2, 0xff, 0xa0, 0xff, 0xa9, 0x72, 0x85, 0x20, 0xa9, 0x04, 0x85, 0x21,
+      0xdd, 0x72, 0x04, 0xd9, 0x72, 0x04, 0xd1, 0x20
+    ])
+    // 27 + 3 (extra cycles for the CMP instructions)
+    const expectedCycles = 30
+    const expectedPC = 0x8014
+
+    storePRG(memory, prg)
+    nesDebugger.breakOn({ insExecuted: 9 })
+
+    nesDebugger.run()
+
+    nesDebugger.on('pause', ({ data }) => {
+      const { pc, cpuState } = data
+
+      expect(cpuState.clock.cycles).toBe(expectedCycles)
+      expect(pc).toBe(expectedPC)
+
+      done()
+    })
+  })
+
+  test('should count the extra cpu cycles for EOR instruction when crossing page.', (done) => {
+    /**
+      0x8000  a2ff      ldx #$ff      ; Preconditions to ensure cross page access
+      0x8002  a0ff      ldy #$ff
+      0x8004  a972      lda #$72      ; Store in $0020 the $0472 address
+      0x8006  8520      sta #$20
+      0x8008  a904      lda #$04
+      0x800a  8521      sta #$21
+      0x800c  5d7204    eor $0472, X  ; Execute the extra cycle for EOR instructions
+      0x800f  597204    eor $0472, Y
+      0x8012  5120      eor ($20), Y
+     */
+    const prg = new Uint8Array([
+      0xa2, 0xff, 0xa0, 0xff, 0xa9, 0x72, 0x85, 0x20, 0xa9, 0x04, 0x85, 0x21,
+      0x5d, 0x72, 0x04, 0x59, 0x72, 0x04, 0x51, 0x20
+    ])
+    // 27 + 3 (extra cycles for the EOR instructions)
+    const expectedCycles = 30
+    const expectedPC = 0x8014
+
+    storePRG(memory, prg)
+    nesDebugger.breakOn({ insExecuted: 9 })
+
+    nesDebugger.run()
+
+    nesDebugger.on('pause', ({ data }) => {
+      const { pc, cpuState } = data
+
+      expect(cpuState.clock.cycles).toBe(expectedCycles)
+      expect(pc).toBe(expectedPC)
+
+      done()
+    })
+  })
+
+  test('should count the extra cpu cycles for LDX instruction when crossing page.', (done) => {
+    /**
+      0x8000  a2ff      ldx #$ff      ; Preconditions to ensure cross page access
+      0x8002  a0ff      ldy #$ff
+      0x8004  a972      lda #$72      ; Store in $0020 the $0472 address
+      0x8006  8520      sta #$20
+      0x8008  a904      lda #$04
+      0x800a  8521      sta #$21
+      0x800c  be7204    ldx $0472, Y  ; Execute the extra cycle for LDX instruction
+     */
+    const prg = new Uint8Array([
+      0xa2, 0xff, 0xa0, 0xff, 0xa9, 0x72, 0x85, 0x20, 0xa9, 0x04, 0x85, 0x21,
+      0xbe, 0x72, 0x04
+    ])
+    // 18 + 1 (extra cycles for the LDX instructions)
+    const expectedCycles = 19
+    const expectedPC = 0x800f
+
+    storePRG(memory, prg)
+    nesDebugger.breakOn({ insExecuted: 7 })
+
+    nesDebugger.run()
+
+    nesDebugger.on('pause', ({ data }) => {
+      const { pc, cpuState } = data
+
+      expect(cpuState.clock.cycles).toBe(expectedCycles)
+      expect(pc).toBe(expectedPC)
+
+      done()
+    })
+  })
+
+  test('should count the extra cpu cycles for LDY instruction when crossing page.', (done) => {
+    /**
+      0x8000  a2ff      ldx #$ff      ; Preconditions to ensure cross page access
+      0x8002  a0ff      ldy #$ff
+      0x8004  a972      lda #$72      ; Store in $0020 the $0472 address
+      0x8006  8520      sta #$20
+      0x8008  a904      lda #$04
+      0x800a  8521      sta #$21
+      0x800c  bc7204    ldy $0472, Y  ; Execute the extra cycle for LDY instruction
+     */
+    const prg = new Uint8Array([
+      0xa2, 0xff, 0xa0, 0xff, 0xa9, 0x72, 0x85, 0x20, 0xa9, 0x04, 0x85, 0x21,
+      0xbc, 0x72, 0x04
+    ])
+    // 18 + 1 (extra cycles for the LDY instructions)
+    const expectedCycles = 19
+    const expectedPC = 0x800f
+
+    storePRG(memory, prg)
+    nesDebugger.breakOn({ insExecuted: 7 })
+
+    nesDebugger.run()
+
+    nesDebugger.on('pause', ({ data }) => {
+      const { pc, cpuState } = data
+
+      expect(cpuState.clock.cycles).toBe(expectedCycles)
+      expect(pc).toBe(expectedPC)
+
+      done()
+    })
+  })
+
+  test('should count the extra cpu cycles for ORA instruction when crossing page.', (done) => {
+    /**
+      0x8000  a2ff      ldx #$ff      ; Preconditions to ensure cross page access
+      0x8002  a0ff      ldy #$ff
+      0x8004  a972      lda #$72      ; Store in $0020 the $0472 address
+      0x8006  8520      sta #$20
+      0x8008  a904      lda #$04
+      0x800a  8521      sta #$21
+      0x800c  1d7204    ora $0472, X  ; Execute the extra cycle for ORA instructions
+      0x800f  197204    ora $0472, Y
+      0x8012  1120      ora ($20), Y
+     */
+    const prg = new Uint8Array([
+      0xa2, 0xff, 0xa0, 0xff, 0xa9, 0x72, 0x85, 0x20, 0xa9, 0x04, 0x85, 0x21,
+      0x1d, 0x72, 0x04, 0x19, 0x72, 0x04, 0x11, 0x20
+    ])
+    // 27 + 3 (extra cycles for the ORA instructions)
+    const expectedCycles = 30
+    const expectedPC = 0x8014
+
+    storePRG(memory, prg)
+    nesDebugger.breakOn({ insExecuted: 9 })
+
+    nesDebugger.run()
+
+    nesDebugger.on('pause', ({ data }) => {
+      const { pc, cpuState } = data
+
+      expect(cpuState.clock.cycles).toBe(expectedCycles)
+      expect(pc).toBe(expectedPC)
+
+      done()
+    })
+  })
+
+  test('should count the extra cpu cycles for SBC instruction when crossing page.', (done) => {
+    /**
+      0x8000  a2ff      ldx #$ff      ; Preconditions to ensure cross page access
+      0x8002  a0ff      ldy #$ff
+      0x8004  a972      lda #$72      ; Store in $0020 the $0472 address
+      0x8006  8520      sta #$20
+      0x8008  a904      lda #$04
+      0x800a  8521      sta #$21
+      0x800c  fd7204    sbc $0472, X  ; Execute the extra cycle for SBC instructions
+      0x800f  f97204    sbc $0472, Y
+      0x8012  f120      sbc ($20), Y
+     */
+    const prg = new Uint8Array([
+      0xa2, 0xff, 0xa0, 0xff, 0xa9, 0x72, 0x85, 0x20, 0xa9, 0x04, 0x85, 0x21,
+      0xfd, 0x72, 0x04, 0xf9, 0x72, 0x04, 0xf1, 0x20
+    ])
+    // 27 + 3 (extra cycles for the SBC instructions)
+    const expectedCycles = 30
+    const expectedPC = 0x8014
+
+    storePRG(memory, prg)
+    nesDebugger.breakOn({ insExecuted: 9 })
 
     nesDebugger.run()
 

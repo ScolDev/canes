@@ -6,6 +6,7 @@ import { BaseInstruction } from '../base-instruction'
 
 export class Sbc extends BaseInstruction {
   readonly name = 'sbc'
+  readonly opcodesWithExtraCycles = [0xfd, 0xf9, 0xf1]
   readonly AddressingModes: CPUAddrModeTable = {
     0xe9: CPUAddressingModes.Immediate,
     0xe5: CPUAddressingModes.ZeroPage,
@@ -24,6 +25,7 @@ export class Sbc extends BaseInstruction {
     const currentAccumulator = this.cpu.getRegister(CPURegisters.A)
     const twoComplement = this.cpuALU.getTwoComplement(memoryValue)
 
+    this.addInstructionExtraCycles(addressingMode, opcode, operand)
     const result = this.cpu.getRegister(CPURegisters.A) + twoComplement + carryFlag
     this.cpu.setRegister(CPURegisters.A, result & 0xff)
 
