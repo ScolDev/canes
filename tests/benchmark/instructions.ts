@@ -1,77 +1,65 @@
-import { type BaseInstruction } from '../../src/core/cpu/components/instructions/base-instruction'
 import { InstructionsTable } from '../../src/core/cpu/components/instructions/instructions-table'
-import { CPUAddressingModes } from '../../src/core/cpu/consts/addressing-modes'
+import { CPUClock } from '../../src/core/cpu/consts/cpu-clock'
 import { CPU } from '../../src/core/cpu/cpu'
-import { type CPUAddrMode } from '../../src/core/cpu/types'
+import { addrModes } from './consts/addr-modes'
+import { executeByInstructionCycles } from './strategies'
+import { type BenchmarkConfig, type InstructionSummary } from './types/benchmark-types'
 
-type AddrModes = Record<CPUAddrMode, string>
-interface InstructionTime {
-  addrMode: string
-  opcode: number
-  name: string
-  time: number
-}
-
-const INS_TO_EXECUTE = 500000
 const cpu = CPU.create()
+const instModule = cpu.getComponents().instruction
 const instTable = InstructionsTable(cpu)
 
-const addrModes: AddrModes = {
-  [CPUAddressingModes.Accumulator]: 'Accumulator',
-  [CPUAddressingModes.Immediate]: 'Immediate',
-  [CPUAddressingModes.ZeroPage]: 'ZeroPage',
-  [CPUAddressingModes.ZeroPageX]: 'ZeroPageX',
-  [CPUAddressingModes.ZeroPageY]: 'ZeroPageY',
-  [CPUAddressingModes.Relative]: 'Relative',
-  [CPUAddressingModes.Absolute]: 'Absolute',
-  [CPUAddressingModes.AbsoluteX]: 'AbsoluteX',
-  [CPUAddressingModes.AbsoluteY]: 'AbsoluteY',
-  [CPUAddressingModes.Indirect]: 'Indirect',
-  [CPUAddressingModes.IndexedIndirect]: 'IndexedIndirect',
-  [CPUAddressingModes.IndirectIndexed]: 'IndirectIndexed',
-  [CPUAddressingModes.Implied]: 'Implied'
+const benchmarkByCycles = {
+  title: `Benchmark for CPU instructions cycles (${CPUClock.NTSC} cycles per instruction)`,
+  strategy: executeByInstructionCycles,
+  instModule
 }
 
-benchMark()
+benchMark(benchmarkByCycles)
 
-function benchMark (): void {
-  console.log('Starting benchmark for CPU instructions...')
+function benchMark (config: BenchmarkConfig): void {
+  const { title, strategy, instModule } = config
 
-  const times = Object.entries(instTable)
+  console.log(`Executing: ${title}\n`)
+  const summary = Object.entries(instTable)
     .map(([opcode, instruction]) => {
       const opcodeIns = Number(opcode)
       const addrMode = addrModes[instruction.AddressingModes[opcodeIns]]
+      const [time, timesExecuted] = strategy(
+        Number(opcode),
+        instruction,
+        instModule
+      )
 
       return {
         addrMode,
         opcode: opcodeIns,
         name: instruction.name,
-        time: executeInstruction(Number(opcode), instruction)
+        timesExecuted,
+        time
       }
     })
     .sort((a, b) => b.time - a.time)
 
-  logTable(times)
-  logSummary(times)
+  logSummary(summary)
 }
 
-function executeInstruction (opcode: number, instruction: BaseInstruction): number {
-  const start = Date.now()
+function logSummary (summaries: InstructionSummary[]): void {
+  console.log('Instruction\t\tTime\t\tTimes Executed\n')
 
-  for (let i = 0; i < INS_TO_EXECUTE; i++) {
-    instruction.execute(opcode, 0x00)
-  }
-  return Date.now() - start
-}
-
-function logTable (times: InstructionTime[]): void {
-  console.log(`\nExecution Times - ${INS_TO_EXECUTE} times per instruction:\n`)
-  times.forEach(result => {
-    const instruction = `${result.name} (${result.addrMode})`.padEnd(22, ' ')
-    console.log(`${instruction}\t${result.time} ms.`)
+  summaries.forEach((summary) => {
+    const instruction = `${summary.name} (${summary.addrMode})`.padEnd(22, ' ')
+    console.log(
+      `${instruction}\t${summary.time} ms\t\t${Math.floor(
+        summary.timesExecuted
+      )}`
+    )
   })
-}
 
-function logSummary (times: Array<{ opcode: number, time: number }>): void {
-  console.log(`\nSummary: ${times.reduce((accu, current) => accu + current.time, 0)} ms.`)
+  console.log(
+    `\nSummary: ${summaries.reduce(
+      (accu, current) => accu + current.time,
+      0
+    )} ms.`
+  )
 }
