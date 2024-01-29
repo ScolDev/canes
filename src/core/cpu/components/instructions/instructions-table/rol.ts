@@ -26,11 +26,10 @@ export class Rol extends BaseInstruction {
   }
 
   updateStatus (result: number, operandValue: number): void {
-    const { cpuALU } = this.cpu.getComponents()
-    const carryFlag = cpuALU.getBitValue(7, operandValue)
+    const carryFlag = this.cpuALU.getBitValue(7, operandValue)
 
-    cpuALU.setFlag(CPUFlags.CarryFlag, carryFlag)
-    cpuALU.updateZeroFlag(result)
-    cpuALU.updateNegativeFlag(result)
+    this.cpuALU.setFlag(CPUFlags.CarryFlag, carryFlag)
+    this.cpuALU.updateZeroFlag(result)
+    this.cpuALU.updateNegativeFlag(result)
   }
 }

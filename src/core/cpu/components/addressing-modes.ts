@@ -1,48 +1,35 @@
+import { NESBusRequests } from '../../control-bus/consts/bus-events'
+import { type NESControlBus } from '../../control-bus/types'
 import { CPUMemoryMap } from '../../memory/consts/memory-map'
 import { CPUAddressingModes } from '../consts/addressing-modes'
 import { CPURegisters } from '../consts/registers'
 import {
   type CPUAddrModeHandler,
   type CPUAddrMode,
-  type AddrModesCpu,
-  type AddrModesAlu,
-  type NESAddrModesComponent,
-  type AddrModesMemory
+  type NESAddrModesComponent
 } from '../types'
 
 export class AddressingModes implements NESAddrModesComponent {
-  private readonly cpu: AddrModesCpu
-  private readonly cpuALU: AddrModesAlu
-  private readonly memory: AddrModesMemory
-
   private readonly AddrModes = new Map<CPUAddrMode, CPUAddrModeHandler>()
 
-  private constructor (cpu: AddrModesCpu) {
-    this.cpu = cpu
-
-    const { cpuALU, memory } = cpu.getComponents()
-    this.cpuALU = cpuALU
-    this.memory = memory
-  }
-
-  get (addressingMode: CPUAddrMode, operand: number): number {
-    const addr = this.AddrModes.get(addressingMode)
-    if (addr !== undefined) {
-      return addr.get(operand)
-    }
-
-    return 0
-  }
-
-  set (addressingMode: CPUAddrMode, value: number, operand: number): void {
-    const addr = this.AddrModes.get(addressingMode)
-    if (addr?.set !== undefined) {
-      addr.set(value, operand)
-    }
-  }
-
-  private initComponents (): void {
+  private constructor (private readonly control: NESControlBus) {
     this.loadAddressingModesHandlers()
+  }
+
+  get (addressingMode: CPUAddrMode, operand?: number): number {
+    const addr = this.AddrModes.get(addressingMode)
+    if (addr === undefined) {
+      return 0
+    }
+    return operand !== undefined ? addr.get(operand) : addr.get()
+  }
+
+  set (addressingMode: CPUAddrMode, value: number, operand?: number): void {
+    const addr = this.AddrModes.get(addressingMode)
+    if (addr?.set === undefined) {
+      return
+    }
+    operand !== undefined ? addr.set(value, operand) : addr.set(value)
   }
 
   private loadAddressingModesHandlers (): void {
@@ -68,9 +55,19 @@ export class AddressingModes implements NESAddrModesComponent {
 
   private accumulator (): CPUAddrModeHandler {
     return {
-      get: () => this.cpu.getRegister(CPURegisters.A),
+      get: () =>
+        this.control.request<number>({
+          type: NESBusRequests.GetRegister,
+          data: CPURegisters.A
+        }),
       set: (value) => {
-        this.cpu.setRegister(CPURegisters.A, value)
+        this.control.notify({
+          type: NESBusRequests.SetRegister,
+          data: {
+            register: CPURegisters.A,
+            value
+          }
+        })
       }
     }
   }
@@ -85,12 +82,21 @@ export class AddressingModes implements NESAddrModesComponent {
     return {
       get: (operand) => {
         const memoryAddress = CPUMemoryMap.ZeroPage + (operand & 0xff)
-        return this.memory.load(memoryAddress)
+        return this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: memoryAddress
+        })
       },
       set: (value, operand) => {
         const memoryAddress = CPUMemoryMap.ZeroPage + (operand & 0xff)
 
-        this.memory.store(memoryAddress, value)
+        this.control.notify({
+          type: NESBusRequests.Store,
+          data: {
+            address: memoryAddress,
+            value
+          }
+        })
         this.setLastWrite(memoryAddress, value)
       }
     }
@@ -99,18 +105,33 @@ export class AddressingModes implements NESAddrModesComponent {
   private zeroPageX (): CPUAddrModeHandler {
     return {
       get: (operand) => {
-        const xRegister = this.cpu.getRegister(CPURegisters.X)
+        const xRegister = this.control.request<number>({
+          type: NESBusRequests.GetRegister,
+          data: CPURegisters.X
+        })
         const memoryAddress =
           CPUMemoryMap.ZeroPage + ((xRegister + operand) & 0xff)
 
-        return this.memory.load(memoryAddress)
+        return this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: memoryAddress
+        })
       },
       set: (value, operand) => {
-        const xRegister = this.cpu.getRegister(CPURegisters.X)
+        const xRegister = this.control.request<number>({
+          type: NESBusRequests.GetRegister,
+          data: CPURegisters.X
+        })
         const memoryAddress =
           CPUMemoryMap.ZeroPage + ((xRegister + operand) & 0xff)
 
-        this.memory.store(memoryAddress, value)
+        this.control.notify({
+          type: NESBusRequests.Store,
+          data: {
+            address: memoryAddress,
+            value
+          }
+        })
         this.setLastWrite(memoryAddress, value)
       }
     }
@@ -119,18 +140,33 @@ export class AddressingModes implements NESAddrModesComponent {
   private zeroPageY (): CPUAddrModeHandler {
     return {
       get: (operand) => {
-        const yRegister = this.cpu.getRegister(CPURegisters.Y)
+        const yRegister = this.control.request<number>({
+          type: NESBusRequests.GetRegister,
+          data: CPURegisters.Y
+        })
         const memoryAddress =
           CPUMemoryMap.ZeroPage + ((yRegister + operand) & 0xff)
 
-        return this.memory.load(memoryAddress)
+        return this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: memoryAddress
+        })
       },
       set: (value, operand) => {
-        const yRegister = this.cpu.getRegister(CPURegisters.Y)
+        const yRegister = this.control.request<number>({
+          type: NESBusRequests.GetRegister,
+          data: CPURegisters.Y
+        })
         const memoryAddress =
           CPUMemoryMap.ZeroPage + ((yRegister + operand) & 0xff)
 
-        this.memory.store(memoryAddress, value)
+        this.control.notify({
+          type: NESBusRequests.Store,
+          data: {
+            address: memoryAddress,
+            value
+          }
+        })
         this.setLastWrite(memoryAddress, value)
       }
     }
@@ -138,15 +174,29 @@ export class AddressingModes implements NESAddrModesComponent {
 
   private relative (): CPUAddrModeHandler {
     return {
-      get: (operand) => this.cpuALU.getSignedByte(operand)
+      get: (operand) =>
+        this.control.request({
+          type: NESBusRequests.GetSignedByte,
+          data: operand
+        })
     }
   }
 
   private aboslute (): CPUAddrModeHandler {
     return {
-      get: (operand) => this.memory.load(operand),
+      get: (operand) =>
+        this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: operand
+        }),
       set: (value, memoryAddress) => {
-        this.memory.store(memoryAddress, value)
+        this.control.notify({
+          type: NESBusRequests.Store,
+          data: {
+            address: memoryAddress,
+            value
+          }
+        })
         this.setLastWrite(memoryAddress, value)
       }
     }
@@ -155,13 +205,29 @@ export class AddressingModes implements NESAddrModesComponent {
   private absoluteX (): CPUAddrModeHandler {
     return {
       get: (operand) => {
-        const xRegister = this.cpu.getRegister(CPURegisters.X)
-        return this.memory.load(operand + xRegister)
+        const xRegister = this.control.request<number>({
+          type: NESBusRequests.GetRegister,
+          data: CPURegisters.X
+        })
+        return this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: operand + xRegister
+        })
       },
       set: (value, operand) => {
-        const xRegister = this.cpu.getRegister(CPURegisters.X)
+        const xRegister = this.control.request<number>({
+          type: NESBusRequests.GetRegister,
+          data: CPURegisters.X
+        })
         const memoryAddress = operand + xRegister
-        this.memory.store(memoryAddress, value)
+
+        this.control.notify({
+          type: NESBusRequests.Store,
+          data: {
+            address: memoryAddress,
+            value
+          }
+        })
         this.setLastWrite(memoryAddress, value)
       }
     }
@@ -170,14 +236,29 @@ export class AddressingModes implements NESAddrModesComponent {
   private absoluteY (): CPUAddrModeHandler {
     return {
       get: (operand) => {
-        const yRegister = this.cpu.getRegister(CPURegisters.Y)
-        return this.memory.load(operand + yRegister)
+        const yRegister = this.control.request<number>({
+          type: NESBusRequests.GetRegister,
+          data: CPURegisters.Y
+        })
+        return this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: operand + yRegister
+        })
       },
       set: (value, operand) => {
-        const yRegister = this.cpu.getRegister(CPURegisters.Y)
+        const yRegister = this.control.request<number>({
+          type: NESBusRequests.GetRegister,
+          data: CPURegisters.Y
+        })
         const memoryAddress = operand + yRegister
 
-        this.memory.store(memoryAddress, value)
+        this.control.notify({
+          type: NESBusRequests.Store,
+          data: {
+            address: memoryAddress,
+            value
+          }
+        })
         this.setLastWrite(memoryAddress, value)
       }
     }
@@ -185,29 +266,65 @@ export class AddressingModes implements NESAddrModesComponent {
 
   private indirect (): CPUAddrModeHandler {
     return {
-      get: (operand) => this.memory.loadWord(operand)
+      get: (operand) =>
+        this.control.request<number>({
+          type: NESBusRequests.LoadWord,
+          data: operand
+        })
     }
   }
 
   private indexedIndirect (): CPUAddrModeHandler {
     return {
       get: (operand) => {
-        const xRegister = this.cpu.getRegister(CPURegisters.X)
-        const zeroPageOffset = (operand + xRegister) & 0xff
-        const memoryAddress =
-          this.memory.load(zeroPageOffset) +
-          (this.memory.load((zeroPageOffset + 1) & 0xff) << 8)
+        const xRegister = this.control.request<number>({
+          type: NESBusRequests.GetRegister,
+          data: CPURegisters.X
+        })
 
-        return this.memory.load(memoryAddress)
+        const zeroPageOffset = (operand + xRegister) & 0xff
+        const zeroPageOffsetNext = (zeroPageOffset + 1) & 0xff
+
+        const lsb = this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: zeroPageOffset
+        })
+        const msb = this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: zeroPageOffsetNext
+        })
+        const memoryAddress = lsb + (msb << 8)
+
+        return this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: memoryAddress
+        })
       },
       set: (value, operand) => {
-        const xRegister = this.cpu.getRegister(CPURegisters.X)
+        const xRegister = this.control.request<number>({
+          type: NESBusRequests.GetRegister,
+          data: CPURegisters.X
+        })
         const zeroPageOffset = (operand + xRegister) & 0xff
-        const memoryAddress =
-          this.memory.load(zeroPageOffset) +
-          (this.memory.load((zeroPageOffset + 1) & 0xff) << 8)
+        const zeroPageOffsetNext = (zeroPageOffset + 1) & 0xff
 
-        this.memory.store(memoryAddress, value)
+        const lsb = this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: zeroPageOffset
+        })
+        const msb = this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: zeroPageOffsetNext
+        })
+        const memoryAddress = lsb + (msb << 8)
+
+        this.control.notify({
+          type: NESBusRequests.Store,
+          data: {
+            address: memoryAddress,
+            value
+          }
+        })
         this.setLastWrite(memoryAddress, value)
       }
     }
@@ -216,36 +333,63 @@ export class AddressingModes implements NESAddrModesComponent {
   private indirectIndexed (): CPUAddrModeHandler {
     return {
       get: (operand) => {
-        const yRegister = this.cpu.getRegister(CPURegisters.Y)
-        const memoryAddress =
-          this.memory.load(operand) +
-          (this.memory.load((operand + 1) & 0xff) << 8)
-        return this.memory.load(memoryAddress + yRegister)
+        const yRegister = this.control.request<number>({
+          type: NESBusRequests.GetRegister,
+          data: CPURegisters.Y
+        })
+        const lsb = this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: operand
+        })
+        const msb = this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: (operand + 1) & 0xff
+        })
+        const memoryAddress = yRegister + lsb + (msb << 8)
+
+        return this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: memoryAddress
+        })
       },
       set: (value, operand) => {
-        const memoryAddress =
-          this.memory.load(operand) +
-          (this.memory.load((operand + 1) & 0xff) << 8) +
-          this.cpu.getRegister(CPURegisters.Y)
-        this.memory.store(memoryAddress, value)
+        const yRegister = this.control.request<number>({
+          type: NESBusRequests.GetRegister,
+          data: CPURegisters.Y
+        })
+        const lsb = this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: operand
+        })
+        const msb = this.control.request<number>({
+          type: NESBusRequests.Load,
+          data: operand + 1
+        })
+        const memoryAddress = yRegister + (lsb + ((msb & 0xff) << 8))
+
+        this.control.notify({
+          type: NESBusRequests.Store,
+          data: {
+            address: memoryAddress,
+            value
+          }
+        })
         this.setLastWrite(memoryAddress, value)
       }
     }
   }
 
   private setLastWrite (address: number, value: number): void {
-    const cpuState = this.cpu.getCPUState()
-
-    if (cpuState.debugMode) {
-      cpuState.lastWrite.address = address
-      cpuState.lastWrite.value = value
-    }
+    this.control.notify({
+      type: NESBusRequests.SetLastWrite,
+      data: {
+        address,
+        value
+      }
+    })
   }
 
-  static create (cpu: AddrModesCpu): NESAddrModesComponent {
-    const addressingModes = new AddressingModes(cpu)
-    addressingModes.initComponents()
-
-    return addressingModes
+  static create (control: NESControlBus): NESAddrModesComponent {
+    return new AddressingModes(control)
   }
 }

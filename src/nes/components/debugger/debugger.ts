@@ -10,23 +10,28 @@ import {
   type DebugEventCallback,
   type DebugConditionExpresion,
   type DebugCpu,
-  type NESDebuggerComponent
+  type NESDebuggerComponent,
+  type DebugMemory
 } from './types'
 import { DebugInitialState } from './consts/state'
+import { type NESControlBus } from '../../../core/control-bus/types'
 
 export class Debugger implements NESDebuggerComponent {
-  private cpu: DebugCpu
-  private readonly state: DebugState = { ...DebugInitialState }
+  private readonly state: DebugState = structuredClone({ ...DebugInitialState })
+
+  private readonly cpu: DebugCpu
+  private readonly memory: DebugMemory
 
   private readonly debugQueues: DebugQueues = {
     pause: []
   }
 
-  private constructor () {}
+  private constructor (readonly control: NESControlBus) {
+    const { cpu, memory } = control.getComponents()
 
-  attach (cpuToAttach: DebugCpu): void {
-    this.cpu = cpuToAttach
-    this.initComponents()
+    this.cpu = cpu
+    this.memory = memory
+    this.state.cpuState = this.cpu.getCPUState()
   }
 
   run (): void {
@@ -66,11 +71,10 @@ export class Debugger implements NESDebuggerComponent {
   }
 
   private validateAtResetVector (): void {
-    const { memory } = this.cpu.getComponents()
     const { atResetVector } = this.state.conditions
 
     const currentPC = this.cpu.getPC()
-    const resetVector = memory.loadWord(CPUMemoryMap.Reset_Vector)
+    const resetVector = this.memory.loadWord(CPUMemoryMap.Reset_Vector)
     if (atResetVector && currentPC === resetVector) {
       this.pause()
     }
@@ -146,19 +150,7 @@ export class Debugger implements NESDebuggerComponent {
     }
   }
 
-  private initComponents (): void {
-    if (this.cpu !== undefined) {
-      this.state.cpuState = this.cpu.getCPUState()
-      this.state.conditions = {
-        insExecuted: -1,
-        atResetVector: false,
-        breakpoints: [],
-        memory: []
-      }
-    }
-  }
-
-  static create (): NESDebuggerComponent {
-    return new Debugger()
+  static create (control: NESControlBus): NESDebuggerComponent {
+    return new Debugger(control)
   }
 }

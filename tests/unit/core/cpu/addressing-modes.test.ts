@@ -1,17 +1,18 @@
+import ControlBus from '../../../../src/core/control-bus/control-bus'
 import { CPUAddressingModes } from '../../../../src/core/cpu/consts/addressing-modes'
 import { CPURegisters } from '../../../../src/core/cpu/consts/registers'
-import { CPU } from '../../../../src/core/cpu/cpu'
 import { type NESCpuComponent } from '../../../../src/core/cpu/types'
 import { CPUMemoryMap } from '../../../../src/core/memory/consts/memory-map'
-import { type NESMemory } from '../../../../src/core/memory/types'
+import { type NESMemoryComponent } from '../../../../src/core/memory/types'
 
 describe('Test for CPU Addressing Modes', () => {
   let cpu: NESCpuComponent
-  let memory: NESMemory
+  let memory: NESMemoryComponent
 
   beforeEach(() => {
-    cpu = CPU.create()
-    memory = cpu.getComponents().memory
+    const control = ControlBus.create()
+    cpu = control.getComponents().cpu
+    memory = control.getComponents().memory
   })
 
   test('should get data from Accumulator addressing mode.', () => {

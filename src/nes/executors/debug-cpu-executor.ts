@@ -1,11 +1,11 @@
-import { type NESDebuggerComponent } from '../../../nes/components/debugger/types'
-import { type NESModule } from '../../../nes/types'
+import { type NESDebuggerComponent } from '../components/debugger/types'
+import { type NESModule } from '../types'
 import {
   type NESCpuComponent,
   type CPUState,
   type NESInstructionComponent,
   type CPUExecutor
-} from '../types'
+} from '../../core/cpu/types'
 
 export class DebugCPUExecutor implements CPUExecutor {
   private readonly cpu: NESCpuComponent
@@ -16,8 +16,11 @@ export class DebugCPUExecutor implements CPUExecutor {
   private nextTickCycles = 0
 
   private constructor (private readonly nes: NESModule) {
-    const { cpu, nesDebugger } = this.nes.getComponents()
-    const { instruction } = cpu.getComponents()
+    const { cpu, instruction, nesDebugger } = this.nes.getComponents()
+
+    if (nesDebugger === undefined) {
+      throw Error('NES Debugger can not be undefined.')
+    }
 
     this.cpu = cpu
     this.nesDebugger = nesDebugger
@@ -40,12 +43,8 @@ export class DebugCPUExecutor implements CPUExecutor {
       this.nesDebugger.validate()
 
       if (this.cpuState.paused) {
-        this.onPause()
         return
       }
-
-      // Strategy:
-      // execute / counting cycles
 
       const insBytes = this.cpu.fetchInstructionBytes()
       const baseCycles = this.cpuInstruction.getInstructionCycles(insBytes)
@@ -61,20 +60,6 @@ export class DebugCPUExecutor implements CPUExecutor {
     }
 
     this.execute()
-  }
-
-  private onPause (): void {
-    this.setLastExecuted()
-  }
-
-  private setLastExecuted (): void {
-    const lastExecuted = this.cpuInstruction.getLastExecuted()
-    if (lastExecuted === undefined) return
-
-    this.cpuState.lastExecuted = {
-      opcode: lastExecuted.bytes[0],
-      asm: lastExecuted.module.getASM(lastExecuted.bytes)
-    }
   }
 
   static create (nes: NESModule): CPUExecutor {

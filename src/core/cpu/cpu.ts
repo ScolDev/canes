@@ -1,31 +1,22 @@
 import { CPUMemoryMap } from '../memory/consts/memory-map'
-import { Memory } from '../memory/memory'
-import { type NESMemoryComponent } from '../memory/types'
-import { ALU } from './components/alu'
-import { Instruction } from './components/instructions/instruction'
 import { CPUFlags } from './consts/flags'
 import { CPUInstructionSize } from './consts/instructions'
 import { CPURegisters } from './consts/registers'
 import { CPUInitialState } from './consts/state'
+import { type NESControlBus } from '../control-bus/types/index'
 import {
   type NESCpuComponent,
   type CPUState,
   type CPUInstruction,
   type CPUAddrMode,
   type CPURegister,
-  type NESCpuComponents,
-  type CPUExecutor,
-  type NESAluComponent,
-  type NESInstructionComponent
+  type CPUExecutor
 } from './types'
+import { NESBusRequests } from '../control-bus/consts/bus-events'
 
 export class CPU implements NESCpuComponent {
-  private cpuState: CPUState = structuredClone(CPUInitialState)
+  private readonly cpuState: CPUState = structuredClone(CPUInitialState)
   private cpuExecutor: CPUExecutor | null = null
-
-  private cpuALU: NESAluComponent | null
-  private memory: NESMemoryComponent | null
-  private instruction: NESInstructionComponent | null
 
   private readonly REG = {
     PC: 0x0000,
@@ -36,31 +27,40 @@ export class CPU implements NESCpuComponent {
     P: 0x00
   }
 
-  private constructor () {}
-
-  getComponents (): NESCpuComponents {
-    return {
-      cpuALU: this.cpuALU,
-      memory: this.memory,
-      instruction: this.instruction
-    }
-  }
+  private constructor (private readonly control: NESControlBus) {}
 
   execute (instruction: CPUInstruction): void {
-    this.instruction.execute(instruction)
+    this.control.notify({
+      type: NESBusRequests.Execute,
+      data: instruction
+    })
+
     this.updateCtrl()
   }
 
   fetchInstructionBytes (): CPUInstruction {
     const pc = this.getPC()
-    const opcode = this.memory.load(pc)
+    const opcode = this.control.request<number>({
+      type: NESBusRequests.Load,
+      data: pc
+    })
+
     const instruction: CPUInstruction = [opcode]
-    const instructionSize = this.instruction.getInstructionSize(opcode)
+    const instructionSize = this.control.request<number>({
+      type: NESBusRequests.GetInstructionSize,
+      data: opcode
+    })
 
     if (instructionSize === 0x02) {
-      instruction[1] = this.memory.load(pc + 1)
+      instruction[1] = this.control.request({
+        type: NESBusRequests.Load,
+        data: pc + 1
+      })
     } else if (instructionSize === 0x03) {
-      instruction[1] = this.memory.loadWord(pc + 1)
+      instruction[1] = this.control.request({
+        type: NESBusRequests.LoadWord,
+        data: pc + 1
+      })
     }
 
     return instruction
@@ -108,10 +108,23 @@ export class CPU implements NESCpuComponent {
     this.setRegister(CPURegisters.X, 0x00)
     this.setRegister(CPURegisters.Y, 0x00)
     this.setRegister(CPURegisters.SP, 0xfd)
-
-    this.memory.store(CPUMemoryMap.SND_CHN, 0x00)
-    this.memory.store(CPUMemoryMap.JOY2, 0x00)
     this.loadResetVector()
+
+    this.control.notify({
+      type: NESBusRequests.Store,
+      data: {
+        address: CPUMemoryMap.SND_CHN,
+        value: 0x00
+      }
+    })
+
+    this.control.notify({
+      type: NESBusRequests.Store,
+      data: {
+        address: CPUMemoryMap.JOY2,
+        value: 0x00
+      }
+    })
 
     if (this.cpuExecutor !== null) {
       this.cpuExecutor.execute()
@@ -122,8 +135,20 @@ export class CPU implements NESCpuComponent {
     const previousSP = this.getRegister(CPURegisters.SP)
     this.setRegister(CPURegisters.SP, previousSP - 0x03)
 
-    this.memory.store(CPUMemoryMap.SND_CHN, 0x00)
-    this.cpuALU.setFlag(CPUFlags.InterruptDisable)
+    this.control.notify({
+      type: NESBusRequests.Store,
+      data: {
+        address: CPUMemoryMap.SND_CHN,
+        value: 0x00
+      }
+    })
+
+    this.control.notify({
+      type: NESBusRequests.SetFlag,
+      data: {
+        flag: CPUFlags.InterruptDisable
+      }
+    })
 
     this.loadResetVector()
 
@@ -140,17 +165,12 @@ export class CPU implements NESCpuComponent {
     this.cpuExecutor = executor
   }
 
-  private initComponents (): void {
-    this.cpuState = structuredClone(CPUInitialState)
-
-    this.cpuALU = ALU.create(this)
-    this.memory = Memory.create(this)
-    this.memory.initComponents()
-    this.instruction = Instruction.create(this)
-  }
-
   private loadResetVector (): void {
-    const resetVector = this.memory.loadWord(CPUMemoryMap.Reset_Vector)
+    const resetVector = this.control.request<number>({
+      type: NESBusRequests.LoadWord,
+      data: CPUMemoryMap.Reset_Vector
+    })
+
     this.setRegister(CPURegisters.PC, resetVector)
   }
 
@@ -158,10 +178,7 @@ export class CPU implements NESCpuComponent {
     this.cpuState.insExecuted++
   }
 
-  static create (): NESCpuComponent {
-    const cpu = new CPU()
-    cpu.initComponents()
-
-    return cpu
+  static create (control: NESControlBus): NESCpuComponent {
+    return new CPU(control)
   }
 }

@@ -1,4 +1,4 @@
-import { CPU } from '../../../../src/core/cpu/cpu'
+import ControlBus from '../../../../src/core/control-bus/control-bus'
 import { type NESCpuComponent } from '../../../../src/core/cpu/types'
 import { type NESMemoryComponent } from '../../../../src/core/memory/types'
 
@@ -7,8 +7,10 @@ describe('Tests for CPU memory mirroring.', () => {
   let memory: NESMemoryComponent
 
   beforeEach(() => {
-    cpu = CPU.create()
-    memory = cpu.getComponents().memory
+    const control = ControlBus.create()
+
+    cpu = control.getComponents().cpu
+    memory = control.getComponents().memory
   })
 
   test('should mirror the internal RAM: Storing and loading single bytes', () => {

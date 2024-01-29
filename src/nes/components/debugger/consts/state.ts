@@ -1,9 +1,9 @@
 import { type DebugState } from '../types'
 
 export const DebugInitialState: DebugState = {
-  cpuState: null,
+  cpuState: undefined,
   conditions: {
-    insExecuted: 0,
+    insExecuted: -1,
     atResetVector: false,
     breakpoints: [],
     memory: []

@@ -3,7 +3,6 @@ import { type ReverseMap } from '../../../shared/types'
 import { type CPUAddressingModes } from '../consts/addressing-modes'
 import { type CPUFlags } from '../consts/flags'
 import { type BaseInstruction } from '../components/instructions/base-instruction'
-import { type NESMemoryComponent } from '../../memory/types'
 
 export type CPURegister = ReverseMap<typeof CPURegisters>
 export type CPUFlag = ReverseMap<typeof CPUFlags>
@@ -18,12 +17,6 @@ export interface CPUAddrModeHandler {
   set?: (...args: number[]) => void
 }
 
-export interface NESCpuComponents {
-  cpuALU: NESAluComponent
-  memory: NESMemoryComponent
-  instruction: NESInstructionComponent
-}
-
 export interface CPUState {
   clock: {
     frequency: number
@@ -34,7 +27,6 @@ export interface CPUState {
   paused: boolean
   debugMode: boolean
   insExecuted: number
-  lastExecuted: CPULastExecuted
   lastWrite: CPULastWrite
 }
 
@@ -50,11 +42,6 @@ export interface CPULastExecuted {
 
 export interface CPUExecutor {
   execute: () => void
-}
-
-export interface LastExecutedInstruction {
-  bytes: CPUInstruction
-  module: BaseInstruction
 }
 
 export interface NESAluComponent {
@@ -75,18 +62,17 @@ export interface NESAluComponent {
 
 export interface NESAddrModesComponent {
   get: (addressingMode: CPUAddrMode, operand?: number) => number
-  set: (addressingMode: CPUAddrMode, value: number, operand: number) => void
+  set: (addressingMode: CPUAddrMode, value: number, operand?: number) => void
 }
 
 export interface NESInstructionComponent {
   execute: (instruction: CPUInstruction) => void
+  getInstructionASM: (instruction: CPUInstruction) => string
   getInstructionCycles: (instructin: CPUInstruction) => number
   getInstructionSize: (opcode: number) => number
-  getLastExecuted: () => LastExecutedInstruction
 }
 
 export interface NESCpuComponent {
-  getComponents: () => NESCpuComponents
   execute: (instruction: CPUInstruction) => void
   fetchInstructionBytes: () => CPUInstruction
   nextPC: (addressingMode: CPUAddrMode, displacement?: number) => void
@@ -100,42 +86,3 @@ export interface NESCpuComponent {
   setDebugMode: (status: boolean) => void
   setExecutor: (executor: CPUExecutor) => void
 }
-
-export type ALUCpu = Pick<NESCpuComponent, 'getRegister' | 'setRegister'>
-
-export type AddrModesCpu = Pick<
-NESCpuComponent,
-'getComponents' | 'getRegister' | 'setRegister' | 'getCPUState'
->
-
-export type AddrModesAlu = Pick<NESAluComponent, 'getSignedByte'>
-export type AddrModesMemory = Pick<
-NESMemoryComponent,
-'load' | 'loadWord' | 'store'
->
-
-export type InstructionsCpu = Pick<
-NESCpuComponent,
-| 'getComponents'
-| 'getCPUState'
-| 'getRegister'
-| 'setRegister'
-| 'nextPC'
-| 'getPC'
-| 'setPC'
->
-
-export type InstructionsAlu = NESAluComponent
-
-export type InstructionsMemory = Pick<
-NESMemoryComponent,
-| 'hasCrossedPage'
-| 'hasExtraCycleByAddressingMode'
-| 'loadAddressByAddressingMode'
-| 'load'
-| 'loadByAddressingMode'
-| 'loadWord'
-| 'store'
-| 'storeWord'
-| 'storeByAddressingMode'
->

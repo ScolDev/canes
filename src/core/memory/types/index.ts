@@ -7,7 +7,6 @@ export interface MemoryMirror {
 }
 
 export interface NESMemoryComponent {
-  initComponents: () => void
   copy: (buffer: Uint8Array, offset: number) => void
   getMemorySection: (start: number, end: number) => Uint8Array
   hasCrossedPage: (actual: number, next: number) => boolean
@@ -27,8 +26,6 @@ export interface NESMemoryComponent {
   storeByAddressingMode: (
     addressingMode: CPUAddrMode,
     value: number,
-    operand: number
+    operand?: number
   ) => void
 }
-
-export type MemoryCpu = NESCpuComponent
