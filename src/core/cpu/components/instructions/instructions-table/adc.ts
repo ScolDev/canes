@@ -20,7 +20,7 @@ export class Adc extends BaseInstruction {
 
   execute (opcode: number, operand: number): void {
     const addressingMode = this.AddressingModes[opcode]
-    const carryFlag = this.cpuALU.getFlag(CPUFlags.CarryFlag)
+    const carryFlag = this.alu.getFlag(CPUFlags.CarryFlag)
     const operandA = this.memory.loadByAddressingMode(addressingMode, operand)
     const operandB = this.cpu.getRegister(CPURegisters.A)
 
@@ -35,9 +35,9 @@ export class Adc extends BaseInstruction {
   updateStatus (result: number, operandA: number, operandB: number): void {
     const carryFlag = result > 0xff ? 1 : 0
 
-    this.cpuALU.setFlag(CPUFlags.CarryFlag, carryFlag)
-    this.cpuALU.updateZeroFlag(result)
-    this.cpuALU.updateNegativeFlag(result)
-    this.cpuALU.updateOverflowFlag(result, operandA, operandB)
+    this.alu.setFlag(CPUFlags.CarryFlag, carryFlag)
+    this.alu.updateZeroFlag(result)
+    this.alu.updateNegativeFlag(result)
+    this.alu.updateOverflowFlag(result, operandA, operandB)
   }
 }

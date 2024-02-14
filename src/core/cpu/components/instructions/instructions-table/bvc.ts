@@ -11,11 +11,11 @@ export class Bvc extends BaseInstruction {
 
   execute (opcode: number, operand: number): void {
     const addressingMode = this.AddressingModes[opcode]
-    const overflowFlag = this.cpuALU.getFlag(CPUFlags.OverflowFlag)
+    const overflowFlag = this.alu.getFlag(CPUFlags.OverflowFlag)
     let displacement = 0x00
 
     if (overflowFlag === 0x00) {
-      displacement = this.cpuALU.getSignedByte(operand)
+      displacement = this.alu.getSignedByte(operand)
       this.addBranchExtraCycles(displacement)
     }
 

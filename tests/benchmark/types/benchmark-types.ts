@@ -5,11 +5,11 @@ export type AddrModes = Record<CPUAddrMode, string>
 
 export interface BenchmarkConfig {
   title: string
-  instModule?: NESInstructionComponent
+  instModule: NESInstructionComponent
   strategy: (
     opcode: number,
     instruction: BaseInstruction,
-    instModule?: NESInstructionComponent
+    instModule: NESInstructionComponent
   ) => [time: number, timesExecuted: number]
 }
 

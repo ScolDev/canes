@@ -42,6 +42,6 @@ export interface ROMNESBanks {
 
 export interface NESRomComponent {
   load: () => Promise<void>
-  getHeader: () => ROMHeader
+  getHeader: () => ROMHeader | null
   getPRG: () => ROMBuffer
 }

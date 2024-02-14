@@ -20,10 +20,10 @@ export class Sbc extends BaseInstruction {
 
   execute (opcode: number, operand: number): void {
     const addressingMode = this.AddressingModes[opcode]
-    const carryFlag = this.cpuALU.getFlag(CPUFlags.CarryFlag)
+    const carryFlag = this.alu.getFlag(CPUFlags.CarryFlag)
     const memoryValue = this.memory.loadByAddressingMode(addressingMode, operand)
     const currentAccumulator = this.cpu.getRegister(CPURegisters.A)
-    const twoComplement = this.cpuALU.getTwoComplement(memoryValue)
+    const twoComplement = this.alu.getTwoComplement(memoryValue)
 
     this.addInstructionExtraCycles(addressingMode, opcode, operand)
     const result = this.cpu.getRegister(CPURegisters.A) + twoComplement + carryFlag
@@ -34,11 +34,11 @@ export class Sbc extends BaseInstruction {
   }
 
   updateStatus (result: number, memoryValue: number, previousAccumulator: number): void {
-    const carryFlag = this.cpuALU.getSignedByte(result) >= 0x00 ? 1 : 0
+    const carryFlag = this.alu.getSignedByte(result) >= 0x00 ? 1 : 0
 
-    this.cpuALU.setFlag(CPUFlags.CarryFlag, carryFlag)
-    this.cpuALU.updateZeroFlag(result)
-    this.cpuALU.updateNegativeFlag(result)
-    this.cpuALU.updateOverflowFlag(result, memoryValue, previousAccumulator)
+    this.alu.setFlag(CPUFlags.CarryFlag, carryFlag)
+    this.alu.updateZeroFlag(result)
+    this.alu.updateNegativeFlag(result)
+    this.alu.updateOverflowFlag(result, memoryValue, previousAccumulator)
   }
 }

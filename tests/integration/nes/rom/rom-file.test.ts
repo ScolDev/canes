@@ -1,5 +1,5 @@
 import { ROM } from '../../../../src/nes/components/rom/rom'
-import { type NESRom } from '../../../../src/nes/components/rom/types'
+import { type NESRomComponent } from '../../../../src/nes/components/rom/types'
 import { FileLoader } from '../../../../src/shared/utils/file-loader'
 
 function areEquals (arr: Uint8Array, compareTo: Uint8Array): boolean {
@@ -17,13 +17,13 @@ describe('Tests for the ROM module.', () => {
     const testROMFile = './tests/integration/__nes_roms__/nestest.nes'
     const fileLoader = FileLoader(testROMFile)
 
-    const rom: NESRom = new ROM(fileLoader)
+    const rom: NESRomComponent = new ROM(fileLoader)
     await rom.load()
 
-    const romInfo = rom.getHeader()
+    const romHeader = rom.getHeader()
 
-    expect(romInfo.banks.prg.length).toBe(1)
-    expect(romInfo).toMatchObject({
+    expect(romHeader?.banks.prg.length).toBe(1)
+    expect(romHeader).toMatchObject({
       numOfPRG: 1,
       numOfCHR: 1,
       hasBatteryBacked: false,
@@ -43,10 +43,10 @@ describe('Tests for the ROM module.', () => {
     const rom = new ROM(fileLoader)
     await rom.load()
 
-    const romInfo = rom.getHeader()
+    const romHeader = rom.getHeader()
 
-    expect(romInfo.banks.prg.length).toBe(16)
-    expect(romInfo).toMatchObject({
+    expect(romHeader?.banks.prg.length).toBe(16)
+    expect(romHeader).toMatchObject({
       numOfPRG: 16,
       numOfCHR: 0,
       hasBatteryBacked: false,
@@ -66,9 +66,9 @@ describe('Tests for the ROM module.', () => {
     const rom = new ROM(fileLoader)
     await rom.load()
 
-    const romInfo = rom.getHeader()
+    const romHeader = rom.getHeader()
 
-    expect(romInfo).toEqual(null)
+    expect(romHeader).toEqual(null)
   })
 
   test('should throw an error when load an non-existent .nes ROM', async () => {

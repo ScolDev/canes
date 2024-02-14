@@ -19,10 +19,9 @@ export class Cmp extends BaseInstruction {
   }
 
   execute (opcode: number, operand: number): void {
-    const { memory } = this.cpu.getComponents()
     const addressingMode = this.AddressingModes[opcode]
     const accumulator = this.cpu.getRegister(CPURegisters.A)
-    const memoryValue = memory.loadByAddressingMode(addressingMode, operand)
+    const memoryValue = this.memory.loadByAddressingMode(addressingMode, operand)
 
     const result = 0x100 + accumulator - memoryValue
 
@@ -34,8 +33,8 @@ export class Cmp extends BaseInstruction {
   updateStatus (result: number, operandA: number, operandB: number): void {
     const carryFlag = operandA >= operandB ? 1 : 0
 
-    this.cpuALU.setFlag(CPUFlags.CarryFlag, carryFlag)
-    this.cpuALU.updateZeroFlag(result)
-    this.cpuALU.updateNegativeFlag(result)
+    this.alu.setFlag(CPUFlags.CarryFlag, carryFlag)
+    this.alu.updateZeroFlag(result)
+    this.alu.updateNegativeFlag(result)
   }
 }

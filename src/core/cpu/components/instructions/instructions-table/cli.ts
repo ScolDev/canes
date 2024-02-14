@@ -12,7 +12,7 @@ export class Cli extends BaseInstruction {
   execute (opcode: number): void {
     const addressingMode = this.AddressingModes[opcode]
 
-    this.cpuALU.clearFlag(CPUFlags.InterruptDisable)
+    this.alu.clearFlag(CPUFlags.InterruptDisable)
     this.cpu.nextPC(addressingMode)
   }
 }

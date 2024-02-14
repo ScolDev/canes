@@ -2,24 +2,28 @@ import { InstructionsTable } from './instructions-table'
 import {
   type CPUInstructionTable,
   type CPUInstruction,
-  type InstructionsCpu,
-  type NESInstructionComponent,
-  type LastExecutedInstruction
+  type NESInstructionComponent
 } from '../../types'
 import { CPUInstructionSize } from '../../consts/instructions'
 import { InstructionsCPUCyclesTable } from './consts/instructions-cycles'
+import type ControlBus from '../../../control-bus/control-bus'
+import { type BaseInstruction } from './base-instruction'
 
 export class Instruction implements NESInstructionComponent {
   private readonly InstructionsCyclesTable = InstructionsCPUCyclesTable
   private readonly instructionsTable: CPUInstructionTable
-  private lastExecuted: LastExecutedInstruction
 
-  private constructor (cpu: InstructionsCpu) {
-    this.instructionsTable = InstructionsTable(cpu)
+  private constructor (readonly control: ControlBus) {
+    this.instructionsTable = InstructionsTable(control)
   }
 
   execute (instruction: CPUInstruction): void {
     this.decodeAndExecute(instruction)
+  }
+
+  getInstructionASM (instruction: CPUInstruction): string {
+    const decoded = this.decode(instruction)
+    return decoded.getASM(instruction)
   }
 
   getInstructionCycles (instruction: CPUInstruction): number {
@@ -34,22 +38,18 @@ export class Instruction implements NESInstructionComponent {
     return CPUInstructionSize[addressingMode]
   }
 
-  getLastExecuted (): LastExecutedInstruction {
-    return this.lastExecuted
-  }
-
   private decodeAndExecute (instruction: CPUInstruction): void {
     const [opcode, operand] = instruction
-    const decodedInstruction = this.instructionsTable[opcode]
-
+    const decodedInstruction = this.decode(instruction)
     decodedInstruction.execute(opcode, operand)
-    this.lastExecuted = {
-      bytes: instruction,
-      module: decodedInstruction
-    }
   }
 
-  static create (cpu: InstructionsCpu): NESInstructionComponent {
-    return new Instruction(cpu)
+  private decode (instruction: CPUInstruction): BaseInstruction {
+    const [opcode] = instruction
+    return this.instructionsTable[opcode]
+  }
+
+  static create (control: ControlBus): NESInstructionComponent {
+    return new Instruction(control)
   }
 }

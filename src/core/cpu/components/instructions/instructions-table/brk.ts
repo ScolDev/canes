@@ -17,7 +17,7 @@ export class Brk extends BaseInstruction {
     const irqInterruptVector = this.memory.loadWord(CPUMemoryMap.IRQ_Vector)
     const currentSP = this.cpu.getRegister(CPURegisters.SP)
 
-    this.cpuALU.setFlag(CPUFlags.BreakCommand)
+    this.alu.setFlag(CPUFlags.BreakCommand)
 
     this.memory.store(CPUMemoryMap.Stack + currentSP, pcl)
     this.memory.store(CPUMemoryMap.Stack + (currentSP - 1), pch)

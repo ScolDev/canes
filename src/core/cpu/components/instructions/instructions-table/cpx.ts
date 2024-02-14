@@ -26,8 +26,8 @@ export class Cpx extends BaseInstruction {
   updateStatus (result: number, operandA: number, operandB: number): void {
     const carryFlag = operandA >= operandB ? 1 : 0
 
-    this.cpuALU.setFlag(CPUFlags.CarryFlag, carryFlag)
-    this.cpuALU.updateZeroFlag(result)
-    this.cpuALU.updateNegativeFlag(result)
+    this.alu.setFlag(CPUFlags.CarryFlag, carryFlag)
+    this.alu.updateZeroFlag(result)
+    this.alu.updateNegativeFlag(result)
   }
 }

@@ -13,7 +13,7 @@ import { ROMSignature } from './consts/signature'
 
 export class ROM implements NESRomComponent {
   private readonly romLoader: ROMLoader
-  private header: ROMHeader | null
+  private header: ROMHeader | null = null
 
   private romFileBuffer = new Uint8Array()
   private readonly signature = new Uint8Array(ROMSignature)
@@ -27,7 +27,7 @@ export class ROM implements NESRomComponent {
     this.header = this.buildHeader(this.romFileBuffer)
   }
 
-  getHeader (): ROMHeader {
+  getHeader (): ROMHeader | null {
     return this.header
   }
 
@@ -59,7 +59,7 @@ export class ROM implements NESRomComponent {
     }
   }
 
-  private buildHeader (romFileBuffer: Uint8Array): ROMHeader {
+  private buildHeader (romFileBuffer: Uint8Array): ROMHeader | null {
     if (!this.isValidSignature(romFileBuffer)) {
       return null
     }

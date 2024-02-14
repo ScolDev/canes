@@ -11,11 +11,11 @@ export class Bpl extends BaseInstruction {
 
   execute (opcode: number, operand: number): void {
     const addressingMode = this.AddressingModes[opcode]
-    const negativeFlag = this.cpuALU.getFlag(CPUFlags.NegativeFlag)
+    const negativeFlag = this.alu.getFlag(CPUFlags.NegativeFlag)
     let displacement = 0x00
 
     if (negativeFlag === 0x00) {
-      displacement = this.cpuALU.getSignedByte(operand)
+      displacement = this.alu.getSignedByte(operand)
       this.addBranchExtraCycles(displacement)
     }
 

@@ -1,6 +1,6 @@
+import ControlBus from '../../../src/core/control-bus/control-bus'
 import { type BaseInstruction } from '../../../src/core/cpu/components/instructions/base-instruction'
 import { InstructionsTable } from '../../../src/core/cpu/components/instructions/instructions-table'
-import { CPU } from '../../../src/core/cpu/cpu'
 import { addrModes } from './consts/addr-modes'
 import {
   type BenchmarkConfig,
@@ -9,9 +9,9 @@ import {
 } from './types'
 import { descendingOrder, logSummary } from './utils/utils'
 
-const cpu = CPU.create()
-const instTable = InstructionsTable(cpu)
-const instModule = cpu.getComponents().instruction
+const control = ControlBus.create()
+const instTable = InstructionsTable(control)
+const instModule = control.getComponents().instruction
 
 function executeBenchmark (
   opcode: number,

@@ -1,32 +1,15 @@
-import { AddressingModes } from '../cpu/components/addressing-modes'
+import { type NESControlBus } from '../control-bus/types'
 import { CPUAddressingModes } from '../cpu/consts/addressing-modes'
 import { CPURegisters } from '../cpu/consts/registers'
-import {
-  type NESAddrModesComponent,
-  type CPUAddrMode,
-  type NESCpuComponent
-} from '../cpu/types'
+import { type CPUAddrMode } from '../cpu/types'
 import { CPUMemoryMap } from './consts/memory-map'
 import { MemoryMirrors } from './consts/memory-mirrors'
-import {
-  type MemoryCpu,
-  type NESMemoryComponent,
-  type MemoryMirror
-} from './types'
+import { type NESMemoryComponent, type MemoryMirror } from './types'
 
 export class Memory implements NESMemoryComponent {
-  private readonly cpu: MemoryCpu
-  private addressingModes: NESAddrModesComponent | null
-
   private MEM = new Uint8Array(CPUMemoryMap.Size)
 
-  private constructor (cpu: MemoryCpu) {
-    this.cpu = cpu
-  }
-
-  initComponents (): void {
-    this.addressingModes = AddressingModes.create(this.cpu)
-  }
+  private constructor (private readonly control: NESControlBus) {}
 
   copy (buffer: Uint8Array, offset: number): void {
     this.MEM.set(buffer, offset)
@@ -56,22 +39,24 @@ export class Memory implements NESMemoryComponent {
     return (actual & 0xff00) !== (next & 0xff00)
   }
 
-  hasExtraCycleByAddressingMode (addrMode: CPUAddrMode, operand: number): boolean {
+  hasExtraCycleByAddressingMode (
+    addrMode: CPUAddrMode,
+    operand: number
+  ): boolean {
     if (addrMode === CPUAddressingModes.AbsoluteX) {
-      const xRegister = this.cpu.getRegister(CPURegisters.X)
+      const xRegister = this.control.cpu.getRegister(CPURegisters.X)
       return this.hasCrossedPage(operand, operand + xRegister)
     }
 
     if (addrMode === CPUAddressingModes.AbsoluteY) {
-      const yRegister = this.cpu.getRegister(CPURegisters.Y)
+      const yRegister = this.control.cpu.getRegister(CPURegisters.Y)
       return this.hasCrossedPage(operand, operand + yRegister)
     }
 
     if (addrMode === CPUAddressingModes.IndirectIndexed) {
-      const yRegister = this.cpu.getRegister(CPURegisters.Y)
+      const yRegister = this.control.cpu.getRegister(CPURegisters.Y)
       const memoryAddress =
-          this.load(operand) +
-          (this.load((operand + 1) & 0xff) << 8)
+        this.load(operand) + (this.load((operand + 1) & 0xff) << 8)
 
       return this.hasCrossedPage(memoryAddress, memoryAddress + yRegister)
     }
@@ -95,7 +80,7 @@ export class Memory implements NESMemoryComponent {
   }
 
   loadByAddressingMode (addressingMode: CPUAddrMode, operand?: number): number {
-    return this.addressingModes.get(addressingMode, operand)
+    return this.control.addressingModes.get(addressingMode, operand)
   }
 
   load (memoryAddress: number): number {
@@ -129,9 +114,9 @@ export class Memory implements NESMemoryComponent {
   storeByAddressingMode (
     addressingMode: CPUAddrMode,
     value: number,
-    operand: number
+    operand?: number
   ): void {
-    this.addressingModes.set(addressingMode, value, operand)
+    this.control.addressingModes.set(addressingMode, value, operand)
   }
 
   private getMemoryMirrors (memoryAddress: number): MemoryMirror {
@@ -173,7 +158,7 @@ export class Memory implements NESMemoryComponent {
     this.storeByte(mirroredAddress, value)
   }
 
-  static create (cpu: NESCpuComponent): NESMemoryComponent {
-    return new Memory(cpu)
+  static create (control: NESControlBus): NESMemoryComponent {
+    return new Memory(control)
   }
 }

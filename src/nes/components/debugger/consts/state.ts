@@ -1,9 +1,10 @@
+import { CPUInitialState } from '../../../../core/cpu/consts/state'
 import { type DebugState } from '../types'
 
 export const DebugInitialState: DebugState = {
-  cpuState: null,
+  cpuState: structuredClone(CPUInitialState),
   conditions: {
-    insExecuted: 0,
+    insExecuted: -1,
     atResetVector: false,
     breakpoints: [],
     memory: []

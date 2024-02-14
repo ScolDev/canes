@@ -12,7 +12,7 @@ export class Sed extends BaseInstruction {
   execute (opcode: number): void {
     const addressingMode = this.AddressingModes[opcode]
 
-    this.cpuALU.setFlag(CPUFlags.DecimalModeFlag)
+    this.alu.setFlag(CPUFlags.DecimalModeFlag)
     this.cpu.nextPC(addressingMode)
   }
 }

@@ -11,11 +11,11 @@ export class Bcc extends BaseInstruction {
 
   execute (opcode: number, operand: number): void {
     const addressingMode = this.AddressingModes[opcode]
-    const carryFlag = this.cpuALU.getFlag(CPUFlags.CarryFlag)
+    const carryFlag = this.alu.getFlag(CPUFlags.CarryFlag)
     let displacement = 0x00
 
     if (carryFlag === 0x00) {
-      displacement = this.cpuALU.getSignedByte(operand)
+      displacement = this.alu.getSignedByte(operand)
       this.addBranchExtraCycles(displacement)
     }
 

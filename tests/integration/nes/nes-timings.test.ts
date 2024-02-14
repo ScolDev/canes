@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { type NESMemoryComponent } from '../../../src/core/memory/types'
+import { DebugEvents } from '../../../src/nes/components/debugger/consts/events'
 import { type NESDebuggerComponent } from '../../../src/nes/components/debugger/types'
 import { NES } from '../../../src/nes/nes'
 import { type NESModule } from '../../../src/nes/types'
@@ -30,7 +31,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nes.loadROM({ filePath })
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       expect(data.pc).toBe(expectedPC)
       expect(data.cpuState.insExecuted).toBe(expectedInsExecuted)
       expect(data.cpuState.clock.cycles).toBe(expectedCycles)
@@ -56,7 +57,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -83,7 +84,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -110,7 +111,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -137,7 +138,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -164,7 +165,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -191,7 +192,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -218,7 +219,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -245,7 +246,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -280,7 +281,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -315,7 +316,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -350,7 +351,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -385,7 +386,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -418,7 +419,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -451,7 +452,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -486,7 +487,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)
@@ -521,7 +522,7 @@ describe('Tests for timings on NES Components.', () => {
 
     nesDebugger.run()
 
-    nesDebugger.on('pause', ({ data }) => {
+    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
       const { pc, cpuState } = data
 
       expect(cpuState.clock.cycles).toBe(expectedCycles)

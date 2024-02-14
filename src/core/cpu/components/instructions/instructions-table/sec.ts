@@ -12,7 +12,7 @@ export class Sec extends BaseInstruction {
   execute (opcode: number): void {
     const addressingMode = this.AddressingModes[opcode]
 
-    this.cpuALU.setFlag(CPUFlags.CarryFlag)
+    this.alu.setFlag(CPUFlags.CarryFlag)
     this.cpu.nextPC(addressingMode)
   }
 }

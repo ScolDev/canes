@@ -1,32 +1,29 @@
+import { type NESControlBus } from '../../control-bus/types'
 import { CPUFlags } from '../consts/flags'
 import { CPURegisters } from '../consts/registers'
-import { type ALUCpu, type CPUFlag, type NESAluComponent } from '../types'
+import { type CPUFlag, type NESAluComponent } from '../types'
 
 export class ALU implements NESAluComponent {
-  private readonly cpu: ALUCpu
-
-  private constructor (cpu: ALUCpu) {
-    this.cpu = cpu
-  }
+  private constructor (private readonly control: NESControlBus) {}
 
   setFlag (flag: CPUFlag, bitValue = 0x01): void {
     const flagMask = (0x01 << flag) ^ 0xff
     const valueMask = bitValue << flag
-    const pRegister = this.cpu.getRegister(CPURegisters.P)
+    const pRegister = this.control.cpu.getRegister(CPURegisters.P)
     const registerValue = valueMask + (pRegister & flagMask)
 
-    this.cpu.setRegister(CPURegisters.P, registerValue)
+    this.control.cpu.setRegister(CPURegisters.P, registerValue)
   }
 
   clearFlag (flag: CPUFlag): void {
     const byteMaskOff = (0x01 << flag) ^ 0xff
-    const pRegister = this.cpu.getRegister(CPURegisters.P)
+    const pRegister = this.control.cpu.getRegister(CPURegisters.P)
 
-    this.cpu.setRegister(CPURegisters.P, pRegister & byteMaskOff)
+    this.control.cpu.setRegister(CPURegisters.P, pRegister & byteMaskOff)
   }
 
   getFlag (flag: CPUFlag): number {
-    const pRegister = this.cpu.getRegister(CPURegisters.P)
+    const pRegister = this.control.cpu.getRegister(CPURegisters.P)
     return this.getBitValue(flag, pRegister)
   }
 
@@ -64,7 +61,7 @@ export class ALU implements NESAluComponent {
     this.setFlag(CPUFlags.NegativeFlag, this.getBitValue(0x07, result))
   }
 
-  static create (cpu: ALUCpu): NESAluComponent {
-    return new ALU(cpu)
+  static create (control: NESControlBus): NESAluComponent {
+    return new ALU(control)
   }
 }

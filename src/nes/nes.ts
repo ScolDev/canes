@@ -1,6 +1,12 @@
+import ControlBus from '../core/control-bus/control-bus'
+import { type NESControlBus } from '../core/control-bus/types'
 import { CPU } from '../core/cpu/cpu'
-import { DebugCPUExecutor } from '../core/cpu/executors/debug-cpu-executor'
-import { type NESCpuComponent, type NESAluComponent } from '../core/cpu/types'
+import { DebugCPUExecutor } from './executors/debug-cpu-executor'
+import {
+  type NESCpuComponent,
+  type NESAluComponent,
+  type NESInstructionComponent
+} from '../core/cpu/types'
 import { CPUMemoryMap } from '../core/memory/consts/memory-map'
 import { type NESMemoryComponent } from '../core/memory/types'
 import { FileLoader } from '../shared/utils/file-loader'
@@ -11,27 +17,32 @@ import { type NESRomComponent, type ROMSource } from './components/rom/types'
 import { type NESModule, type NESComponents } from './types'
 
 export class NES implements NESModule {
+  private readonly control: NESControlBus
+  private nesDebugger: NESDebuggerComponent | undefined
+
   private readonly cpu: NESCpuComponent
   private readonly alu: NESAluComponent
+  private readonly instruction: NESInstructionComponent
   private readonly memory: NESMemoryComponent
-  private rom: NESRomComponent
-  private readonly nesDebugger: NESDebuggerComponent
+
+  private rom: NESRomComponent | undefined
 
   private constructor () {
-    this.cpu = CPU.create()
-    this.nesDebugger = Debugger.create()
+    this.control = ControlBus.create()
 
-    const { cpuALU, memory } = this.cpu.getComponents()
-    this.alu = cpuALU
+    const { cpu, alu, instruction, memory } = this.control.getComponents()
+    this.cpu = cpu
+    this.alu = alu
+    this.instruction = instruction
     this.memory = memory
   }
 
   debug (): NESDebuggerComponent {
+    this.nesDebugger = Debugger.create(this.control)
     const executor = DebugCPUExecutor.create(this)
 
     this.cpu.setExecutor(executor)
     this.cpu.setDebugMode(true)
-    this.nesDebugger.attach(this.cpu)
 
     return this.nesDebugger
   }
@@ -40,6 +51,7 @@ export class NES implements NESModule {
     return {
       cpu: this.cpu,
       cpuALU: this.alu,
+      instruction: this.instruction,
       memory: this.memory,
       nesDebugger: this.nesDebugger
     }
@@ -53,6 +65,10 @@ export class NES implements NESModule {
   }
 
   powerUp (): void {
+    if (this.rom === undefined) {
+      throw Error('ROM has not been loaded.')
+    }
+
     if (this.rom.getHeader() !== null) {
       this.loadPRG()
       this.cpu.powerUp()
@@ -60,6 +76,8 @@ export class NES implements NESModule {
   }
 
   private loadPRG (): void {
+    if (this.rom === undefined) return
+
     const { buffer } = this.rom.getPRG()
     this.memory.copy(buffer, CPUMemoryMap.PRG_ROM)
   }

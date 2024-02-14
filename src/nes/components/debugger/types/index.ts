@@ -2,6 +2,7 @@ import {
   type CPUState,
   type NESCpuComponent
 } from '../../../../core/cpu/types'
+import { type NESMemoryComponent } from '../../../../core/memory/types'
 import { type ReverseMap } from '../../../../shared/types'
 import { type DebugEvents } from '../consts/events'
 
@@ -32,7 +33,7 @@ export interface DebugConditionExpresion {
   lessThanOrEquals?: number
 }
 
-export type DebugEventType = ReverseMap<DebugEvents>
+export type DebugEventType = ReverseMap<typeof DebugEvents>
 export type DebugEventCallback = (event: DebugEvent) => void
 export interface DebugQueues {
   pause: DebugEventCallback[]
@@ -47,11 +48,12 @@ export interface DebugEvent {
 
 export type DebugCpu = Pick<
 NESCpuComponent,
-'getComponents' | 'getCPUState' | 'getPC' | 'powerUp'
+'getCPUState' | 'getPC' | 'powerUp'
 >
 
+export type DebugMemory = Pick<NESMemoryComponent, 'loadWord'>
+
 export interface NESDebuggerComponent {
-  attach: (cpuToAttach: DebugCpu) => void
   run: () => void
   breakOn: (conditions: DebugSingleConditions) => void
   addBreakpoint: (breakpoint: DebugBreakpoint) => void

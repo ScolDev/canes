@@ -1,29 +1,21 @@
+import { type NESControlBus } from '../../../control-bus/types'
+import { type NESMemoryComponent } from '../../../memory/types'
 import { getASMByAddrMode } from '../../consts/addressing-modes'
 import {
   type CPUInstruction,
   type CPUAddrModeTable,
-  type InstructionsCpu,
-  type InstructionsAlu,
-  type InstructionsMemory,
   type CPUState,
-  type CPUAddrMode
+  type CPUAddrMode,
+  type NESCpuComponent,
+  type NESAluComponent
 } from '../../types'
 
 export abstract class BaseInstruction {
-  protected readonly _cpu: InstructionsCpu
   protected readonly _cpuState: CPUState
-  protected readonly _cpuALU: InstructionsAlu
-  protected readonly _memory: InstructionsMemory
   protected readonly opcodesWithExtraCycles?: number[]
 
-  constructor (cpu: InstructionsCpu) {
-    this._cpu = cpu
-
-    const { cpuALU, memory } = this.cpu.getComponents()
-    this._cpuALU = cpuALU
-    this._memory = memory
-
-    this._cpuState = cpu.getCPUState()
+  constructor (private readonly control: NESControlBus) {
+    this._cpuState = this.control.cpu.getCPUState()
   }
 
   public abstract readonly name: string
@@ -39,8 +31,8 @@ export abstract class BaseInstruction {
   }
 
   protected addBranchExtraCycles (displacement: number): void {
-    const currentPC = this.cpu.getPC()
-    const hasCrossedPage = this.memory.hasCrossedPage(
+    const currentPC = this.control.cpu.getPC()
+    const hasCrossedPage = this.control.memory.hasCrossedPage(
       currentPC,
       currentPC + displacement
     )
@@ -48,7 +40,11 @@ export abstract class BaseInstruction {
     this.cpuState.clock.lastExtraCycles += hasCrossedPage ? 2 : 1
   }
 
-  protected addInstructionExtraCycles (addrMode: CPUAddrMode, opcode: number, operand: number): void {
+  protected addInstructionExtraCycles (
+    addrMode: CPUAddrMode,
+    opcode: number,
+    operand: number
+  ): void {
     if (
       this.opcodesWithExtraCycles === undefined ||
       !this.opcodesWithExtraCycles.includes(opcode)
@@ -56,23 +52,26 @@ export abstract class BaseInstruction {
       return
     }
 
-    const hasExtraCycle = this.memory.hasExtraCycleByAddressingMode(addrMode, operand)
+    const hasExtraCycle = this.control.memory.hasExtraCycleByAddressingMode(
+      addrMode,
+      operand
+    )
     this.cpuState.clock.lastExtraCycles += hasExtraCycle ? 1 : 0
   }
 
-  protected get cpu (): InstructionsCpu {
-    return this._cpu
+  protected get cpu (): NESCpuComponent {
+    return this.control.cpu
   }
 
   protected get cpuState (): CPUState {
     return this._cpuState
   }
 
-  protected get cpuALU (): InstructionsAlu {
-    return this._cpuALU
+  protected get alu (): NESAluComponent {
+    return this.control.alu
   }
 
-  protected get memory (): InstructionsMemory {
-    return this._memory
+  protected get memory (): NESMemoryComponent {
+    return this.control.memory
   }
 }

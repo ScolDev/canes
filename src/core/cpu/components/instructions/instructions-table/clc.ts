@@ -12,7 +12,7 @@ export class Clc extends BaseInstruction {
   execute (opcode: number): void {
     const addressingMode = this.AddressingModes[opcode]
 
-    this.cpuALU.clearFlag(CPUFlags.CarryFlag)
+    this.alu.clearFlag(CPUFlags.CarryFlag)
     this.cpu.nextPC(addressingMode)
   }
 }

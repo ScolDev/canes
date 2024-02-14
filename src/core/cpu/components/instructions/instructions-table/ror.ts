@@ -16,7 +16,7 @@ export class Ror extends BaseInstruction {
   execute (opcode: number, operand: number): void {
     const addressingMode = this.AddressingModes[opcode]
     const operandValue = this.memory.loadByAddressingMode(addressingMode, operand)
-    const carryFlag = this.cpuALU.getFlag(CPUFlags.CarryFlag)
+    const carryFlag = this.alu.getFlag(CPUFlags.CarryFlag)
 
     const result = (operandValue >> 1) + (carryFlag << 7)
 
@@ -26,10 +26,10 @@ export class Ror extends BaseInstruction {
   }
 
   updateStatus (result: number, operandValue: number): void {
-    const carryFlag = this.cpuALU.getBitValue(0, operandValue)
+    const carryFlag = this.alu.getBitValue(0, operandValue)
 
-    this.cpuALU.setFlag(CPUFlags.CarryFlag, carryFlag)
-    this.cpuALU.updateZeroFlag(result)
-    this.cpuALU.updateNegativeFlag(result)
+    this.alu.setFlag(CPUFlags.CarryFlag, carryFlag)
+    this.alu.updateZeroFlag(result)
+    this.alu.updateNegativeFlag(result)
   }
 }

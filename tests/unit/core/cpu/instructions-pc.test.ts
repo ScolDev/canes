@@ -1,23 +1,25 @@
+import ControlBus from '../../../../src/core/control-bus/control-bus'
 import { CPUFlags } from '../../../../src/core/cpu/consts/flags'
 import { CPURegisters } from '../../../../src/core/cpu/consts/registers'
-import { CPU } from '../../../../src/core/cpu/cpu'
 import {
+  type NESAluComponent,
   type CPUInstruction,
-  type NESAlu,
   type NESCpuComponent
 } from '../../../../src/core/cpu/types'
 import { CPUMemoryMap } from '../../../../src/core/memory/consts/memory-map'
-import { type NESMemory } from '../../../../src/core/memory/types'
+import { type NESMemoryComponent } from '../../../../src/core/memory/types'
 
 describe('Tests for the PC register after instrucions executions.', () => {
-  let cpuALU: NESAlu
-  let memory: NESMemory
+  let cpuALU: NESAluComponent
+  let memory: NESMemoryComponent
   let cpu: NESCpuComponent
 
   beforeEach(() => {
-    cpu = CPU.create()
-    cpuALU = cpu.getComponents().cpuALU
-    memory = cpu.getComponents().memory
+    const control = ControlBus.create()
+
+    cpu = control.getComponents().cpu
+    cpuALU = control.getComponents().alu
+    memory = control.getComponents().memory
   })
 
   test('should increase the PC register after ADC instructions has been executed', () => {

@@ -12,7 +12,7 @@ export class Sei extends BaseInstruction {
   execute (opcode: number): void {
     const addressingMode = this.AddressingModes[opcode]
 
-    this.cpuALU.setFlag(CPUFlags.InterruptDisable)
+    this.alu.setFlag(CPUFlags.InterruptDisable)
     this.cpu.nextPC(addressingMode)
   }
 }

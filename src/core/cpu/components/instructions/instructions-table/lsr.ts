@@ -24,10 +24,10 @@ export class Lsr extends BaseInstruction {
   }
 
   updateStatus (result: number, operandValue: number): void {
-    const carryFlag = this.cpuALU.getBitValue(0, operandValue)
+    const carryFlag = this.alu.getBitValue(0, operandValue)
 
-    this.cpuALU.setFlag(CPUFlags.CarryFlag, carryFlag)
-    this.cpuALU.updateZeroFlag(result)
-    this.cpuALU.updateNegativeFlag(result)
+    this.alu.setFlag(CPUFlags.CarryFlag, carryFlag)
+    this.alu.updateZeroFlag(result)
+    this.alu.updateNegativeFlag(result)
   }
 }

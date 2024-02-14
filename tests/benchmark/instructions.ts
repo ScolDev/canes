@@ -1,13 +1,16 @@
+import ControlBus from '../../src/core/control-bus/control-bus'
 import { InstructionsTable } from '../../src/core/cpu/components/instructions/instructions-table'
 import { CPUClock } from '../../src/core/cpu/consts/cpu-clock'
-import { CPU } from '../../src/core/cpu/cpu'
 import { addrModes } from './consts/addr-modes'
 import { executeByInstructionCycles } from './strategies'
-import { type BenchmarkConfig, type InstructionSummary } from './types/benchmark-types'
+import {
+  type BenchmarkConfig,
+  type InstructionSummary
+} from './types/benchmark-types'
 
-const cpu = CPU.create()
-const instModule = cpu.getComponents().instruction
-const instTable = InstructionsTable(cpu)
+const control = ControlBus.create()
+const instModule = control.getComponents().instruction
+const instTable = InstructionsTable(control)
 
 const benchmarkByCycles = {
   title: `Benchmark for CPU instructions cycles (${CPUClock.NTSC} cycles per instruction)`,

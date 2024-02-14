@@ -20,7 +20,7 @@ export class Iny extends BaseInstruction {
   }
 
   updateStatus (result: number): void {
-    this.cpuALU.updateZeroFlag(result)
-    this.cpuALU.updateNegativeFlag(result)
+    this.alu.updateZeroFlag(result)
+    this.alu.updateNegativeFlag(result)
   }
 }

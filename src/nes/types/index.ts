@@ -6,8 +6,9 @@ import { type ROMSource } from '../components/rom/types'
 export interface NESComponents {
   cpu: NESCpuComponent
   cpuALU: NESAluComponent
+  instruction: NESInstructionComponent
   memory: NESMemoryComponent
-  nesDebugger: NESDebuggerComponent
+  nesDebugger: NESDebuggerComponent | undefined
 }
 
 export interface NESModule {

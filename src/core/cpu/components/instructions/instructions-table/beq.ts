@@ -11,11 +11,11 @@ export class Beq extends BaseInstruction {
 
   execute (opcode: number, operand: number): void {
     const addressingMode = this.AddressingModes[opcode]
-    const zeroFlag = this.cpuALU.getFlag(CPUFlags.ZeroFlag)
+    const zeroFlag = this.alu.getFlag(CPUFlags.ZeroFlag)
     let displacement = 0x00
 
     if (zeroFlag === 0x01) {
-      displacement = this.cpuALU.getSignedByte(operand)
+      displacement = this.alu.getSignedByte(operand)
       this.addBranchExtraCycles(displacement)
     }
 

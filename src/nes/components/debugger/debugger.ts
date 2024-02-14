@@ -9,28 +9,24 @@ import {
   type DebugEventType,
   type DebugEventCallback,
   type DebugConditionExpresion,
-  type DebugCpu,
   type NESDebuggerComponent
 } from './types'
 import { DebugInitialState } from './consts/state'
+import { type NESControlBus } from '../../../core/control-bus/types'
 
 export class Debugger implements NESDebuggerComponent {
-  private cpu: DebugCpu
-  private readonly state: DebugState = { ...DebugInitialState }
+  private readonly state: DebugState = structuredClone({ ...DebugInitialState })
 
   private readonly debugQueues: DebugQueues = {
     pause: []
   }
 
-  private constructor () {}
-
-  attach (cpuToAttach: DebugCpu): void {
-    this.cpu = cpuToAttach
-    this.initComponents()
+  private constructor (readonly control: NESControlBus) {
+    this.state.cpuState = this.control.cpu.getCPUState()
   }
 
   run (): void {
-    this.cpu.powerUp()
+    this.control.cpu.powerUp()
   }
 
   breakOn (conditions: DebugSingleConditions): void {
@@ -66,11 +62,10 @@ export class Debugger implements NESDebuggerComponent {
   }
 
   private validateAtResetVector (): void {
-    const { memory } = this.cpu.getComponents()
     const { atResetVector } = this.state.conditions
 
-    const currentPC = this.cpu.getPC()
-    const resetVector = memory.loadWord(CPUMemoryMap.Reset_Vector)
+    const currentPC = this.control.cpu.getPC()
+    const resetVector = this.control.memory.loadWord(CPUMemoryMap.Reset_Vector)
     if (atResetVector && currentPC === resetVector) {
       this.pause()
     }
@@ -84,7 +79,7 @@ export class Debugger implements NESDebuggerComponent {
   }
 
   private validateBreakpoints (): void {
-    const currentPC = this.cpu.getPC()
+    const currentPC = this.control.cpu.getPC()
     for (const breakpoint of this.state.conditions.breakpoints) {
       if (currentPC === breakpoint) {
         this.pause()
@@ -134,7 +129,7 @@ export class Debugger implements NESDebuggerComponent {
       type: DebugEvents.Pause,
       data: {
         cpuState,
-        pc: this.cpu.getPC()
+        pc: this.control.cpu.getPC()
       }
     }
 
@@ -146,19 +141,7 @@ export class Debugger implements NESDebuggerComponent {
     }
   }
 
-  private initComponents (): void {
-    if (this.cpu !== undefined) {
-      this.state.cpuState = this.cpu.getCPUState()
-      this.state.conditions = {
-        insExecuted: -1,
-        atResetVector: false,
-        breakpoints: [],
-        memory: []
-      }
-    }
-  }
-
-  static create (): NESDebuggerComponent {
-    return new Debugger()
+  static create (control: NESControlBus): NESDebuggerComponent {
+    return new Debugger(control)
   }
 }

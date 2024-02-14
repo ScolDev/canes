@@ -12,7 +12,7 @@ export class Cld extends BaseInstruction {
   execute (opcode: number): void {
     const addressingMode = this.AddressingModes[opcode]
 
-    this.cpuALU.clearFlag(CPUFlags.DecimalModeFlag)
+    this.alu.clearFlag(CPUFlags.DecimalModeFlag)
     this.cpu.nextPC(addressingMode)
   }
 }

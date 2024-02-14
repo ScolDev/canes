@@ -12,9 +12,8 @@ export class Bit extends BaseInstruction {
   }
 
   execute (opcode: number, operand: number): void {
-    const { memory } = this.cpu.getComponents()
     const addressingMode = this.AddressingModes[opcode]
-    const memoryValue = memory.loadByAddressingMode(addressingMode, operand)
+    const memoryValue = this.memory.loadByAddressingMode(addressingMode, operand)
     const result = this.cpu.getRegister(CPURegisters.A) & memoryValue
 
     this.updateStatus(result, memoryValue)
@@ -22,10 +21,10 @@ export class Bit extends BaseInstruction {
   }
 
   updateStatus (result: number, operand: number): void {
-    const overflowFlag = this.cpuALU.getBitValue(6, operand)
+    const overflowFlag = this.alu.getBitValue(6, operand)
 
-    this.cpuALU.updateZeroFlag(result)
-    this.cpuALU.setFlag(CPUFlags.OverflowFlag, overflowFlag)
-    this.cpuALU.updateNegativeFlag(operand)
+    this.alu.updateZeroFlag(result)
+    this.alu.setFlag(CPUFlags.OverflowFlag, overflowFlag)
+    this.alu.updateNegativeFlag(operand)
   }
 }

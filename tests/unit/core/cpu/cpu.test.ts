@@ -1,12 +1,12 @@
 import { CPUFlags } from '../../../../src/core/cpu/consts/flags'
 import { CPURegisters } from '../../../../src/core/cpu/consts/registers'
-import { CPU } from '../../../../src/core/cpu/cpu'
 import {
   type NESAluComponent,
   type NESCpuComponent
 } from '../../../../src/core/cpu/types'
 import { CPUMemoryMap } from '../../../../src/core/memory/consts/memory-map'
 import { type NESMemoryComponent } from '../../../../src/core/memory/types'
+import ControlBus from '../../../../src/core/control-bus/control-bus'
 
 describe('Tests for CPU module.', () => {
   let cpuALU: NESAluComponent
@@ -14,9 +14,11 @@ describe('Tests for CPU module.', () => {
   let cpu: NESCpuComponent
 
   beforeEach(() => {
-    cpu = CPU.create()
-    cpuALU = cpu.getComponents().cpuALU
-    memory = cpu.getComponents().memory
+    const control = ControlBus.create()
+
+    cpu = control.getComponents().cpu
+    cpuALU = control.getComponents().alu
+    memory = control.getComponents().memory
   })
 
   test('should load CPU module.', () => {

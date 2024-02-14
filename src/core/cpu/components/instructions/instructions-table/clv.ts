@@ -12,7 +12,7 @@ export class Clv extends BaseInstruction {
   execute (opcode: number): void {
     const addressingMode = this.AddressingModes[opcode]
 
-    this.cpuALU.clearFlag(CPUFlags.OverflowFlag)
+    this.alu.clearFlag(CPUFlags.OverflowFlag)
     this.cpu.nextPC(addressingMode)
   }
 }
