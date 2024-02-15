@@ -1,6 +1,5 @@
 import ControlBus from '../core/control-bus/control-bus'
 import { type NESControlBus } from '../core/control-bus/types'
-import { CPU } from '../core/cpu/cpu'
 import { DebugCPUExecutor } from './executors/debug-cpu-executor'
 import {
   type NESCpuComponent,

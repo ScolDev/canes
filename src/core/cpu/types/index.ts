@@ -62,6 +62,7 @@ export interface NESAddrModesComponent {
 
 export interface NESInstructionComponent {
   execute: (instruction: CPUInstruction) => void
+  fetchInstructionBytes: (fromAddress: number) => CPUInstruction
   getInstructionASM: (instruction: CPUInstruction) => string
   getInstructionCycles: (instructin: CPUInstruction) => number
   getInstructionSize: (opcode: number) => number
@@ -69,7 +70,6 @@ export interface NESInstructionComponent {
 
 export interface NESCpuComponent {
   execute: (instruction: CPUInstruction) => void
-  fetchInstructionBytes: () => CPUInstruction
   nextPC: (addressingMode: CPUAddrMode, displacement?: number) => void
   setPC: (address: number) => void
   getPC: () => number

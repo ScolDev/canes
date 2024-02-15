@@ -6,7 +6,7 @@ import { DebugEvents } from '../../../src/nes/components/debugger/consts/events'
 import { type NESDebuggerComponent } from '../../../src/nes/components/debugger/types'
 import { NES } from '../../../src/nes/nes'
 import { type NESModule } from '../../../src/nes/types'
-import { storePRG } from '../helpers/memory-helper'
+import { storePRG } from '../helpers'
 
 describe('Tests for NES ROMs executions.', () => {
   let nes: NESModule
@@ -48,7 +48,7 @@ describe('Tests for NES ROMs executions.', () => {
       const { pc } = data
       const { paused } = data.cpuState
 
-      const currentInsBytes = cpu.fetchInstructionBytes()
+      const currentInsBytes = instruction.fetchInstructionBytes(pc)
       const asm = instruction.getInstructionASM(currentInsBytes)
       const [opcode] = currentInsBytes
 
@@ -86,7 +86,7 @@ describe('Tests for NES ROMs executions.', () => {
       const { pc } = data
       const { paused } = data.cpuState
 
-      const currentInsBytes = cpu.fetchInstructionBytes()
+      const currentInsBytes = instruction.fetchInstructionBytes(pc)
       const asm = instruction.getInstructionASM(currentInsBytes)
       const [opcode] = currentInsBytes
 
@@ -112,7 +112,7 @@ describe('Tests for NES ROMs executions.', () => {
       const { pc } = data
       const { paused } = data.cpuState
 
-      const currentInsBytes = cpu.fetchInstructionBytes()
+      const currentInsBytes = instruction.fetchInstructionBytes(pc)
       const asm = instruction.getInstructionASM(currentInsBytes)
 
       expect(type).toBe(DebugEvents.Pause)

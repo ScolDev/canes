@@ -7,7 +7,7 @@ import { MemoryMirrors } from './consts/memory-mirrors'
 import { type NESMemoryComponent, type MemoryMirror } from './types'
 
 export class Memory implements NESMemoryComponent {
-  private MEM = new Uint8Array(CPUMemoryMap.Size)
+  private readonly MEM = new Uint8Array(CPUMemoryMap.Size)
 
   private constructor (private readonly control: NESControlBus) {}
 

@@ -1,4 +1,8 @@
-import { type NESCpuComponent, type NESAluComponent, type NESInstructionComponent } from '../../core/cpu/types'
+import {
+  type NESCpuComponent,
+  type NESAluComponent,
+  type NESInstructionComponent
+} from '../../core/cpu/types'
 import { type NESMemoryComponent } from '../../core/memory/types'
 import { type NESDebuggerComponent } from '../components/debugger/types'
 import { type ROMSource } from '../components/rom/types'

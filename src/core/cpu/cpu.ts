@@ -33,21 +33,6 @@ export class CPU implements NESCpuComponent {
     this.updateCtrl()
   }
 
-  fetchInstructionBytes (): CPUInstruction {
-    const pc = this.getPC()
-    const opcode = this.control.memory.load(pc)
-    const instruction: CPUInstruction = [opcode]
-    const instructionSize = this.control.instruction.getInstructionSize(opcode)
-
-    if (instructionSize === 0x02) {
-      instruction[1] = this.control.memory.load(pc + 1)
-    } else if (instructionSize === 0x03) {
-      instruction[1] = this.control.memory.loadWord(pc + 1)
-    }
-
-    return instruction
-  }
-
   nextPC (addressingMode: CPUAddrMode, displacement = 0x00): void {
     const instructionSize = CPUInstructionSize[addressingMode]
     const currentPC = this.getRegister(CPURegisters.PC)

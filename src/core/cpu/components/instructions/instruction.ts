@@ -21,6 +21,20 @@ export class Instruction implements NESInstructionComponent {
     this.decodeAndExecute(instruction)
   }
 
+  fetchInstructionBytes (fromAddress: number): CPUInstruction {
+    const opcode = this.control.memory.load(fromAddress)
+    const instruction: CPUInstruction = [opcode]
+    const instructionSize = this.getInstructionSize(opcode)
+
+    if (instructionSize === 0x02) {
+      instruction[1] = this.control.memory.load(fromAddress + 1)
+    } else if (instructionSize === 0x03) {
+      instruction[1] = this.control.memory.loadWord(fromAddress + 1)
+    }
+
+    return instruction
+  }
+
   getInstructionASM (instruction: CPUInstruction): string {
     const decoded = this.decode(instruction)
     return decoded.getASM(instruction)

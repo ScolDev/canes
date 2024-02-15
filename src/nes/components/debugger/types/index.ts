@@ -1,10 +1,9 @@
 import {
-  type CPUState,
-  type NESCpuComponent
+  type CPUState
 } from '../../../../core/cpu/types'
-import { type NESMemoryComponent } from '../../../../core/memory/types'
 import { type ReverseMap } from '../../../../shared/types'
 import { type DebugEvents } from '../consts/events'
+import { type NESDisASMComponent } from '../../disasm/types/index'
 
 export interface DebugState {
   cpuState: CPUState
@@ -46,14 +45,12 @@ export interface DebugEvent {
   }
 }
 
-export type DebugCpu = Pick<
-NESCpuComponent,
-'getCPUState' | 'getPC' | 'powerUp'
->
-
-export type DebugMemory = Pick<NESMemoryComponent, 'loadWord'>
+export interface NESDebuggerComponents {
+  disASM: NESDisASMComponent
+}
 
 export interface NESDebuggerComponent {
+  getComponents: () => NESDebuggerComponents
   run: () => void
   breakOn: (conditions: DebugSingleConditions) => void
   addBreakpoint: (breakpoint: DebugBreakpoint) => void

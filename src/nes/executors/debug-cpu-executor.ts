@@ -46,7 +46,8 @@ export class DebugCPUExecutor implements CPUExecutor {
         return
       }
 
-      const insBytes = this.cpu.fetchInstructionBytes()
+      const currentPC = this.cpu.getPC()
+      const insBytes = this.cpuInstruction.fetchInstructionBytes(currentPC)
       const baseCycles = this.cpuInstruction.getInstructionCycles(insBytes)
 
       this.cpuState.clock.lastExtraCycles = 0

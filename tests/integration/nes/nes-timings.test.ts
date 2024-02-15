@@ -4,7 +4,7 @@ import { DebugEvents } from '../../../src/nes/components/debugger/consts/events'
 import { type NESDebuggerComponent } from '../../../src/nes/components/debugger/types'
 import { NES } from '../../../src/nes/nes'
 import { type NESModule } from '../../../src/nes/types'
-import { storePRG } from '../helpers/memory-helper'
+import { storePRG } from '../helpers'
 
 describe('Tests for timings on NES Components.', () => {
   let nes: NESModule

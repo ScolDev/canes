@@ -9,13 +9,17 @@ import {
   type DebugEventType,
   type DebugEventCallback,
   type DebugConditionExpresion,
-  type NESDebuggerComponent
+  type NESDebuggerComponent,
+  type NESDebuggerComponents
 } from './types'
 import { DebugInitialState } from './consts/state'
 import { type NESControlBus } from '../../../core/control-bus/types'
+import { type NESDisASMComponent } from '../disasm/types'
+import DisASM from '../disasm/disasm'
 
 export class Debugger implements NESDebuggerComponent {
   private readonly state: DebugState = structuredClone({ ...DebugInitialState })
+  private readonly disASM: NESDisASMComponent
 
   private readonly debugQueues: DebugQueues = {
     pause: []
@@ -23,6 +27,13 @@ export class Debugger implements NESDebuggerComponent {
 
   private constructor (readonly control: NESControlBus) {
     this.state.cpuState = this.control.cpu.getCPUState()
+    this.disASM = DisASM.create(this.control)
+  }
+
+  getComponents (): NESDebuggerComponents {
+    return {
+      disASM: this.disASM
+    }
   }
 
   run (): void {
