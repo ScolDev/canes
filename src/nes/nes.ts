@@ -52,6 +52,7 @@ export class NES implements NESModule {
       cpuALU: this.alu,
       instruction: this.instruction,
       memory: this.memory,
+      control: this.control,
       nesDebugger: this.nesDebugger
     }
   }

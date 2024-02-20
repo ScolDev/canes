@@ -1,3 +1,4 @@
+import { type NESControlBus } from '../../core/control-bus/types'
 import {
   type NESCpuComponent,
   type NESAluComponent,
@@ -12,6 +13,7 @@ export interface NESComponents {
   cpuALU: NESAluComponent
   instruction: NESInstructionComponent
   memory: NESMemoryComponent
+  control: NESControlBus
   nesDebugger: NESDebuggerComponent | undefined
 }
 

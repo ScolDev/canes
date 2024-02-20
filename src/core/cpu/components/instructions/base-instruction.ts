@@ -24,10 +24,12 @@ export abstract class BaseInstruction {
   public abstract execute (...args: CPUInstruction): void
   public updateStatus? (...args: number[]): void
 
-  getASM (instruction: CPUInstruction): string {
+  getASM (instruction: CPUInstruction, address?: number): string {
     const [opcode, operand] = instruction
     const addressingMode = this.AddressingModes[opcode]
-    return `${this.name}${getASMByAddrMode(addressingMode, operand)}`
+    const operandASM = getASMByAddrMode(addressingMode, operand, address)
+
+    return `${this.name}${operandASM.length > 0 ? (' ' + operandASM) : ''}`
   }
 
   protected addBranchExtraCycles (displacement: number): void {

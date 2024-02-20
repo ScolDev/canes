@@ -35,9 +35,9 @@ export class Instruction implements NESInstructionComponent {
     return instruction
   }
 
-  getInstructionASM (instruction: CPUInstruction): string {
+  getInstructionASM (instruction: CPUInstruction, address?: number): string {
     const decoded = this.decode(instruction)
-    return decoded.getASM(instruction)
+    return decoded.getASM(instruction, address)
   }
 
   getInstructionCycles (instruction: CPUInstruction): number {

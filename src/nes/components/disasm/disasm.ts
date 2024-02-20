@@ -20,7 +20,7 @@ export default class DisASM implements NESDisASMComponent {
     for (let line = 0; line < numOfLines; line++) {
       const instBytes = this.instruction.fetchInstructionBytes(address)
       const size = this.instruction.getInstructionSize(instBytes[0])
-      const asm = this.instruction.getInstructionASM(instBytes)
+      const asm = this.instruction.getInstructionASM(instBytes, address)
 
       address += size
       lines.push({ asm, address, bytes: instBytes })

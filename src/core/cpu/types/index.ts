@@ -63,7 +63,7 @@ export interface NESAddrModesComponent {
 export interface NESInstructionComponent {
   execute: (instruction: CPUInstruction) => void
   fetchInstructionBytes: (fromAddress: number) => CPUInstruction
-  getInstructionASM: (instruction: CPUInstruction) => string
+  getInstructionASM: (instruction: CPUInstruction, address: number) => string
   getInstructionCycles: (instructin: CPUInstruction) => number
   getInstructionSize: (opcode: number) => number
 }
