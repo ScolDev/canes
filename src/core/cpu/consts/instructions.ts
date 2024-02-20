@@ -11,7 +11,7 @@ export const CPUInstructionSize: Record<CPUAddrMode, number> = {
   [CPUAddressingModes.Absolute]: 3,
   [CPUAddressingModes.AbsoluteX]: 3,
   [CPUAddressingModes.AbsoluteY]: 3,
-  [CPUAddressingModes.Indirect]: 2,
+  [CPUAddressingModes.Indirect]: 3,
   [CPUAddressingModes.IndexedIndirect]: 2,
   [CPUAddressingModes.IndirectIndexed]: 2,
   [CPUAddressingModes.Implied]: 1
