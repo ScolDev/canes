@@ -1,5 +1,5 @@
-import { type NESCpuComponent, type NESAluComponent, type NESInstructionComponent, type NESAddrModesComponent } from '../../cpu/types'
-import { type NESMemoryComponent } from '../../memory/types'
+import { type NESCpuComponent, type NESAluComponent, type NESInstructionComponent, type NESAddrModesComponent } from '../cpu/types'
+import { type NESMemoryComponent } from '../memory/types'
 
 export interface NESComponents {
   cpu: NESCpuComponent

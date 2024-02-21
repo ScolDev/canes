@@ -1,4 +1,4 @@
-import { CPUClock } from '../../../src/core/cpu/consts/cpu-clock'
+import { CPUClock } from '../../../src/nes/components/core/cpu/consts/cpu-clock'
 import { BenchmarkTypes } from './consts/benchmark-types'
 import { executeAverageOnInstructionCycles, executeByInstructionCycles } from './strategies'
 import { type BenchmarkConfig } from './types'

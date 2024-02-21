@@ -1,9 +1,8 @@
-import { type BaseInstruction } from '../../../src/core/cpu/components/instructions/base-instruction'
-import { CPUInstructionSize } from '../../../src/core/cpu/consts/instructions'
-import { type CPUInstruction } from '../../../src/core/cpu/types'
-import { CPUMemoryMap } from '../../../src/core/memory/consts/memory-map'
-import { type NESMemoryComponent } from '../../../src/core/memory/types'
-import { type DisASMLine } from '../../../src/nes/components/disasm/types'
+import { type BaseInstruction } from '../../src/nes/components/core/cpu/components/instructions/base-instruction'
+import { CPUInstructionSize } from '../../src/nes/components/core/cpu/consts/instructions'
+import { CPUMemoryMap } from '../../src/nes/components/core/memory/consts/memory-map'
+import { type NESMemoryComponent } from '../../src/nes/components/core/memory/types'
+import { type DisASMLine } from '../../src/nes/components/disasm/types'
 
 export function storePRG (memory: NESMemoryComponent, prg: Uint8Array, resetVector = 0x8000): void {
   memory.storeWord(CPUMemoryMap.Reset_Vector, resetVector)

@@ -5,7 +5,7 @@ import {
   type ROMLoader,
   type NESRomComponent,
   type ROMBuffer
-} from './types/'
+} from './types'
 import { Buffer } from 'buffer'
 import { MapperCodes, MapperNames } from './consts/mapper'
 import { ROMFile } from './consts/rom-file'

@@ -1,11 +1,11 @@
+import {
+  type CPUExecutor,
+  type NESCpuComponent,
+  type NESInstructionComponent,
+  type CPUState
+} from '../components/core/cpu/types'
 import { type NESDebuggerComponent } from '../components/debugger/types'
 import { type NESModule } from '../types'
-import {
-  type NESCpuComponent,
-  type CPUState,
-  type NESInstructionComponent,
-  type CPUExecutor
-} from '../../core/cpu/types'
 
 export class DebugCPUExecutor implements CPUExecutor {
   private readonly cpu: NESCpuComponent
@@ -16,7 +16,8 @@ export class DebugCPUExecutor implements CPUExecutor {
   private nextTickCycles = 0
 
   private constructor (private readonly nes: NESModule) {
-    const { cpu, instruction, nesDebugger } = this.nes.getComponents()
+    const { control, nesDebugger } = this.nes.getComponents()
+    const { cpu, instruction } = control.getComponents()
 
     if (nesDebugger === undefined) {
       throw Error('NES Debugger can not be undefined.')

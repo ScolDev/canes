@@ -1,4 +1,4 @@
-import { CPUInitialState } from '../../../../core/cpu/consts/state'
+import { CPUInitialState } from '../../core/cpu/consts/state'
 import { type DebugState } from '../types'
 
 export const DebugInitialState: DebugState = {

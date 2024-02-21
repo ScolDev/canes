@@ -1,7 +1,7 @@
-import { CPURegisters } from '../../../../src/core/cpu/consts/registers'
-import { CPUFlags } from '../../../../src/core/cpu/consts/flags'
-import ControlBus from '../../../../src/core/control-bus/control-bus'
-import { type NESAluComponent, type NESCpuComponent } from '../../../../src/core/cpu/types'
+import ControlBus from '../../../../src/nes/components/core/control-bus/control-bus'
+import { CPUFlags } from '../../../../src/nes/components/core/cpu/consts/flags'
+import { CPURegisters } from '../../../../src/nes/components/core/cpu/consts/registers'
+import { type NESCpuComponent, type NESAluComponent } from '../../../../src/nes/components/core/cpu/types'
 
 describe('Tests for ALU module.', () => {
   let cpu: NESCpuComponent

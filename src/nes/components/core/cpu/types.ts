@@ -1,8 +1,8 @@
-import { type CPURegisters } from '../consts/registers'
-import { type ReverseMap } from '../../../shared/types'
-import { type CPUAddressingModes } from '../consts/addressing-modes'
-import { type CPUFlags } from '../consts/flags'
-import { type BaseInstruction } from '../components/instructions/base-instruction'
+import { type CPURegisters } from './consts/registers'
+import { type ReverseMap } from '../../../../shared/types'
+import { type CPUAddressingModes } from './consts/addressing-modes'
+import { type CPUFlags } from './consts/flags'
+import { type BaseInstruction } from './components/instructions/base-instruction'
 
 export type CPURegister = ReverseMap<typeof CPURegisters>
 export type CPUFlag = ReverseMap<typeof CPUFlags>
@@ -63,7 +63,7 @@ export interface NESAddrModesComponent {
 export interface NESInstructionComponent {
   execute: (instruction: CPUInstruction) => void
   fetchInstructionBytes: (fromAddress: number) => CPUInstruction
-  getInstructionASM: (instruction: CPUInstruction, address: number) => string
+  getInstructionASM: (instruction: CPUInstruction, address?: number) => string
   getInstructionCycles: (instructin: CPUInstruction) => number
   getInstructionSize: (opcode: number) => number
 }

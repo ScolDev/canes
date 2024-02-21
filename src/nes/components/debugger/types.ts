@@ -1,9 +1,7 @@
-import {
-  type CPUState
-} from '../../../../core/cpu/types'
-import { type ReverseMap } from '../../../../shared/types'
-import { type DebugEvents } from '../consts/events'
-import { type NESDisASMComponent } from '../../disasm/types/index'
+import { type ReverseMap } from '../../../shared/types'
+import { type DebugEvents } from './consts/events'
+import { type NESDisASMComponent } from '../disasm/types'
+import { type CPUState } from '../core/cpu/types'
 
 export interface DebugState {
   cpuState: CPUState

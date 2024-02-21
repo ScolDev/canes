@@ -1,4 +1,4 @@
-import { type CPUAddrMode } from '../../cpu/types'
+import { type CPUAddrMode } from '../cpu/types'
 
 export interface MemoryMirror {
   start: number

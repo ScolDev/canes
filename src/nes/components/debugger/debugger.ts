@@ -1,4 +1,3 @@
-import { CPUMemoryMap } from '../../../core/memory/consts/memory-map'
 import { DebugEvents } from './consts/events'
 import {
   type DebugState,
@@ -13,9 +12,10 @@ import {
   type NESDebuggerComponents
 } from './types'
 import { DebugInitialState } from './consts/state'
-import { type NESControlBus } from '../../../core/control-bus/types'
 import { type NESDisASMComponent } from '../disasm/types'
 import DisASM from '../disasm/disasm'
+import { type NESControlBus } from '../core/control-bus/types'
+import { CPUMemoryMap } from '../core/memory/consts/memory-map'
 
 export class Debugger implements NESDebuggerComponent {
   private readonly state: DebugState = structuredClone({ ...DebugInitialState })

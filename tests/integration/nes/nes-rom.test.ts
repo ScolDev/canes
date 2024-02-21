@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
-import { type NESInstructionComponent, type NESCpuComponent } from '../../../src/core/cpu/types'
-import { type NESMemoryComponent } from '../../../src/core/memory/types'
+import { type NESControlBus } from '../../../src/nes/components/core/control-bus/types'
+import { type NESCpuComponent, type NESInstructionComponent } from '../../../src/nes/components/core/cpu/types'
+import { type NESMemoryComponent } from '../../../src/nes/components/core/memory/types'
 import { DebugEvents } from '../../../src/nes/components/debugger/consts/events'
 import { type NESDebuggerComponent } from '../../../src/nes/components/debugger/types'
 import { NES } from '../../../src/nes/nes'
@@ -10,6 +11,7 @@ import { storePRG } from '../helpers'
 
 describe('Tests for NES ROMs executions.', () => {
   let nes: NESModule
+  let control: NESControlBus
   let cpu: NESCpuComponent
   let memory: NESMemoryComponent
   let instruction: NESInstructionComponent
@@ -17,11 +19,12 @@ describe('Tests for NES ROMs executions.', () => {
 
   beforeEach(() => {
     nes = NES.create()
+    control = nes.getComponents().control
     nesDebugger = nes.debug()
 
-    cpu = nes.getComponents().cpu
-    memory = nes.getComponents().memory
-    instruction = nes.getComponents().instruction
+    cpu = control.getComponents().cpu
+    memory = control.getComponents().memory
+    instruction = control.getComponents().instruction
   })
 
   test('should execute the PRG code after power-up', (done) => {
