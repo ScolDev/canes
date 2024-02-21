@@ -80,8 +80,10 @@ describe('Tests for the ROM module.', () => {
       await rom.load()
 
       expect(true).toBe(false)
-    } catch (error: any) {
-      expect(error.message).toBe('Cannot load the rom file')
+    } catch (error) {
+      if (error instanceof Error) {
+        expect(error.message).toBe('Cannot load the rom file')
+      }
     }
   })
 

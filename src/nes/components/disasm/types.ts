@@ -1,4 +1,4 @@
-import { type CPUInstruction } from '../../../../core/cpu/types'
+import { type CPUInstruction } from '../core/cpu/types'
 
 export interface CodeRange {
   start: number

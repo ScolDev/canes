@@ -1,5 +1,5 @@
-import { type NESControlBus } from '../../../core/control-bus/types'
-import { type NESInstructionComponent } from '../../../core/cpu/types'
+import { type NESControlBus } from '../core/control-bus/types'
+import { type NESInstructionComponent } from '../core/cpu/types'
 import {
   type CodeRange,
   type DisASMLine,
