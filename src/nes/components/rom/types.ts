@@ -1,8 +1,3 @@
-interface ROMFileSource {
-  filePath: string
-}
-
-export type ROMSource = ROMFileSource
 export interface ROMLoader {
   getBytes: () => Promise<Uint8Array>
 }
@@ -41,7 +36,6 @@ export interface ROMNESBanks {
 }
 
 export interface NESRomComponent {
-  load: () => Promise<void>
   getHeader: () => ROMHeader | null
   getPRG: () => ROMBuffer
 }

@@ -2,7 +2,6 @@ import {
   type ROMBank,
   type ROMMapper,
   type ROMHeader,
-  type ROMLoader,
   type NESRomComponent,
   type ROMBuffer
 } from './types'
@@ -12,19 +11,14 @@ import { ROMFile } from './consts/rom-file'
 import { ROMSignature } from './consts/signature'
 
 export class ROM implements NESRomComponent {
-  private readonly romLoader: ROMLoader
-  private header: ROMHeader | null = null
+  private readonly header: ROMHeader | null = null
 
-  private romFileBuffer = new Uint8Array()
+  private readonly romBuffer = new Uint8Array()
   private readonly signature = new Uint8Array(ROMSignature)
 
-  constructor (romLoader: ROMLoader) {
-    this.romLoader = romLoader
-  }
-
-  async load (): Promise<void> {
-    this.romFileBuffer = await this.romLoader.getBytes()
-    this.header = this.buildHeader(this.romFileBuffer)
+  private constructor (romBuffer: Uint8Array) {
+    this.romBuffer = romBuffer
+    this.header = this.buildHeader(this.romBuffer)
   }
 
   getHeader (): ROMHeader | null {
@@ -59,17 +53,17 @@ export class ROM implements NESRomComponent {
     }
   }
 
-  private buildHeader (romFileBuffer: Uint8Array): ROMHeader | null {
-    if (!this.isValidSignature(romFileBuffer)) {
+  private buildHeader (romBuffer: Uint8Array): ROMHeader | null {
+    if (!this.isValidSignature(romBuffer)) {
       return null
     }
 
-    const numOfPRG = romFileBuffer[4]
-    const numOfCHR = romFileBuffer[5]
-    const flags6 = romFileBuffer[6]
+    const numOfPRG = romBuffer[4]
+    const numOfCHR = romBuffer[5]
+    const flags6 = romBuffer[6]
     const hasBatteryBacked = ((flags6 >> 1) & 0x01) === 0x01
     const hasTrainer = ((flags6 >> 2) & 0x01) === 0x01
-    const prgBanks = this.getPRGBanks(romFileBuffer, hasTrainer)
+    const prgBanks = this.getPRGBanks(romBuffer, hasTrainer)
     const mapper = this.decodeMapper(flags6)
 
     return {
@@ -77,7 +71,7 @@ export class ROM implements NESRomComponent {
       numOfCHR,
       hasBatteryBacked,
       hasTrainer,
-      size: romFileBuffer.length,
+      size: romBuffer.length,
       banks: {
         prg: prgBanks
       },
@@ -85,14 +79,14 @@ export class ROM implements NESRomComponent {
     }
   }
 
-  private getPRGBanks (romFileBuffer: Uint8Array, hasTrainer: boolean): ROMBank[] {
-    const numOfPRG = romFileBuffer[4]
+  private getPRGBanks (romBuffer: Uint8Array, hasTrainer: boolean): ROMBank[] {
+    const numOfPRG = romBuffer[4]
     const banks: ROMBank[] = []
 
     let prgOffset = ROMFile.HeaderSize + (hasTrainer ? ROMFile.TrainerSize : 0)
     for (let i = 0; i < numOfPRG; prgOffset += ROMFile.PRGBankSize, i++) {
       banks.push({
-        data: romFileBuffer.subarray(
+        data: romBuffer.subarray(
           prgOffset,
           prgOffset + ROMFile.PRGBankSize
         )
@@ -118,5 +112,9 @@ export class ROM implements NESRomComponent {
       this.signature[2] === compareTo[2] &&
       this.signature[3] === compareTo[3]
     )
+  }
+
+  static create (romBuffer: Uint8Array): NESRomComponent {
+    return new ROM(romBuffer)
   }
 }

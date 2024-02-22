@@ -5,9 +5,11 @@ import { type NESCpuComponent, type NESInstructionComponent } from '../../../src
 import { type NESMemoryComponent } from '../../../src/nes/components/core/memory/types'
 import { DebugEvents } from '../../../src/nes/components/debugger/consts/events'
 import { type NESDebuggerComponent } from '../../../src/nes/components/debugger/types'
+import { ROM } from '../../../src/nes/components/rom/rom'
+import { type NESRomComponent, type ROMLoader } from '../../../src/nes/components/rom/types'
 import { NES } from '../../../src/nes/nes'
 import { type NESModule } from '../../../src/nes/types'
-import { storePRG } from '../helpers'
+import { FileLoader, storePRG } from '../helpers'
 
 describe('Tests for NES ROMs executions.', () => {
   let nes: NESModule
@@ -16,6 +18,8 @@ describe('Tests for NES ROMs executions.', () => {
   let memory: NESMemoryComponent
   let instruction: NESInstructionComponent
   let nesDebugger: NESDebuggerComponent
+  let rom: NESRomComponent
+  let romLoader: ROMLoader
 
   beforeEach(() => {
     nes = NES.create()
@@ -108,22 +112,27 @@ describe('Tests for NES ROMs executions.', () => {
       './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
     const romResetVector = 0xe683
 
-    nesDebugger.breakOn({ atResetVector: true })
-    nes.loadROM({ filePath })
+    romLoader = new FileLoader(filePath)
+    romLoader.getBytes().then(bytes => {
+      rom = ROM.create(bytes)
 
-    nesDebugger.on(DebugEvents.Pause, ({ type, data }) => {
-      const { pc } = data
-      const { paused } = data.cpuState
+      nesDebugger.breakOn({ atResetVector: true })
+      nes.loadROM(rom)
 
-      const currentInsBytes = instruction.fetchInstructionBytes(pc)
-      const asm = instruction.getInstructionASM(currentInsBytes)
+      nesDebugger.on(DebugEvents.Pause, ({ type, data }) => {
+        const { pc } = data
+        const { paused } = data.cpuState
 
-      expect(type).toBe(DebugEvents.Pause)
-      expect(pc).toBe(romResetVector)
-      expect(asm).toBe('sei')
-      expect(paused).toBe(true)
+        const currentInsBytes = instruction.fetchInstructionBytes(pc)
+        const asm = instruction.getInstructionASM(currentInsBytes)
 
-      done()
+        expect(type).toBe(DebugEvents.Pause)
+        expect(pc).toBe(romResetVector)
+        expect(asm).toBe('sei')
+        expect(paused).toBe(true)
+
+        done()
+      })
     })
   })
 
@@ -132,25 +141,31 @@ describe('Tests for NES ROMs executions.', () => {
       './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
     const testStatusAddress = 0x6000
 
-    nesDebugger.addMemoryBreakpoint({
-      address: testStatusAddress,
-      equalsTo: 0x80,
-      onWrite: true
-    })
-    nes.loadROM({ filePath })
+    romLoader = new FileLoader(filePath)
 
-    nesDebugger.on(DebugEvents.Pause, ({ type, data }) => {
-      const { pc } = data
-      const { paused } = data.cpuState
-      const memoryValue = memory.load(testStatusAddress)
+    romLoader.getBytes().then(bytes => {
+      rom = ROM.create(bytes)
 
-      expect(type).toBe(DebugEvents.Pause)
-      expect(paused).toBe(true)
-      expect(memoryValue).toBe(0x80)
-      expect(pc).toBeLessThanOrEqual(0xffff)
-      expect(cpu.getPC()).toBeGreaterThanOrEqual(0x8000)
+      nesDebugger.addMemoryBreakpoint({
+        address: testStatusAddress,
+        equalsTo: 0x80,
+        onWrite: true
+      })
+      nes.loadROM(rom)
 
-      done()
+      nesDebugger.on(DebugEvents.Pause, ({ type, data }) => {
+        const { pc } = data
+        const { paused } = data.cpuState
+        const memoryValue = memory.load(testStatusAddress)
+
+        expect(type).toBe(DebugEvents.Pause)
+        expect(paused).toBe(true)
+        expect(memoryValue).toBe(0x80)
+        expect(pc).toBeLessThanOrEqual(0xffff)
+        expect(cpu.getPC()).toBeGreaterThanOrEqual(0x8000)
+
+        done()
+      })
     })
   })
 
@@ -159,26 +174,32 @@ describe('Tests for NES ROMs executions.', () => {
       './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
     const testStatusAddress = 0x6001
 
-    nesDebugger.addMemoryBreakpoint({
-      address: testStatusAddress,
-      greaterThanOrEquals: 0x80,
-      lessThanOrEquals: 0xff,
-      onWrite: true
-    })
-    nes.loadROM({ filePath })
+    romLoader = new FileLoader(filePath)
 
-    nesDebugger.on(DebugEvents.Pause, ({ type, data }) => {
-      const { pc } = data
-      const { paused } = data.cpuState
-      const memoryValue = memory.load(testStatusAddress)
+    romLoader.getBytes().then(bytes => {
+      rom = ROM.create(bytes)
 
-      expect(type).toBe(DebugEvents.Pause)
-      expect(paused).toBe(true)
-      expect(memoryValue).toBe(0xde)
-      expect(pc).toBeGreaterThanOrEqual(0x8000)
-      expect(cpu.getPC()).toBeLessThanOrEqual(0xffff)
+      nesDebugger.addMemoryBreakpoint({
+        address: testStatusAddress,
+        greaterThanOrEquals: 0x80,
+        lessThanOrEquals: 0xff,
+        onWrite: true
+      })
+      nes.loadROM(rom)
 
-      done()
+      nesDebugger.on(DebugEvents.Pause, ({ type, data }) => {
+        const { pc } = data
+        const { paused } = data.cpuState
+        const memoryValue = memory.load(testStatusAddress)
+
+        expect(type).toBe(DebugEvents.Pause)
+        expect(paused).toBe(true)
+        expect(memoryValue).toBe(0xde)
+        expect(pc).toBeGreaterThanOrEqual(0x8000)
+        expect(cpu.getPC()).toBeLessThanOrEqual(0xffff)
+
+        done()
+      })
     })
   })
 })

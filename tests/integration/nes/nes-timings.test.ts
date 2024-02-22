@@ -3,9 +3,10 @@ import { type NESControlBus } from '../../../src/nes/components/core/control-bus
 import { type NESMemoryComponent } from '../../../src/nes/components/core/memory/types'
 import { DebugEvents } from '../../../src/nes/components/debugger/consts/events'
 import { type NESDebuggerComponent } from '../../../src/nes/components/debugger/types'
+import { ROM } from '../../../src/nes/components/rom/rom'
 import { NES } from '../../../src/nes/nes'
 import { type NESModule } from '../../../src/nes/types'
-import { storePRG } from '../helpers'
+import { FileLoader, storePRG } from '../helpers'
 
 describe('Tests for timings on NES Components.', () => {
   let nes: NESModule
@@ -27,20 +28,26 @@ describe('Tests for timings on NES Components.', () => {
 
     const filePath =
       './tests/integration/__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
+    const romLoader = new FileLoader(filePath)
     const expectedPC = 0xe847
     const expectedCycles = 46086
     const expectedInsExecuted = 15000
-    nesDebugger.breakOn({ insExecuted: expectedInsExecuted })
 
-    nes.loadROM({ filePath })
+    romLoader.getBytes()
+      .then(bytes => {
+        const rom = ROM.create(bytes)
 
-    nesDebugger.on(DebugEvents.Pause, ({ data }) => {
-      expect(data.pc).toBe(expectedPC)
-      expect(data.cpuState.insExecuted).toBe(expectedInsExecuted)
-      expect(data.cpuState.clock.cycles).toBe(expectedCycles)
+        nesDebugger.breakOn({ insExecuted: expectedInsExecuted })
+        nes.loadROM(rom)
 
-      done()
-    })
+        nesDebugger.on(DebugEvents.Pause, ({ data }) => {
+          expect(data.pc).toBe(expectedPC)
+          expect(data.cpuState.insExecuted).toBe(expectedInsExecuted)
+          expect(data.cpuState.clock.cycles).toBe(expectedCycles)
+
+          done()
+        })
+      })
   })
 
   test('should count 4 cpu cycles for BCC instruction when crossing page on branching.', (done) => {

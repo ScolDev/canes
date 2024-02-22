@@ -3,6 +3,9 @@ import { CPUInstructionSize } from '../../src/nes/components/core/cpu/consts/ins
 import { CPUMemoryMap } from '../../src/nes/components/core/memory/consts/memory-map'
 import { type NESMemoryComponent } from '../../src/nes/components/core/memory/types'
 import { type DisASMLine } from '../../src/nes/components/disasm/types'
+import { type ROMLoader } from '../../src/nes/components/rom/types'
+import { readFile } from 'fs/promises'
+import { resolve } from 'path'
 
 export function storePRG (memory: NESMemoryComponent, prg: Uint8Array, resetVector = 0x8000): void {
   memory.storeWord(CPUMemoryMap.Reset_Vector, resetVector)
@@ -40,4 +43,16 @@ export function buildSampleCode (instructions: BaseInstruction[]): Uint8Array {
     .flat()
 
   return Uint8Array.from(code)
+}
+
+export class FileLoader implements ROMLoader {
+  constructor (private readonly filePath: string) {}
+
+  async getBytes (): Promise<Uint8Array> {
+    try {
+      return await readFile(resolve(this.filePath))
+    } catch (error) {
+      throw Error('Cannot load the rom file')
+    }
+  }
 }

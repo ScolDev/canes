@@ -1,6 +1,6 @@
 import { type NESControlBus } from './components/core/control-bus/types'
 import { type NESDebuggerComponent } from './components/debugger/types'
-import { type ROMSource } from './components/rom/types'
+import { type NESRomComponent } from './components/rom/types'
 
 export interface NESComponents {
   control: NESControlBus
@@ -10,6 +10,6 @@ export interface NESComponents {
 export interface NESModule {
   debug: () => NESDebuggerComponent
   getComponents: () => NESComponents
-  loadROM: (romSource: ROMSource) => Promise<void>
+  loadROM: (rom: NESRomComponent) => void
   powerUp: () => void
 }

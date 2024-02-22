@@ -1,15 +1,13 @@
 import { DebugCPUExecutor } from './executors/debug-cpu-executor'
 import { Debugger } from './components/debugger/debugger'
 import { type NESDebuggerComponent } from './components/debugger/types'
-import { ROM } from './components/rom/rom'
-import { type NESRomComponent, type ROMSource } from './components/rom/types'
 import { type NESModule, type NESComponents } from './types'
-import { FileLoader } from '../shared/utils/file-loader'
 import { type NESCpuComponent } from './components/core/cpu/types'
 import { CPUMemoryMap } from './components/core/memory/consts/memory-map'
 import { type NESMemoryComponent } from './components/core/memory/types'
 import { type NESControlBus } from './components/core/control-bus/types'
 import ControlBus from './components/core/control-bus/control-bus'
+import { type NESRomComponent } from './components/rom/types'
 
 export class NES implements NESModule {
   private readonly control: NESControlBus
@@ -45,10 +43,8 @@ export class NES implements NESModule {
     }
   }
 
-  async loadROM ({ filePath }: ROMSource): Promise<void> {
-    const fileLoader = FileLoader(filePath)
-    this.rom = new ROM(fileLoader)
-    await this.rom.load()
+  loadROM (rom: NESRomComponent): void {
+    this.rom = rom
     this.powerUp()
   }
 

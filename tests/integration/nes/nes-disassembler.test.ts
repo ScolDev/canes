@@ -59,9 +59,11 @@ import { Tya } from '../../../src/nes/components/core/cpu/components/instruction
 import { type NESMemoryComponent } from '../../../src/nes/components/core/memory/types'
 import { type NESDebuggerComponent } from '../../../src/nes/components/debugger/types'
 import { type NESDisASMComponent } from '../../../src/nes/components/disasm/types'
+import { ROM } from '../../../src/nes/components/rom/rom'
+import { type NESRomComponent, type ROMLoader } from '../../../src/nes/components/rom/types'
 import { NES } from '../../../src/nes/nes'
 import { type NESModule } from '../../../src/nes/types'
-import { mapLinesToASM, buildSampleCode, storePRG } from '../helpers'
+import { mapLinesToASM, buildSampleCode, storePRG, FileLoader } from '../helpers'
 
 /* eslint-disable @typescript-eslint/no-floating-promises */
 describe('Tests for DisAssembler module', () => {
@@ -70,6 +72,8 @@ describe('Tests for DisAssembler module', () => {
   let disASM: NESDisASMComponent
   let control: NESControlBus
   let memory: NESMemoryComponent
+  let rom: NESRomComponent
+  let romLoader: ROMLoader
 
   beforeEach(() => {
     nes = NES.create()
@@ -101,7 +105,10 @@ describe('Tests for DisAssembler module', () => {
       'pla'
     ]
 
-    await nes.loadROM({ filePath })
+    romLoader = new FileLoader(filePath)
+    rom = ROM.create(await romLoader.getBytes())
+
+    nes.loadROM(rom)
     const lines = disASM.read({ start: 0xe683, numOfLines: 15 })
 
     expect(mapLinesToASM(lines)).toEqual(expectedCode)
