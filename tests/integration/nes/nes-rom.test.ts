@@ -5,6 +5,7 @@ import { type NESCpuComponent, type NESInstructionComponent } from '../../../src
 import { type NESMemoryComponent } from '../../../src/nes/components/core/memory/types'
 import { DebugEvents } from '../../../src/nes/components/debugger/consts/events'
 import { type NESDebuggerComponent } from '../../../src/nes/components/debugger/types'
+import { type NESDisASMComponent } from '../../../src/nes/components/disasm/types'
 import { ROM } from '../../../src/nes/components/rom/rom'
 import { type NESRomComponent, type ROMLoader } from '../../../src/nes/components/rom/types'
 import { NES } from '../../../src/nes/nes'
@@ -18,6 +19,7 @@ describe('Tests for NES ROMs executions.', () => {
   let memory: NESMemoryComponent
   let instruction: NESInstructionComponent
   let nesDebugger: NESDebuggerComponent
+  let disASM: NESDisASMComponent
   let rom: NESRomComponent
   let romLoader: ROMLoader
 
@@ -25,6 +27,7 @@ describe('Tests for NES ROMs executions.', () => {
     nes = NES.create()
     control = nes.getComponents().control
     nesDebugger = nes.debug()
+    disASM = nesDebugger.getComponents().disASM
 
     cpu = control.getComponents().cpu
     memory = control.getComponents().memory
@@ -53,14 +56,18 @@ describe('Tests for NES ROMs executions.', () => {
 
     nesDebugger.on(DebugEvents.Pause, ({ type, data }) => {
       const { pc } = data
-      const { paused } = data.cpuState
+      const { isRunning } = data.cpuState
 
       const currentInsBytes = instruction.fetchInstructionBytes(pc)
-      const asm = instruction.getInstructionASM(currentInsBytes)
       const [opcode] = currentInsBytes
+      const asm = disASM.getInstructionASM({
+        opcode,
+        operand: currentInsBytes[1],
+        supported: true
+      })
 
       expect(type).toBe(DebugEvents.Pause)
-      expect(paused).toBe(true)
+      expect(isRunning).toBe(false)
       expect(pc).toBe(0x800a)
       expect(asm).toBe('lda #$00')
       expect(opcode).toBe(0xa9)
@@ -91,17 +98,21 @@ describe('Tests for NES ROMs executions.', () => {
 
     nesDebugger.on(DebugEvents.Pause, ({ type, data }) => {
       const { pc } = data
-      const { paused } = data.cpuState
+      const { isRunning } = data.cpuState
 
       const currentInsBytes = instruction.fetchInstructionBytes(pc)
-      const asm = instruction.getInstructionASM(currentInsBytes)
       const [opcode] = currentInsBytes
+      const asm = disASM.getInstructionASM({
+        opcode,
+        operand: currentInsBytes[1],
+        supported: true
+      })
 
       expect(type).toBe(DebugEvents.Pause)
       expect(asm).toBe('lda $2002')
       expect(opcode).toBe(0xad)
       expect(pc).toBe(0x8005)
-      expect(paused).toBe(true)
+      expect(isRunning).toBe(false)
 
       done()
     })
@@ -121,15 +132,19 @@ describe('Tests for NES ROMs executions.', () => {
 
       nesDebugger.on(DebugEvents.Pause, ({ type, data }) => {
         const { pc } = data
-        const { paused } = data.cpuState
+        const { isRunning } = data.cpuState
 
         const currentInsBytes = instruction.fetchInstructionBytes(pc)
-        const asm = instruction.getInstructionASM(currentInsBytes)
+        const asm = disASM.getInstructionASM({
+          opcode: currentInsBytes[0],
+          operand: currentInsBytes[1],
+          supported: true
+        })
 
         expect(type).toBe(DebugEvents.Pause)
         expect(pc).toBe(romResetVector)
         expect(asm).toBe('sei')
-        expect(paused).toBe(true)
+        expect(isRunning).toBe(false)
 
         done()
       })
@@ -155,11 +170,11 @@ describe('Tests for NES ROMs executions.', () => {
 
       nesDebugger.on(DebugEvents.Pause, ({ type, data }) => {
         const { pc } = data
-        const { paused } = data.cpuState
+        const { isRunning } = data.cpuState
         const memoryValue = memory.load(testStatusAddress)
 
         expect(type).toBe(DebugEvents.Pause)
-        expect(paused).toBe(true)
+        expect(isRunning).toBe(false)
         expect(memoryValue).toBe(0x80)
         expect(pc).toBeLessThanOrEqual(0xffff)
         expect(cpu.getPC()).toBeGreaterThanOrEqual(0x8000)
@@ -189,11 +204,11 @@ describe('Tests for NES ROMs executions.', () => {
 
       nesDebugger.on(DebugEvents.Pause, ({ type, data }) => {
         const { pc } = data
-        const { paused } = data.cpuState
+        const { isRunning } = data.cpuState
         const memoryValue = memory.load(testStatusAddress)
 
         expect(type).toBe(DebugEvents.Pause)
-        expect(paused).toBe(true)
+        expect(isRunning).toBe(false)
         expect(memoryValue).toBe(0xde)
         expect(pc).toBeGreaterThanOrEqual(0x8000)
         expect(cpu.getPC()).toBeLessThanOrEqual(0xffff)

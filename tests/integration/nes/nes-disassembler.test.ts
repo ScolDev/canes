@@ -65,6 +65,20 @@ import { NES } from '../../../src/nes/nes'
 import { type NESModule } from '../../../src/nes/types'
 import { mapLinesToASM, buildSampleCode, storePRG, FileLoader } from '../helpers'
 
+function getNumOfLines (instructions: BaseInstruction[]): number {
+  return instructions.reduce(
+    (prev, ins) => prev + Object.keys(ins.AddressingModes).length,
+    0
+  )
+}
+
+async function setUpDisASM (disASM: NESDisASMComponent, memory: NESMemoryComponent, code: Uint8Array): Promise<void> {
+  storePRG(memory, code)
+
+  disASM.setPRG(code)
+  await disASM.parse()
+}
+
 /* eslint-disable @typescript-eslint/no-floating-promises */
 describe('Tests for DisAssembler module', () => {
   let nes: NESModule
@@ -109,12 +123,15 @@ describe('Tests for DisAssembler module', () => {
     rom = ROM.create(await romLoader.getBytes())
 
     nes.loadROM(rom)
-    const lines = disASM.read({ start: 0xe683, numOfLines: 15 })
+    disASM.setPRG(rom.getPRG().buffer)
+    disASM.parse()
 
-    expect(mapLinesToASM(lines)).toEqual(expectedCode)
+    const linesNodes = disASM.read({ fromAddress: 0xe683, numOfLines: 15 })
+
+    expect(mapLinesToASM(linesNodes)).toEqual(expectedCode)
   })
 
-  test('should disassemble ADC, AND, ASL instructions', () => {
+  test('should disassemble ADC, AND, ASL instructions', async () => {
     const instructions: BaseInstruction[] = [
       new Adc(control),
       new And(control),
@@ -143,24 +160,21 @@ describe('Tests for DisAssembler module', () => {
       'asl $12, X',
       'asl $1234, X'
     ]
-    const expectedNumOfLines = instructions.reduce(
-      (prev, ins) => prev + Object.keys(ins.AddressingModes).length,
-      0
-    )
+    const expectedNumOfLines = getNumOfLines(instructions)
 
     const code = buildSampleCode(instructions)
-    storePRG(memory, code)
+    await setUpDisASM(disASM, memory, code)
 
-    const lines = disASM.read({
-      start: 0x8000,
+    const linesNodes = disASM.read({
+      fromAddress: 0x8000,
       numOfLines: expectedNumOfLines
     })
 
-    expect(lines.length).toBe(expectedNumOfLines)
-    expect(mapLinesToASM(lines)).toEqual(expectedCode)
+    expect(linesNodes.length).toBe(expectedNumOfLines)
+    expect(mapLinesToASM(linesNodes)).toEqual(expectedCode)
   })
 
-  test('should disassemble BCC, BCS, BEQ, BIT, BMI, BNE, BPL, BRK, BVC, BVS instructions', () => {
+  test('should disassemble BCC, BCS, BEQ, BIT, BMI, BNE, BPL, BRK, BVC, BVS instructions', async () => {
     const instructions: BaseInstruction[] = [
       new Bcc(control),
       new Bcs(control),
@@ -173,6 +187,7 @@ describe('Tests for DisAssembler module', () => {
       new Bvc(control),
       new Bvs(control)
     ]
+    const expectedNumOfLines = getNumOfLines(instructions)
     const expectedCode = [
       'bcc $8014',
       'bcs $8016',
@@ -187,24 +202,19 @@ describe('Tests for DisAssembler module', () => {
       'bvs $8028'
     ]
 
-    const expectedNumOfLines = instructions.reduce(
-      (prev, ins) => prev + Object.keys(ins.AddressingModes).length,
-      0
-    )
-
     const code = buildSampleCode(instructions)
-    storePRG(memory, code)
+    await setUpDisASM(disASM, memory, code)
 
-    const lines = disASM.read({
-      start: 0x8000,
+    const linesNodes = disASM.read({
+      fromAddress: 0x8000,
       numOfLines: expectedNumOfLines
     })
 
-    expect(lines.length).toBe(expectedNumOfLines)
-    expect(mapLinesToASM(lines)).toEqual(expectedCode)
+    expect(linesNodes.length).toBe(expectedNumOfLines)
+    expect(mapLinesToASM(linesNodes)).toEqual(expectedCode)
   })
 
-  test('should disassemble CLC, CLD, CLI, CLV, CMP, CPX, CPY instructions', () => {
+  test('should disassemble CLC, CLD, CLI, CLV, CMP, CPX, CPY instructions', async () => {
     const instructions: BaseInstruction[] = [
       new Clc(control),
       new Cld(control),
@@ -214,6 +224,7 @@ describe('Tests for DisAssembler module', () => {
       new Cpx(control),
       new Cpy(control)
     ]
+    const expectedNumOfLines = getNumOfLines(instructions)
     const expectedCode = [
       'clc',
       'cld',
@@ -235,24 +246,19 @@ describe('Tests for DisAssembler module', () => {
       'cpy $1234'
     ]
 
-    const expectedNumOfLines = instructions.reduce(
-      (prev, ins) => prev + Object.keys(ins.AddressingModes).length,
-      0
-    )
-
     const code = buildSampleCode(instructions)
-    storePRG(memory, code)
+    await setUpDisASM(disASM, memory, code)
 
-    const lines = disASM.read({
-      start: 0x8000,
+    const linesNodes = disASM.read({
+      fromAddress: 0x8000,
       numOfLines: expectedNumOfLines
     })
 
-    expect(lines.length).toBe(expectedNumOfLines)
-    expect(mapLinesToASM(lines)).toEqual(expectedCode)
+    expect(linesNodes.length).toBe(expectedNumOfLines)
+    expect(mapLinesToASM(linesNodes)).toEqual(expectedCode)
   })
 
-  test('should disassemble DEC, DEX, DEY, EOR, INC, INX, INY instructions', () => {
+  test('should disassemble DEC, DEX, DEY, EOR, INC, INX, INY instructions', async () => {
     const instructions: BaseInstruction[] = [
       new Dec(control),
       new Dex(control),
@@ -262,6 +268,7 @@ describe('Tests for DisAssembler module', () => {
       new Inx(control),
       new Iny(control)
     ]
+    const expectedNumOfLines = getNumOfLines(instructions)
     const expectedCode = [
       'dec $12',
       'dec $1234',
@@ -285,24 +292,19 @@ describe('Tests for DisAssembler module', () => {
       'iny'
     ]
 
-    const expectedNumOfLines = instructions.reduce(
-      (prev, ins) => prev + Object.keys(ins.AddressingModes).length,
-      0
-    )
-
     const code = buildSampleCode(instructions)
-    storePRG(memory, code)
+    await setUpDisASM(disASM, memory, code)
 
-    const lines = disASM.read({
-      start: 0x8000,
+    const linesNodes = disASM.read({
+      fromAddress: 0x8000,
       numOfLines: expectedNumOfLines
     })
 
-    expect(lines.length).toBe(expectedNumOfLines)
-    expect(mapLinesToASM(lines)).toEqual(expectedCode)
+    expect(linesNodes.length).toBe(expectedNumOfLines)
+    expect(mapLinesToASM(linesNodes)).toEqual(expectedCode)
   })
 
-  test('should disassemble JMP, JSR, LDA, LDX, LDY, LSR, NOP instructions', () => {
+  test('should disassemble JMP, JSR, LDA, LDX, LDY, LSR, NOP instructions', async () => {
     const instructions: BaseInstruction[] = [
       new Jmp(control),
       new Dex(control),
@@ -314,10 +316,7 @@ describe('Tests for DisAssembler module', () => {
       new Nop(control)
     ]
 
-    const expectedNumOfLines = instructions.reduce(
-      (prev, ins) => prev + Object.keys(ins.AddressingModes).length,
-      0
-    )
+    const expectedNumOfLines = getNumOfLines(instructions)
     const expectedCode = [
       'jmp $1234',
       'jmp ($1234)',
@@ -350,18 +349,18 @@ describe('Tests for DisAssembler module', () => {
     ]
 
     const code = buildSampleCode(instructions)
-    storePRG(memory, code)
+    await setUpDisASM(disASM, memory, code)
 
-    const lines = disASM.read({
-      start: 0x8000,
+    const linesNodes = disASM.read({
+      fromAddress: 0x8000,
       numOfLines: expectedNumOfLines
     })
 
-    expect(lines.length).toBe(expectedNumOfLines)
-    expect(mapLinesToASM(lines)).toEqual(expectedCode)
+    expect(linesNodes.length).toBe(expectedNumOfLines)
+    expect(mapLinesToASM(linesNodes)).toEqual(expectedCode)
   })
 
-  test('should disassemble ORA, PHA, PHP, PLA, PLP, ROL, ROR, RTI, RTS instructions', () => {
+  test('should disassemble ORA, PHA, PHP, PLA, PLP, ROL, ROR, RTI, RTS instructions', async () => {
     const instructions: BaseInstruction[] = [
       new Ora(control),
       new Pha(control),
@@ -374,10 +373,7 @@ describe('Tests for DisAssembler module', () => {
       new Rts(control)
     ]
 
-    const expectedNumOfLines = instructions.reduce(
-      (prev, ins) => prev + Object.keys(ins.AddressingModes).length,
-      0
-    )
+    const expectedNumOfLines = getNumOfLines(instructions)
     const expectedCode = [
       'ora ($12, X)',
       'ora $12',
@@ -406,18 +402,18 @@ describe('Tests for DisAssembler module', () => {
     ]
 
     const code = buildSampleCode(instructions)
-    storePRG(memory, code)
+    await setUpDisASM(disASM, memory, code)
 
-    const lines = disASM.read({
-      start: 0x8000,
+    const linesNodes = disASM.read({
+      fromAddress: 0x8000,
       numOfLines: expectedNumOfLines
     })
 
-    expect(lines.length).toBe(expectedNumOfLines)
-    expect(mapLinesToASM(lines)).toEqual(expectedCode)
+    expect(linesNodes.length).toBe(expectedNumOfLines)
+    expect(mapLinesToASM(linesNodes)).toEqual(expectedCode)
   })
 
-  test('should disassemble SBC, SEC, SED, SEI, STA, STX, STY, TAX, TAY, TSX, TXA, TXS, TYA instructions', () => {
+  test('should disassemble SBC, SEC, SED, SEI, STA, STX, STY, TAX, TAY, TSX, TXA, TXS, TYA instructions', async () => {
     const instructions: BaseInstruction[] = [
       new Sbc(control),
       new Sec(control),
@@ -434,10 +430,7 @@ describe('Tests for DisAssembler module', () => {
       new Tya(control)
     ]
 
-    const expectedNumOfLines = instructions.reduce(
-      (prev, ins) => prev + Object.keys(ins.AddressingModes).length,
-      0
-    )
+    const expectedNumOfLines = getNumOfLines(instructions)
     const expectedCode = [
       'sbc ($12, X)',
       'sbc $12',
@@ -472,14 +465,14 @@ describe('Tests for DisAssembler module', () => {
     ]
 
     const code = buildSampleCode(instructions)
-    storePRG(memory, code)
+    await setUpDisASM(disASM, memory, code)
 
-    const lines = disASM.read({
-      start: 0x8000,
+    const linesNodes = disASM.read({
+      fromAddress: 0x8000,
       numOfLines: expectedNumOfLines
     })
 
-    expect(lines.length).toBe(expectedNumOfLines)
-    expect(mapLinesToASM(lines)).toEqual(expectedCode)
+    expect(linesNodes.length).toBe(expectedNumOfLines)
+    expect(mapLinesToASM(linesNodes)).toEqual(expectedCode)
   })
 })

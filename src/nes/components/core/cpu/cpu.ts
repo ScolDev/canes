@@ -1,3 +1,4 @@
+import { BaseCPUExecutor } from '../../../executors/base-cpu-executor'
 import { type NESControlBus } from '../control-bus/types'
 import { CPUMemoryMap } from '../memory/consts/memory-map'
 import { CPUFlags } from './consts/flags'
@@ -15,7 +16,7 @@ import {
 
 export class CPU implements NESCpuComponent {
   private readonly cpuState: CPUState = structuredClone(CPUInitialState)
-  private cpuExecutor: CPUExecutor | null = null
+  private cpuExecutor: CPUExecutor | null = BaseCPUExecutor.create()
 
   private readonly REG = {
     PC: 0x0000,
@@ -61,6 +62,10 @@ export class CPU implements NESCpuComponent {
     return this.REG[register] & 0xff
   }
 
+  isDebugged (): boolean {
+    return this.cpuState.debugMode
+  }
+
   setRegister (register: CPURegister, value: number): void {
     if (register === CPURegisters.PC) {
       this.REG.PC = value & 0xffff
@@ -81,6 +86,7 @@ export class CPU implements NESCpuComponent {
     this.loadResetVector()
 
     if (this.cpuExecutor !== null) {
+      this.cpuState.isRunning = true
       this.cpuExecutor.execute()
     }
   }

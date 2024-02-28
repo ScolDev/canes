@@ -1,16 +1,46 @@
-import { type CPUInstruction } from '../core/cpu/types'
-
 export interface CodeRange {
-  start: number
   numOfLines: number
+  fromLineNumber?: number
+  fromAddress?: number
 }
 
 export interface DisASMLine {
-  asm: string
-  address: number
-  bytes: CPUInstruction
+  readonly asm: string
+  readonly address: number
+  readonly bytes: number[]
+  readonly lineNumber: number
+  readonly instruction: {
+    opcode: number
+    supported: boolean
+    operand?: number
+  }
+}
+
+export interface DisASMNode {
+  readonly line: DisASMLine
+  readonly ref?: number
+}
+
+export interface ParsingOptions {
+  baseAddress: number
+  endAddress: number
+}
+
+export interface NESDisASMCode {
+  addLine: (line: DisASMLine) => void
+  clear: () => void
+  getLineFromAddress: (address: number) => DisASMNode | undefined
+  getLineFromLineNumber: (lineNumber: number) => DisASMNode | undefined
+  getNumOfLines: () => number
 }
 
 export interface NESDisASMComponent {
-  read: (range: CodeRange) => DisASMLine[]
+  getCode: () => NESDisASMCode
+  getInstructionASM: (
+    instruction: { opcode: number, supported: boolean, operand?: number },
+    address?: number
+  ) => string
+  parse: (options?: ParsingOptions) => Promise<void>
+  read: (range: CodeRange) => DisASMNode[]
+  setPRG: (prg: Uint8Array) => void
 }

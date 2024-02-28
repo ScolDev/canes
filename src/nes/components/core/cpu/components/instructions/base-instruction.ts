@@ -1,6 +1,5 @@
 import { type NESControlBus } from '../../../control-bus/types'
 import { type NESMemoryComponent } from '../../../memory/types'
-import { getASMByAddrMode } from '../../consts/addressing-modes'
 import {
   type CPUInstruction,
   type CPUAddrModeTable,
@@ -23,14 +22,6 @@ export abstract class BaseInstruction {
 
   public abstract execute (...args: CPUInstruction): void
   public updateStatus? (...args: number[]): void
-
-  getASM (instruction: CPUInstruction, address?: number): string {
-    const [opcode, operand] = instruction
-    const addressingMode = this.AddressingModes[opcode]
-    const operandASM = getASMByAddrMode(addressingMode, operand, address)
-
-    return `${this.name}${operandASM.length > 0 ? (' ' + operandASM) : ''}`
-  }
 
   protected addBranchExtraCycles (displacement: number): void {
     const currentPC = this.control.cpu.getPC()

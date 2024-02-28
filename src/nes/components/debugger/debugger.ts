@@ -1,7 +1,6 @@
 import { DebugEvents } from './consts/events'
 import {
   type DebugState,
-  type DebugQueues,
   type DebugSingleConditions,
   type DebugBreakpoint,
   type DebugMemoryBreakpoint,
@@ -9,7 +8,8 @@ import {
   type DebugEventCallback,
   type DebugConditionExpresion,
   type NESDebuggerComponent,
-  type NESDebuggerComponents
+  type NESDebuggerComponents,
+  type DebugListeners
 } from './types'
 import { DebugInitialState } from './consts/state'
 import { type NESDisASMComponent } from '../disasm/types'
@@ -21,13 +21,13 @@ export class Debugger implements NESDebuggerComponent {
   private readonly state: DebugState = structuredClone({ ...DebugInitialState })
   private readonly disASM: NESDisASMComponent
 
-  private readonly debugQueues: DebugQueues = {
+  private readonly debugListeners: DebugListeners = {
     pause: []
   }
 
   private constructor (readonly control: NESControlBus) {
     this.state.cpuState = this.control.cpu.getCPUState()
-    this.disASM = DisASM.create(this.control)
+    this.disASM = DisASM.create()
   }
 
   getComponents (): NESDebuggerComponents {
@@ -36,8 +36,16 @@ export class Debugger implements NESDebuggerComponent {
     }
   }
 
+  getState (): DebugState {
+    return this.state
+  }
+
   run (): void {
     this.control.cpu.powerUp()
+  }
+
+  pause (): void {
+    this.pauseDebug()
   }
 
   breakOn (conditions: DebugSingleConditions): void {
@@ -57,8 +65,12 @@ export class Debugger implements NESDebuggerComponent {
     this.state.conditions.memory.push(memoryBreakpoint)
   }
 
+  isActive (): boolean {
+    return this.control.cpu.isDebugged()
+  }
+
   validate (): void {
-    if (this.state.cpuState.paused) return
+    if (!this.state.cpuState.isRunning) return
 
     this.validateAtResetVector()
     this.validateSingleConditions()
@@ -68,7 +80,7 @@ export class Debugger implements NESDebuggerComponent {
 
   on (event: DebugEventType, cb: DebugEventCallback): void {
     if (event === DebugEvents.Pause) {
-      this.debugQueues.pause.push(cb)
+      this.debugListeners.pause.push(cb)
     }
   }
 
@@ -78,14 +90,14 @@ export class Debugger implements NESDebuggerComponent {
     const currentPC = this.control.cpu.getPC()
     const resetVector = this.control.memory.loadWord(CPUMemoryMap.Reset_Vector)
     if (atResetVector && currentPC === resetVector) {
-      this.pause()
+      this.pauseDebug()
     }
   }
 
   private validateSingleConditions (): void {
     const { insExecuted } = this.state.cpuState
     if (insExecuted === this.state.conditions.insExecuted) {
-      this.pause()
+      this.pauseDebug()
     }
   }
 
@@ -93,7 +105,7 @@ export class Debugger implements NESDebuggerComponent {
     const currentPC = this.control.cpu.getPC()
     for (const breakpoint of this.state.conditions.breakpoints) {
       if (currentPC === breakpoint) {
-        this.pause()
+        this.pauseDebug()
         return
       }
     }
@@ -107,7 +119,7 @@ export class Debugger implements NESDebuggerComponent {
       const didWrite = condition.onWrite && condition.address === address
 
       if (didWrite && this.expressions(value, condition)) {
-        this.pause()
+        this.pauseDebug()
         return
       }
     }
@@ -133,9 +145,9 @@ export class Debugger implements NESDebuggerComponent {
     return match
   }
 
-  private pause (): void {
+  private pauseDebug (): void {
     const { cpuState } = this.state
-    const onPauseCallbacks = this.debugQueues.pause
+    const onPauseCallbacks = this.debugListeners.pause
     const event = {
       type: DebugEvents.Pause,
       data: {
@@ -144,7 +156,7 @@ export class Debugger implements NESDebuggerComponent {
       }
     }
 
-    cpuState.paused = true
+    cpuState.isRunning = false
     for (const cb of onPauseCallbacks) {
       setTimeout(() => {
         cb(event)

@@ -8,7 +8,7 @@ export const CPUInitialState: CPUState = {
     lastExtraCycles: 0,
     lastInstructionCycles: 0
   },
-  paused: false,
+  isRunning: false,
   debugMode: false,
   insExecuted: 0,
   lastWrite: { address: -1, value: -1 }

@@ -39,8 +39,13 @@ export class NES implements NESModule {
   getComponents (): NESComponents {
     return {
       control: this.control,
-      nesDebugger: this.nesDebugger
+      nesDebugger: this.nesDebugger,
+      rom: this.rom
     }
+  }
+
+  isPowerOn (): boolean {
+    return this.cpu.getCPUState().isRunning
   }
 
   loadROM (rom: NESRomComponent): void {
@@ -63,7 +68,7 @@ export class NES implements NESModule {
     if (this.rom === undefined) return
 
     const { buffer } = this.rom.getPRG()
-    this.memory.copy(buffer, CPUMemoryMap.PRG_ROM)
+    this.memory.copy(buffer, CPUMemoryMap.PRG_ROM_START)
   }
 
   static create (): NESModule {

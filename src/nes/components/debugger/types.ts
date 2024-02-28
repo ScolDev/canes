@@ -32,7 +32,7 @@ export interface DebugConditionExpresion {
 
 export type DebugEventType = ReverseMap<typeof DebugEvents>
 export type DebugEventCallback = (event: DebugEvent) => void
-export interface DebugQueues {
+export interface DebugListeners {
   pause: DebugEventCallback[]
 }
 export interface DebugEvent {
@@ -49,10 +49,13 @@ export interface NESDebuggerComponents {
 
 export interface NESDebuggerComponent {
   getComponents: () => NESDebuggerComponents
+  getState: () => DebugState
   run: () => void
+  pause: () => void
   breakOn: (conditions: DebugSingleConditions) => void
   addBreakpoint: (breakpoint: DebugBreakpoint) => void
   addMemoryBreakpoint: (memoryBreakpoint: DebugMemoryBreakpoint) => void
+  isActive: () => boolean
   validate: () => void
   on: (event: DebugEventType, cb: DebugEventCallback) => void
 }

@@ -43,7 +43,7 @@ export class DebugCPUExecutor implements CPUExecutor {
     while (this.cpuState.clock.cycles < this.nextTickCycles) {
       this.nesDebugger.validate()
 
-      if (this.cpuState.paused) {
+      if (!this.cpuState.isRunning) {
         return
       }
 

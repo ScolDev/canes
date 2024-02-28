@@ -24,7 +24,7 @@ export interface CPUState {
     lastExtraCycles: number
     lastInstructionCycles: number
   }
-  paused: boolean
+  isRunning: boolean
   debugMode: boolean
   insExecuted: number
   lastWrite: CPULastWrite
@@ -63,7 +63,6 @@ export interface NESAddrModesComponent {
 export interface NESInstructionComponent {
   execute: (instruction: CPUInstruction) => void
   fetchInstructionBytes: (fromAddress: number) => CPUInstruction
-  getInstructionASM: (instruction: CPUInstruction, address?: number) => string
   getInstructionCycles: (instructin: CPUInstruction) => number
   getInstructionSize: (opcode: number) => number
 }
@@ -75,6 +74,7 @@ export interface NESCpuComponent {
   getPC: () => number
   getCPUState: () => CPUState
   getRegister: (register: CPURegister) => number
+  isDebugged: () => boolean
   setRegister: (register: CPURegister, value: number) => void
   powerUp: () => void
   reset: () => void
