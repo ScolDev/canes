@@ -12,7 +12,11 @@ import { type NESMemoryComponent } from '../memory/types'
 import { Memory } from '../memory/memory'
 import { NESBusRequests } from './consts/bus-events'
 import { AddressingModes } from '../cpu/components/addressing-modes'
-import { type NESControlBus, type NESBusRequest, type NESComponents } from './types'
+import {
+  type NESControlBus,
+  type NESBusRequest,
+  type NESComponents
+} from './types'
 
 export default class ControlBus implements NESControlBus {
   private readonly cpu: NESCpuComponent
@@ -33,64 +37,96 @@ export default class ControlBus implements NESControlBus {
   }
 
   notify (request: NESBusRequest): void {
-    if (request.type === NESBusRequests.SetFlag) {
-      this.alu.setFlag(request.data.flag, request.data.value)
-    } else if (request.type === NESBusRequests.Execute) {
-      this.instruction.execute(request.data)
-    } else if (request.type === NESBusRequests.Store) {
-      this.memory.store(request.data.address, request.data.value)
-    } else if (request.type === NESBusRequests.StoreByAddressingMode) {
-      this.addressingModes.set(
-        request.data.addrMode,
-        request.data.value,
-        request.data.operand
-      )
-    } else if (request.type === NESBusRequests.SetRegister) {
-      this.cpu.setRegister(request.data.register, request.data.value)
-    } else if (request.type === NESBusRequests.SetLastWrite) {
-      const isDebugMode = this.cpuState.debugMode
+    switch (request.type) {
+      case NESBusRequests.SetFlag:
+        this.alu.setFlag(request.data.flag, request.data.value)
+        break
 
-      if (isDebugMode) {
-        this.cpuState.lastWrite.address = request.data.address
-        this.cpuState.lastWrite.value = request.data.value
-      }
-    } else if (request.type === NESBusRequests.AddCPUExtraCycles) {
-      this.cpuState.clock.lastExtraCycles += request.data
+      case NESBusRequests.Execute:
+        this.instruction.execute(request.data)
+        break
+
+      case NESBusRequests.Store:
+        this.memory.store(request.data.address, request.data.value)
+        break
+
+      case NESBusRequests.StoreByAddressingMode:
+        this.addressingModes.set(
+          request.data.addrMode,
+          request.data.value,
+          request.data.operand
+        )
+        break
+
+      case NESBusRequests.SetRegister:
+        this.cpu.setRegister(request.data.register, request.data.value)
+        break
+
+      case NESBusRequests.SetLastWrite:
+        if (this.cpuState.debugMode) {
+          this.cpuState.lastWrite.address = request.data.address
+          this.cpuState.lastWrite.value = request.data.value
+        }
+        break
+
+      case NESBusRequests.AddCPUExtraCycles:
+        this.cpuState.clock.lastExtraCycles += request.data
+        break
     }
   }
 
   request<TResponse>(request: NESBusRequest): TResponse {
     let response
 
-    if (request.type === NESBusRequests.LoadByAddressingMode) {
-      response = this.addressingModes.get(
-        request.data.addressingMode,
-        request.data.operand
-      )
-    } else if (request.type === NESBusRequests.Load) {
-      response = this.memory.load(request.data)
-    } else if (request.type === NESBusRequests.LoadWord) {
-      response = this.memory.loadWord(request.data)
-    } else if (request.type === NESBusRequests.GetInstructionSize) {
-      response = this.instruction.getInstructionSize(request.data)
-    } else if (request.type === NESBusRequests.GetSignedByte) {
-      response = this.alu.getSignedByte(request.data)
-    } else if (request.type === NESBusRequests.GetPCRegister) {
-      response = this.cpu.getPC()
-    } else if (request.type === NESBusRequests.GetRegister) {
-      response = this.cpu.getRegister(request.data)
-    } else if (request.type === NESBusRequests.IsDebugMode) {
-      response = this.cpu.getCPUState().debugMode
-    } else if (request.type === NESBusRequests.HasCrossedPage) {
-      response = this.memory.hasCrossedPage(
-        request.data.actual,
-        request.data.next
-      )
-    } else if (request.type === NESBusRequests.HasExtraCycle) {
-      response = this.memory.hasExtraCycleByAddressingMode(
-        request.data.addrMode,
-        request.data.operand
-      )
+    switch (request.type) {
+      case NESBusRequests.LoadByAddressingMode:
+        response = this.addressingModes.get(
+          request.data.addressingMode,
+          request.data.operand
+        )
+        break
+
+      case NESBusRequests.Load:
+        response = this.memory.load(request.data)
+        break
+
+      case NESBusRequests.LoadWord:
+        response = this.memory.loadWord(request.data)
+        break
+
+      case NESBusRequests.GetInstructionSize:
+        response = this.instruction.getInstructionSize(request.data)
+        break
+
+      case NESBusRequests.GetSignedByte:
+        response = this.alu.getSignedByte(request.data)
+        break
+
+      case NESBusRequests.GetPCRegister:
+        response = this.cpu.getPC()
+        break
+
+      case NESBusRequests.GetRegister:
+        response = this.cpu.getRegister(request.data)
+        break
+
+      case NESBusRequests.IsDebugMode:
+        response = this.cpu.getCPUState().debugMode
+        break
+
+      case NESBusRequests.HasCrossedPage:
+        response = this.memory.hasCrossedPage(
+          request.data.actual,
+          request.data.next
+        )
+        break
+
+      case NESBusRequests.HasExtraCycle:
+        response = this.memory.hasExtraCycleByAddressingMode(
+          request.data.addrMode,
+          request.data.operand
+        )
+        break
     }
 
     return response as TResponse
