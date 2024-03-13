@@ -28,7 +28,7 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  plugins: ["@typescript-eslint", "react", "jest"],
+  plugins: ["@typescript-eslint", "react", "jest", "path"],
   settings: {
     react: {
       version: "18.2",
@@ -37,5 +37,6 @@ module.exports = {
   rules: {
     "react/react-in-jsx-scope": "off",
     "react/jsx-uses-react": "off",
+    "path/no-relative-imports": "error",
   },
 };

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
-import { type NESControlBus } from '../../../src/nes/components/core/control-bus/types'
-import { type NESMemoryComponent } from '../../../src/nes/components/core/memory/types'
-import { DebugEvents } from '../../../src/nes/components/debugger/consts/events'
-import { type NESDebuggerComponent } from '../../../src/nes/components/debugger/types'
-import { ROM } from '../../../src/nes/components/rom/rom'
-import { NES } from '../../../src/nes/nes'
-import { type NESModule } from '../../../src/nes/types'
+import { type NESControlBus } from 'src/nes/components/core/control-bus/types'
+import { type NESMemoryComponent } from 'src/nes/components/core/memory/types'
+import { DebugEvents } from 'src/nes/components/debugger/consts/events'
+import { type NESDebuggerComponent } from 'src/nes/components/debugger/types'
+import { ROM } from 'src/nes/components/rom/rom'
+import { NES } from 'src/nes/nes'
+import { type NESModule } from 'src/nes/types'
 import { FileLoader, storePRG } from '../helpers'
 
 describe('Tests for timings on NES Components.', () => {

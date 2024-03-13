@@ -1,4 +1,4 @@
-import { type NESModule } from '../../../nes/types'
+import { type NESModule } from 'src/nes/types'
 
 export default class LoadDebugger {
   private constructor (private readonly nes: NESModule) {}

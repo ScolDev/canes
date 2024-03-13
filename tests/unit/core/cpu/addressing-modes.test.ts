@@ -1,9 +1,9 @@
-import ControlBus from '../../../../src/nes/components/core/control-bus/control-bus'
-import { CPUAddressingModes } from '../../../../src/nes/components/core/cpu/consts/addressing-modes'
-import { CPURegisters } from '../../../../src/nes/components/core/cpu/consts/registers'
-import { type NESCpuComponent } from '../../../../src/nes/components/core/cpu/types'
-import { CPUMemoryMap } from '../../../../src/nes/components/core/memory/consts/memory-map'
-import { type NESMemoryComponent } from '../../../../src/nes/components/core/memory/types'
+import ControlBus from 'src/nes/components/core/control-bus/control-bus'
+import { CPUAddressingModes } from 'src/nes/components/core/cpu/consts/addressing-modes'
+import { CPURegisters } from 'src/nes/components/core/cpu/consts/registers'
+import { type NESCpuComponent } from 'src/nes/components/core/cpu/types'
+import { CPUMemoryMap } from 'src/nes/components/core/memory/consts/memory-map'
+import { type NESMemoryComponent } from 'src/nes/components/core/memory/types'
 
 describe('Test for CPU Addressing Modes', () => {
   let cpu: NESCpuComponent

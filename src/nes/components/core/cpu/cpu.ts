@@ -1,4 +1,4 @@
-import { BaseCPUExecutor } from '../../../executors/base-cpu-executor'
+import { BaseCPUExecutor } from 'src/nes/executors/base-cpu-executor'
 import { type NESControlBus } from '../control-bus/types'
 import { CPUMemoryMap } from '../memory/consts/memory-map'
 import { CPUFlags } from './consts/flags'

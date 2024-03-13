@@ -1,5 +1,5 @@
 /* eslint-disable object-property-newline */
-import { type CPUCyclesTable } from '../../../types'
+import { type CPUCyclesTable } from 'src/nes/components/core/cpu/types'
 
 export const InstructionsCPUCyclesTable: CPUCyclesTable = {
   // ADC

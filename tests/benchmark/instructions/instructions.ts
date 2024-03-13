@@ -1,6 +1,6 @@
-import ControlBus from '../../../src/nes/components/core/control-bus/control-bus'
-import { type BaseInstruction } from '../../../src/nes/components/core/cpu/components/instructions/base-instruction'
-import { InstructionsTable } from '../../../src/nes/components/core/cpu/components/instructions/instructions-table'
+import ControlBus from 'src/nes/components/core/control-bus/control-bus'
+import { type BaseInstruction } from 'src/nes/components/core/cpu/components/instructions/base-instruction'
+import { InstructionsTable } from 'src/nes/components/core/cpu/components/instructions/instructions-table'
 import { addrModes } from './consts/addr-modes'
 import {
   type BenchmarkConfig,

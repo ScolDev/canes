@@ -1,5 +1,5 @@
 import { type CPURegisters } from './consts/registers'
-import { type ReverseMap } from '../../../../shared/types'
+import { type ReverseMap } from 'src/shared/types'
 import { type CPUAddressingModes } from './consts/addressing-modes'
 import { type CPUFlags } from './consts/flags'
 import { type BaseInstruction } from './components/instructions/base-instruction'

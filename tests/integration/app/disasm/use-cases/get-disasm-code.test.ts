@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
-import LoadDebugger from '../../../../../src/app/debugger/uses-cases/load-debugger'
-import GetDisASMCode from '../../../../../src/app/disasm/use-cases/get-disasm-code'
-import LoadDisASMCode from '../../../../../src/app/disasm/use-cases/parse-disasm-code'
-import LoadROM from '../../../../../src/app/nes/use-cases/load-rom'
-import { NES } from '../../../../../src/nes/nes'
-import { type NESModule } from '../../../../../src/nes/types'
-import { createROMLoader } from '../../../helpers'
+import LoadDebugger from 'src/app/debugger/uses-cases/load-debugger'
+import GetDisASMCode from 'src/app/disasm/use-cases/get-disasm-code'
+import LoadDisASMCode from 'src/app/disasm/use-cases/parse-disasm-code'
+import LoadROM from 'src/app/nes/use-cases/load-rom'
+import { NES } from 'src/nes/nes'
+import { type NESModule } from 'src/nes/types'
+import { createROMLoader } from 'tests/integration/helpers'
 
 describe('GetDisASMCode use case', () => {
   let nes: NESModule

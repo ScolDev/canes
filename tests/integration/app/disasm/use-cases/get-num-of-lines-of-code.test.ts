@@ -1,12 +1,12 @@
-import LoadDebugger from '../../../../../src/app/debugger/uses-cases/load-debugger'
-import GetNumOfLinesOfCode from '../../../../../src/app/disasm/use-cases/get-num-of-lines-of-code'
-import LoadDisASMCode from '../../../../../src/app/disasm/use-cases/parse-disasm-code'
-import { type NESControlBus } from '../../../../../src/nes/components/core/control-bus/types'
-import { type NESMemoryComponent } from '../../../../../src/nes/components/core/memory/types'
-import { OpcodeToASM } from '../../../../../src/nes/components/disasm/consts/asm'
-import { NES } from '../../../../../src/nes/nes'
-import { type NESModule } from '../../../../../src/nes/types'
-import { buildPRGWithAllOpcodes, storePRG } from '../../../helpers'
+import LoadDebugger from 'src/app/debugger/uses-cases/load-debugger'
+import GetNumOfLinesOfCode from 'src/app/disasm/use-cases/get-num-of-lines-of-code'
+import LoadDisASMCode from 'src/app/disasm/use-cases/parse-disasm-code'
+import { type NESControlBus } from 'src/nes/components/core/control-bus/types'
+import { type NESMemoryComponent } from 'src/nes/components/core/memory/types'
+import { OpcodeToASM } from 'src/nes/components/disasm/consts/asm'
+import { NES } from 'src/nes/nes'
+import { type NESModule } from 'src/nes/types'
+import { buildPRGWithAllOpcodes, storePRG } from 'tests/integration/helpers'
 
 describe('GetNumOfLinesOfCode use case', () => {
   let nes: NESModule

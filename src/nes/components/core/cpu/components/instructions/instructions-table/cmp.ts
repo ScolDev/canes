@@ -1,7 +1,7 @@
-import { CPUAddressingModes } from '../../../consts/addressing-modes'
-import { CPUFlags } from '../../../consts/flags'
-import { CPURegisters } from '../../../consts/registers'
-import { type CPUAddrModeTable } from '../../../types'
+import { CPUAddressingModes } from 'src/nes/components/core/cpu/consts/addressing-modes'
+import { CPUFlags } from 'src/nes/components/core/cpu/consts/flags'
+import { CPURegisters } from 'src/nes/components/core/cpu/consts/registers'
+import { type CPUAddrModeTable } from 'src/nes/components/core/cpu/types'
 import { BaseInstruction } from '../base-instruction'
 
 export class Cmp extends BaseInstruction {

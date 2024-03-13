@@ -1,6 +1,6 @@
 /* eslint-disable object-property-newline */
-import { type NESControlBus } from '../../../../control-bus/types'
-import { type CPUInstructionTable } from '../../../types'
+import { type NESControlBus } from 'src/nes/components/core/control-bus/types'
+import { type CPUInstructionTable } from 'src/nes/components/core/cpu/types'
 import { Adc } from './adc'
 import { And } from './and'
 import { Asl } from './asl'

@@ -1,5 +1,5 @@
-import { CPUMemoryMap } from '../../../nes/components/core/memory/consts/memory-map'
-import { type NESModule } from '../../../nes/types'
+import { CPUMemoryMap } from 'src/nes/components/core/memory/consts/memory-map'
+import { type NESModule } from 'src/nes/types'
 
 export default class ParseDisASMCode {
   constructor (private readonly nes: NESModule) {}

@@ -1,6 +1,6 @@
-import { ROM } from '../../../nes/components/rom/rom'
-import { type ROMLoader } from '../../../nes/components/rom/types'
-import { type NESModule } from '../../../nes/types'
+import { ROM } from 'src/nes/components/rom/rom'
+import { type ROMLoader } from 'src/nes/components/rom/types'
+import { type NESModule } from 'src/nes/types'
 
 export default class LoadROM {
   private constructor (

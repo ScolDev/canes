@@ -1,8 +1,8 @@
-import LoadDebugger from '../../../../../src/app/debugger/uses-cases/load-debugger'
-import LoadROM from '../../../../../src/app/nes/use-cases/load-rom'
-import { NES } from '../../../../../src/nes/nes'
-import { type NESModule } from '../../../../../src/nes/types'
-import { createROMLoader } from '../../../helpers'
+import LoadDebugger from 'src/app/debugger/uses-cases/load-debugger'
+import LoadROM from 'src/app/nes/use-cases/load-rom'
+import { NES } from 'src/nes/nes'
+import { type NESModule } from 'src/nes/types'
+import { createROMLoader } from 'tests/integration/helpers'
 
 describe('NES use cases', () => {
   let nes: NESModule

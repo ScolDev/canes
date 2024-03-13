@@ -6,7 +6,7 @@ import {
 } from '../../types'
 import { CPUInstructionSize } from '../../consts/instructions'
 import { InstructionsCPUCyclesTable } from './consts/instructions-cycles'
-import type ControlBus from '../../../control-bus/control-bus'
+import type ControlBus from 'src/nes/components/core/control-bus/control-bus'
 import { type BaseInstruction } from './base-instruction'
 
 export class Instruction implements NESInstructionComponent {

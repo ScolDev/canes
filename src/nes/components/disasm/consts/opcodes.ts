@@ -1,4 +1,4 @@
-import { type ReverseMap } from '../../../../shared/types'
+import { type ReverseMap } from 'src/shared/types'
 import { CPUAddressingModes } from '../../core/cpu/consts/addressing-modes'
 import { type CPUAddrMode } from '../../core/cpu/types'
 

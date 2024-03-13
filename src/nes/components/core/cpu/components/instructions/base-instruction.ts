@@ -1,5 +1,5 @@
-import { type NESControlBus } from '../../../control-bus/types'
-import { type NESMemoryComponent } from '../../../memory/types'
+import { type NESControlBus } from 'src/nes/components/core/control-bus/types'
+import { type NESMemoryComponent } from 'src/nes/components/core/memory/types'
 import {
   type CPUInstruction,
   type CPUAddrModeTable,

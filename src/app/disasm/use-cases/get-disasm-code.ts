@@ -1,6 +1,6 @@
-import { type NESModule } from '../../../nes/types'
-import { type DisASMNode } from '../../../nes/components/disasm/types'
-import { CPUMemoryMap } from '../../../nes/components/core/memory/consts/memory-map'
+import { type NESModule } from 'src/nes/types'
+import { type DisASMNode } from 'src/nes/components/disasm/types'
+import { CPUMemoryMap } from 'src/nes/components/core/memory/consts/memory-map'
 
 interface Request {
   fromAddress?: number
