@@ -27,6 +27,10 @@
   "jest": {
     "collectCoverage": true,
     "coverageDirectory": "coverage",
+    "moduleNameMapper": {
+      "src/(.*)": "<rootDir>/src/$1",
+      "tests/(.*)": "<rootDir>/tests/$1"
+    },
     "testMatch": [
       "**/?(*.test).ts?(x)"
     ],
