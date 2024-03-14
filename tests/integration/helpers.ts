@@ -1,14 +1,14 @@
-import { type BaseInstruction } from '../../src/nes/components/core/cpu/components/instructions/base-instruction'
-import { CPUInstructionSize } from '../../src/nes/components/core/cpu/consts/instructions'
-import { CPUMemoryMap } from '../../src/nes/components/core/memory/consts/memory-map'
-import { type NESMemoryComponent } from '../../src/nes/components/core/memory/types'
-import { type DisASMNode } from '../../src/nes/components/disasm/types'
-import { type ROMLoader } from '../../src/nes/components/rom/types'
 import { readFile } from 'fs/promises'
 import { resolve } from 'path'
 import path from 'node:path'
-import { OpcodeToAddrMode } from '../../src/nes/components/disasm/consts/opcodes'
-import { type CPUAddrMode } from '../../src/nes/components/core/cpu/types'
+import { type CPUAddrMode } from 'src/nes/core/addressing-modes/types'
+import { type BaseInstruction } from 'src/nes/core/instructions/base-instruction'
+import { CPUInstructionSize } from 'src/nes/core/instructions/consts/instruction-size'
+import { CPUMemoryMap } from 'src/nes/core/memory/consts/memory-map'
+import { type NESMemoryComponent } from 'src/nes/core/memory/types'
+import { OpcodeToAddrMode } from 'src/nes/disasm/consts/opcodes'
+import { type DisASMNode } from 'src/nes/disasm/types'
+import { type ROMLoader } from 'src/nes/rom/types'
 
 export function storePRG (
   memory: NESMemoryComponent,

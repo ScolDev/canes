@@ -1,4 +1,4 @@
-import { type CPUExecutor } from '../components/core/cpu/types'
+import { type CPUExecutor } from '../core/cpu/types'
 
 export class BaseCPUExecutor implements CPUExecutor {
   private constructor () {}

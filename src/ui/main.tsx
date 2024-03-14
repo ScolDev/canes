@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import Debugger from './components/debugger/Debugger.tsx'
 import './main.css'
+import Debugger from './components/debugger/Debugger'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

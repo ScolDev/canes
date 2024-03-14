@@ -1,5 +1,6 @@
-import { type BaseInstruction } from 'src/nes/components/core/cpu/components/instructions/base-instruction'
-import { type CPUAddrMode, type NESInstructionComponent } from 'src/nes/components/core/cpu/types'
+import { type CPUAddrMode } from 'src/nes/core/addressing-modes/types'
+import { type BaseInstruction } from 'src/nes/core/instructions/base-instruction'
+import { type NESInstructionComponent } from 'src/nes/core/instructions/types'
 
 export type AddrModes = Record<CPUAddrMode, string>
 

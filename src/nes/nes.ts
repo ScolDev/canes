@@ -1,13 +1,13 @@
 import { DebugCPUExecutor } from './executors/debug-cpu-executor'
-import { Debugger } from './components/debugger/debugger'
-import { type NESDebuggerComponent } from './components/debugger/types'
+import { Debugger } from './debugger/debugger'
+import { type NESDebuggerComponent } from './debugger/types'
 import { type NESModule, type NESComponents } from './types'
-import { type NESCpuComponent } from './components/core/cpu/types'
-import { CPUMemoryMap } from './components/core/memory/consts/memory-map'
-import { type NESMemoryComponent } from './components/core/memory/types'
-import { type NESControlBus } from './components/core/control-bus/types'
-import ControlBus from './components/core/control-bus/control-bus'
-import { type NESRomComponent } from './components/rom/types'
+import { type NESCpuComponent } from './core/cpu/types'
+import { CPUMemoryMap } from './core/memory/consts/memory-map'
+import { type NESMemoryComponent } from './core/memory/types'
+import { type NESControlBus } from './core/control-bus/types'
+import ControlBus from './core/control-bus/control-bus'
+import { type NESRomComponent } from './rom/types'
 
 export class NES implements NESModule {
   private readonly control: NESControlBus

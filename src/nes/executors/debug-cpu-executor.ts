@@ -1,10 +1,10 @@
 import {
   type CPUExecutor,
   type NESCpuComponent,
-  type NESInstructionComponent,
   type CPUState
-} from '../components/core/cpu/types'
-import { type NESDebuggerComponent } from '../components/debugger/types'
+} from '../core/cpu/types'
+import { type NESInstructionComponent } from '../core/instructions/types'
+import { type NESDebuggerComponent } from '../debugger/types'
 import { type NESModule } from '../types'
 
 export class DebugCPUExecutor implements CPUExecutor {

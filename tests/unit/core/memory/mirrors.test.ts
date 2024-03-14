@@ -1,6 +1,6 @@
-import ControlBus from 'src/nes/components/core/control-bus/control-bus'
-import { type NESCpuComponent } from 'src/nes/components/core/cpu/types'
-import { type NESMemoryComponent } from 'src/nes/components/core/memory/types'
+import ControlBus from 'src/nes/core/control-bus/control-bus'
+import { type NESCpuComponent } from 'src/nes/core/cpu/types'
+import { type NESMemoryComponent } from 'src/nes/core/memory/types'
 
 describe('Tests for CPU memory mirroring.', () => {
   let cpu: NESCpuComponent

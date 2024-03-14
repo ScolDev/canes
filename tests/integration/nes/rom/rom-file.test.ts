@@ -1,5 +1,5 @@
-import { ROM } from 'src/nes/components/rom/rom'
-import { type NESRomComponent } from 'src/nes/components/rom/types'
+import { ROM } from 'src/nes/rom/rom'
+import { type NESRomComponent } from 'src/nes/rom/types'
 import { FileLoader } from '../../helpers'
 
 function areEquals (arr: Uint8Array, compareTo: Uint8Array): boolean {

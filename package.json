@@ -9,7 +9,7 @@
     "build": "tsc && vite build",
     "eslint": "eslint . --ext .ts,.tsx",
     "ts-check": "tsc --noemit",
-    "lint": "npm run eslint && npm run ts-check",
+    "lint": "npm run eslint --fix && npm run ts-check",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "benchmark:basic": "npm run benchmark",

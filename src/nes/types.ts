@@ -1,7 +1,7 @@
-import { type NESControlBus } from './components/core/control-bus/types'
-import { type CPUState } from './components/core/cpu/types'
-import { type DebugState, type NESDebuggerComponent } from './components/debugger/types'
-import { type NESRomComponent } from './components/rom/types'
+import { type NESControlBus } from './core/control-bus/types'
+import { type CPUState } from './core/cpu/types'
+import { type DebugState, type NESDebuggerComponent } from './debugger/types'
+import { type NESRomComponent } from './rom/types'
 
 export interface NESComponents {
   control: NESControlBus

@@ -1,10 +1,12 @@
-import ControlBus from 'src/nes/components/core/control-bus/control-bus'
-import { CPUAddressingModes } from 'src/nes/components/core/cpu/consts/addressing-modes'
-import { CPUFlags } from 'src/nes/components/core/cpu/consts/flags'
-import { CPURegisters } from 'src/nes/components/core/cpu/consts/registers'
-import { type NESAluComponent, type NESCpuComponent, type CPUInstruction } from 'src/nes/components/core/cpu/types'
-import { CPUMemoryMap } from 'src/nes/components/core/memory/consts/memory-map'
-import { type NESMemoryComponent } from 'src/nes/components/core/memory/types'
+import ControlBus from 'src/nes/core/control-bus/control-bus'
+import { CPUAddressingModes } from 'src/nes/core/addressing-modes/consts/addressing-modes'
+import { CPUFlags } from 'src/nes/core/cpu/consts/flags'
+import { CPURegisters } from 'src/nes/core/cpu/consts/registers'
+import { CPUMemoryMap } from 'src/nes/core/memory/consts/memory-map'
+import { type NESMemoryComponent } from 'src/nes/core/memory/types'
+import { type NESAluComponent } from 'src/nes/core/alu/types'
+import { type NESCpuComponent } from 'src/nes/core/cpu/types'
+import { type CPUInstruction } from 'src/nes/core/instructions/types'
 
 describe('CPU Instructions', () => {
   let cpuALU: NESAluComponent

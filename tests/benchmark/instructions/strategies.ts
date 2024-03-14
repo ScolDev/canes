@@ -1,7 +1,7 @@
-import { type BaseInstruction } from 'src/nes/components/core/cpu/components/instructions/base-instruction'
-import { CPUClock } from 'src/nes/components/core/cpu/consts/cpu-clock'
-import { type CPUInstruction } from 'src/nes/components/core/cpu/types'
+import { type BaseInstruction } from 'src/nes/core/instructions/base-instruction'
+import { CPUClock } from 'src/nes/core/cpu/consts/cpu-clock'
 import { type BenchmarkStrategyConfig } from './types'
+import { type CPUInstruction } from 'src/nes/core/instructions/types'
 
 export function executeAverageOnInstructionCycles (config: BenchmarkStrategyConfig): [time: number, timesExecuted: number] {
   const TIMES_TO_RUN = 6

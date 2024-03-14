@@ -1,12 +1,8 @@
-import ControlBus from 'src/nes/components/core/control-bus/control-bus'
-import { type BaseInstruction } from 'src/nes/components/core/cpu/components/instructions/base-instruction'
-import { InstructionsTable } from 'src/nes/components/core/cpu/components/instructions/instructions-table'
+import ControlBus from 'src/nes/core/control-bus/control-bus'
+import { type BaseInstruction } from 'src/nes/core/instructions/base-instruction'
+import { InstructionsTable } from 'src/nes/core/instructions/instructions-table'
 import { addrModes } from './consts/addr-modes'
-import {
-  type BenchmarkConfig,
-  type BenchmarkStrategy,
-  type BenchmarkResult
-} from './types'
+import { type BenchmarkStrategy, type BenchmarkResult, type BenchmarkConfig } from './types'
 import { descendingOrder, logSummary } from './utils/utils'
 
 const control = ControlBus.create()
