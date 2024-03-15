@@ -8,6 +8,7 @@ import {
   OpcodeToASM
 } from './consts/asm'
 import { OpcodeToAddrMode } from './consts/opcodes'
+import { PRGNotFound } from './errors/prg-not-found'
 import {
   type CodeRange,
   type NESDisASMComponent,
@@ -101,7 +102,7 @@ export default class DisASM implements NESDisASMComponent {
     options: ParsingOptions
   ): void {
     if (this.prg === undefined) {
-      throw new Error('PRG has not been loaded yet.')
+      throw new PRGNotFound()
     }
 
     const { baseAddress, endAddress } = options

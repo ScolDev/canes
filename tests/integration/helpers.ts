@@ -78,7 +78,7 @@ export class FileLoader implements ROMLoader {
     try {
       return await readFile(resolve(this.filePath))
     } catch (error) {
-      throw Error('Cannot load the rom file')
+      throw new Error('Cannot load the ROM file')
     }
   }
 }

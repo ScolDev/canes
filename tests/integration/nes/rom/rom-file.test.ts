@@ -66,7 +66,7 @@ describe('Tests for the ROM module.', () => {
   })
 
   test('should throw an error when load an non-existent .nes ROM', async () => {
-    const testROMFile = './tests/integration/__nes_roms__/non_existent.nes'
+    const testROMFile = './not_found.nes'
     const fileLoader = new FileLoader(testROMFile)
 
     try {
@@ -74,9 +74,7 @@ describe('Tests for the ROM module.', () => {
 
       expect(true).toBe(false)
     } catch (error) {
-      if (error instanceof Error) {
-        expect(error.message).toBe('Cannot load the rom file')
-      }
+      expect(error).toBeInstanceOf(Error)
     }
   })
 

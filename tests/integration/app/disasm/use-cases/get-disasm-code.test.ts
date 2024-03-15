@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import LoadDebugger from 'src/app/debugger/uses-cases/load-debugger'
+import { DebuggerNotLoaded } from 'src/app/disasm/errors/debugger-not-loaded'
+import { DisASMCodeNotParsed } from 'src/app/disasm/errors/disasm-code-not-parsed'
 import GetDisASMCode from 'src/app/disasm/use-cases/get-disasm-code'
 import LoadDisASMCode from 'src/app/disasm/use-cases/parse-disasm-code'
 import LoadROM from 'src/app/nes/use-cases/load-rom'
@@ -99,8 +101,9 @@ describe('GetDisASMCode use case', () => {
 
         const nesDebugger = nes.getComponents().nesDebugger
         if (nesDebugger === undefined) {
-          throw Error('Debugger is not defined.')
+          throw new DebuggerNotLoaded()
         }
+
         nesDebugger.pause()
 
         setTimeout(() => {
@@ -127,7 +130,7 @@ describe('GetDisASMCode use case', () => {
 
       expect(true).toBe(false)
     } catch (error) {
-      expect(error instanceof Error).toBe(true)
+      expect(error).toBeInstanceOf(DebuggerNotLoaded)
     }
   })
 
@@ -147,7 +150,7 @@ describe('GetDisASMCode use case', () => {
 
       expect(true).toBe(false)
     } catch (error) {
-      expect(error instanceof Error).toBe(true)
+      expect(error).toBeInstanceOf(DisASMCodeNotParsed)
     }
   })
 })

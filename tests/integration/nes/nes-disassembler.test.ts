@@ -64,6 +64,7 @@ import { type NESRomComponent, type ROMLoader } from 'src/nes/rom/types'
 import { NES } from 'src/nes/nes'
 import { type NESModule } from 'src/nes/types'
 import { mapLinesToASM, buildSampleCode, storePRG, FileLoader } from '../helpers'
+import { PRGNotFound } from 'src/nes/disasm/errors/prg-not-found'
 
 function getNumOfLines (instructions: BaseInstruction[]): number {
   return instructions.reduce(
@@ -74,7 +75,6 @@ function getNumOfLines (instructions: BaseInstruction[]): number {
 
 async function setUpDisASM (disASM: NESDisASMComponent, memory: NESMemoryComponent, code: Uint8Array): Promise<void> {
   storePRG(memory, code)
-
   disASM.setPRG(code)
   await disASM.parse()
 }
@@ -474,5 +474,15 @@ describe('Tests for DisAssembler module', () => {
 
     expect(linesNodes.length).toBe(expectedNumOfLines)
     expect(mapLinesToASM(linesNodes)).toEqual(expectedCode)
+  })
+
+  test('should throw a PRGNotFound error', async () => {
+    try {
+      await disASM.parse()
+
+      expect(true).toBe(false)
+    } catch (error) {
+      expect(error).toBeInstanceOf(PRGNotFound)
+    }
   })
 })

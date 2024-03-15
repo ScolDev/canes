@@ -8,6 +8,7 @@ import { type NESMemoryComponent } from './core/memory/types'
 import { type NESControlBus } from './core/control-bus/types'
 import ControlBus from './core/control-bus/control-bus'
 import { type NESRomComponent } from './rom/types'
+import { ROMNotLoaded } from './errors/rom-not-loaded'
 
 export class NES implements NESModule {
   private readonly control: NESControlBus
@@ -55,7 +56,7 @@ export class NES implements NESModule {
 
   powerUp (): void {
     if (this.rom === undefined) {
-      throw Error('ROM has not been loaded.')
+      throw new ROMNotLoaded()
     }
 
     if (this.rom.getHeader() !== null) {

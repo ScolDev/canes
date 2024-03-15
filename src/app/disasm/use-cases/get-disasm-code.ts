@@ -1,6 +1,8 @@
 import { type NESModule } from 'src/nes/types'
 import { type DisASMNode } from 'src/nes/disasm/types'
 import { CPUMemoryMap } from 'src/nes/core/memory/consts/memory-map'
+import { DebuggerNotLoaded } from '../errors/debugger-not-loaded'
+import { DisASMCodeNotParsed } from '../errors/disasm-code-not-parsed'
 
 interface Request {
   fromAddress?: number
@@ -18,14 +20,14 @@ export default class GetDisASMCode {
     const { nesDebugger } = this.nes.getComponents()
 
     if (nesDebugger === undefined || !nesDebugger.isActive()) {
-      throw new Error('NES Debugger has not been loaded.')
+      throw new DebuggerNotLoaded()
     }
 
     const { disASM } = nesDebugger.getComponents()
     const code = disASM.getCode()
 
     if (code.getNumOfLines() === 0) {
-      throw new Error('Disassembly code has not been parsed yet.')
+      throw new DisASMCodeNotParsed()
     }
 
     if (fromAddress !== undefined || fromLineNumber !== undefined) {

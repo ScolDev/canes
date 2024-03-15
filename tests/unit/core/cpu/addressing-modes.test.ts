@@ -5,7 +5,7 @@ import { CPUMemoryMap } from 'src/nes/core/memory/consts/memory-map'
 import { type NESMemoryComponent } from 'src/nes/core/memory/types'
 import { type NESCpuComponent } from 'src/nes/core/cpu/types'
 
-describe('Test for CPU Addressing Modes', () => {
+describe('Tests for CPU Addressing Modes', () => {
   let cpu: NESCpuComponent
   let memory: NESMemoryComponent
 

@@ -1,5 +1,6 @@
 import { CPUMemoryMap } from 'src/nes/core/memory/consts/memory-map'
 import { type NESModule } from 'src/nes/types'
+import { DebuggerNotLoaded } from '../errors/debugger-not-loaded'
 
 export default class ParseDisASMCode {
   constructor (private readonly nes: NESModule) {}
@@ -8,7 +9,7 @@ export default class ParseDisASMCode {
     const { control, nesDebugger } = this.nes.getComponents()
 
     if (nesDebugger === undefined || !nesDebugger.isActive()) {
-      throw new Error('Debugger has not been loaded.')
+      throw new DebuggerNotLoaded()
     }
 
     const { disASM } = nesDebugger.getComponents()

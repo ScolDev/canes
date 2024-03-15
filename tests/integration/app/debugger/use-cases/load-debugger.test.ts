@@ -1,4 +1,5 @@
 import LoadDebugger from 'src/app/debugger/uses-cases/load-debugger'
+import { DebuggerNotLoaded } from 'src/app/disasm/errors/debugger-not-loaded'
 import LoadROM from 'src/app/nes/use-cases/load-rom'
 import { NES } from 'src/nes/nes'
 import { type NESModule } from 'src/nes/types'
@@ -19,7 +20,7 @@ describe('NES debugger use cases', () => {
     const { nesDebugger } = nes.getComponents()
 
     if (nesDebugger === undefined) {
-      throw new Error('Debugger is not defined')
+      throw new DebuggerNotLoaded()
     }
 
     const { atResetVector } = nesDebugger.getState().conditions
@@ -40,7 +41,7 @@ describe('NES debugger use cases', () => {
     const { nesDebugger } = nes.getComponents()
 
     if (nesDebugger === undefined) {
-      throw new Error('Debugger is not defined')
+      throw new DebuggerNotLoaded()
     }
 
     const { atResetVector } = nesDebugger.getState().conditions

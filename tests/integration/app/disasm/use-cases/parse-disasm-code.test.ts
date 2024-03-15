@@ -1,4 +1,5 @@
 import LoadDebugger from 'src/app/debugger/uses-cases/load-debugger'
+import { DebuggerNotLoaded } from 'src/app/disasm/errors/debugger-not-loaded'
 import ParseDisASMCode from 'src/app/disasm/use-cases/parse-disasm-code'
 import LoadROM from 'src/app/nes/use-cases/load-rom'
 import { NES } from 'src/nes/nes'
@@ -43,7 +44,7 @@ describe('ParseDisASMCode use cases', () => {
 
     const { nesDebugger } = nes.getComponents()
     if (nesDebugger === undefined) {
-      throw new Error('Debugger is not defined')
+      throw new DebuggerNotLoaded()
     }
 
     const { disASM } = nesDebugger.getComponents()

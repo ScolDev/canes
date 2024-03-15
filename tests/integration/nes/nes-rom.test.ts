@@ -12,6 +12,7 @@ import { type NESModule } from 'src/nes/types'
 import { FileLoader, storePRG } from '../helpers'
 import { type NESInstructionComponent } from 'src/nes/core/instructions/types'
 import { type NESCpuComponent } from 'src/nes/core/cpu/types'
+import { ROMNotLoaded } from 'src/nes/errors/rom-not-loaded'
 
 describe('Tests for NES ROMs executions.', () => {
   let nes: NESModule
@@ -217,5 +218,15 @@ describe('Tests for NES ROMs executions.', () => {
         done()
       })
     })
+  })
+
+  test('should throw an ROMNotLoaded error', () => {
+    try {
+      nes.powerUp()
+
+      expect(true).toBe(false)
+    } catch (error) {
+      expect(error).toBeInstanceOf(ROMNotLoaded)
+    }
   })
 })

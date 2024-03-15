@@ -6,6 +6,7 @@ import {
 import { type NESInstructionComponent } from '../core/instructions/types'
 import { type NESDebuggerComponent } from '../debugger/types'
 import { type NESModule } from '../types'
+import { ExecutorInitFailed } from './errors/executor-init-failed'
 
 export class DebugCPUExecutor implements CPUExecutor {
   private readonly cpu: NESCpuComponent
@@ -20,7 +21,7 @@ export class DebugCPUExecutor implements CPUExecutor {
     const { cpu, instruction } = control.getComponents()
 
     if (nesDebugger === undefined) {
-      throw Error('NES Debugger can not be undefined.')
+      throw new ExecutorInitFailed()
     }
 
     this.cpu = cpu
