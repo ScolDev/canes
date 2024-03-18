@@ -1,6 +1,5 @@
 import { readFile } from 'fs/promises'
 import { resolve } from 'path'
-import path from 'node:path'
 import { type CPUAddrMode } from 'src/nes/core/addressing-modes/types'
 import { type BaseInstruction } from 'src/nes/core/instructions/base-instruction'
 import { CPUInstructionSize } from 'src/nes/core/instructions/consts/instruction-size'
@@ -85,7 +84,7 @@ export class FileLoader implements ROMLoader {
 
 export function createROMLoader (): ROMLoader {
   const basePath = '__nes_roms__/instr_test-v5/rom_singles/01-basics.nes'
-  const filePath = path.resolve(__dirname, basePath)
+  const filePath = resolve(__dirname, basePath)
 
   return new FileLoader(filePath)
 }
