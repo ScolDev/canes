@@ -7,6 +7,7 @@ import { type NESMemoryComponent } from 'src/nes/core/memory/types'
 import { type NESAluComponent } from 'src/nes/core/alu/types'
 import { type NESCpuComponent } from 'src/nes/core/cpu/types'
 import { type CPUInstruction } from 'src/nes/core/instructions/types'
+import { UnknownInstruction } from 'src/nes/core/instructions/errors/unknown-instruction'
 
 describe('CPU Instructions', () => {
   let cpuALU: NESAluComponent
@@ -19,6 +20,18 @@ describe('CPU Instructions', () => {
     cpu = control.getComponents().cpu
     cpuALU = control.getComponents().alu
     memory = control.getComponents().memory
+  })
+
+  test('should throw an error when running an unknown opcode', () => {
+    try {
+      const instruction: CPUInstruction = [0xff]
+      cpu.execute(instruction)
+
+      expect(true).toBe(false)
+    } catch (error) {
+      expect(error).toBeInstanceOf(UnknownInstruction)
+      expect((error as UnknownInstruction).opcode).toBe(0xff)
+    }
   })
 
   test('Emulate the AND instruction for Inmediate', () => {

@@ -1,7 +1,7 @@
 import type ControlBus from '../control-bus/control-bus'
-import { type BaseInstruction } from './base-instruction'
 import { InstructionsCPUCyclesTable } from './consts/instruction-cycle'
 import { CPUInstructionSize } from './consts/instruction-size'
+import { UnknownInstruction } from './errors/unknown-instruction'
 import { InstructionsTable } from './instructions-table'
 import {
   type NESInstructionComponent,
@@ -42,6 +42,11 @@ export class Instruction implements NESInstructionComponent {
 
   getInstructionSize (opcode: number): number {
     const instruction = this.instructionsTable[opcode]
+
+    if (instruction === undefined) {
+      throw new UnknownInstruction(opcode)
+    }
+
     const addressingMode = instruction.AddressingModes[opcode]
 
     return CPUInstructionSize[addressingMode]
@@ -49,13 +54,13 @@ export class Instruction implements NESInstructionComponent {
 
   private decodeAndExecute (instruction: CPUInstruction): void {
     const [opcode, operand] = instruction
-    const decodedInstruction = this.decode(instruction)
-    decodedInstruction.execute(opcode, operand)
-  }
+    const decodedInstruction = this.instructionsTable[opcode]
 
-  private decode (instruction: CPUInstruction): BaseInstruction {
-    const [opcode] = instruction
-    return this.instructionsTable[opcode]
+    if (decodedInstruction === undefined) {
+      throw new UnknownInstruction(opcode)
+    }
+
+    decodedInstruction.execute(opcode, operand)
   }
 
   static create (control: ControlBus): NESInstructionComponent {
