@@ -1,6 +1,6 @@
 import { render, screen, getByRole, getAllByRole } from '@testing-library/react'
 import user from '@testing-library/user-event'
-import { Debugger } from 'src/ui/components/debugger/Debugger'
+import { Debugger } from 'src/ui/debugger/Debugger'
 import { createROMLoader } from 'tests/integration/helpers'
 
 async function createROMFile (): Promise<File> {

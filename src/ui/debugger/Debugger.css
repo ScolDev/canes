@@ -21,7 +21,7 @@
   display: flex;
 }
 .Debugger-disasmLine:hover {
-  background-color: #202022;
+  background-color: #18181a;
 }
 
 .Debugger-disasmLineAddress,
