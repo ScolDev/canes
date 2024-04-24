@@ -1,6 +1,32 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
+.Debugger {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;;
+  place-items: center;;
+  height: 100%;
+  width: 100%;
+}
+
+.Debugger-disasm {
+  box-sizing: border-box;
+  font-size: 1.3rem;
+  font-weight: 800;
   padding: 2rem;
-  text-align: center;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+}
+.Debugger-disasmLine {
+  display: flex;
+}
+.Debugger-disasmLine:hover {
+  background-color: #202022;
+}
+
+.Debugger-disasmLineAddress,
+.Debugger-disasmLineBytes,
+.Debugger-disasmLineInstruction {
+  min-width: 200px;
+  padding: 0.5rem 1rem;
 }

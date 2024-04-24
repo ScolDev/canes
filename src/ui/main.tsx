@@ -2,7 +2,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './main.css'
-import Debugger from './components/debugger/Debugger'
+import { Debugger } from './components/debugger/Debugger'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

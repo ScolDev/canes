@@ -5,7 +5,6 @@ import {
   type NESRomComponent,
   type ROMBuffer
 } from './types'
-import { Buffer } from 'buffer'
 import { MapperCodes, MapperNames } from './consts/mapper'
 import { ROMFile } from './consts/rom-file'
 import { ROMSignature } from './consts/signature'
@@ -36,7 +35,7 @@ export class ROM implements NESRomComponent {
       const prgA = prgBanks[0].data
       const prgB = this.header.numOfPRG === 2 ? prgBanks[1].data : prgA
 
-      const prg = Buffer.concat([prgA, prgB])
+      const prg = new Uint8Array([...prgA, ...prgB])
       return {
         buffer: prg,
         size: prg.length
