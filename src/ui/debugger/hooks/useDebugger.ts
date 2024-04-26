@@ -1,5 +1,4 @@
-import { useEffect, useReducer, type Reducer } from 'react'
-import { type ROMLoader } from 'src/nes/rom/types'
+import { useEffect } from 'react'
 import {
   type DebuggerCommandHandler,
   useDebuggerCommand
@@ -10,28 +9,7 @@ import {
   type DebuggerQueryHandler,
   useDebuggerQuery
 } from './useDebuggerQuery'
-
-type DebugState = DebuggerDisconnected | DebuggerConnected
-
-interface DebuggerDisconnected {
-  status: 'disconnected'
-}
-
-interface DebuggerConnected {
-  status: 'connected'
-  rom: ROMFile
-}
-
-export interface ROMFile {
-  file: ROMLoader
-  name: string
-  size: number
-}
-
-export interface DebugAction {
-  type: 'CONNECT'
-  rom: ROMFile
-}
+import { type DebugState, useDebuggerState } from './useDebuggerState'
 
 export interface DebuggerContext {
   state: DebugState
@@ -39,27 +17,12 @@ export interface DebuggerContext {
   queryHandler: DebuggerQueryHandler
 }
 
-const initialState: DebugState = {
-  status: 'disconnected'
-}
-
-const debugReducer: Reducer<DebugState, DebugAction> = (state, action) => {
-  switch (action.type) {
-    case 'CONNECT':
-      return { status: 'connected', rom: action.rom }
-    default:
-      return state
-  }
-}
-
-// TODO: extract state to a new hook useDebuggerState
-
 export function useDebugger (): DebuggerContext {
-  const [state, dispatch] = useReducer(debugReducer, initialState)
+  const { state, dispatch } = useDebuggerState()
 
   const nes = NESService.loadNES()
-  const commandHandler = useDebuggerCommand(nes, dispatch)
   const queryHandler = useDebuggerQuery(nes)
+  const commandHandler = useDebuggerCommand(nes, dispatch)
 
   const loadDebuggerUseCase = LoadDebugger.create(nes)
 

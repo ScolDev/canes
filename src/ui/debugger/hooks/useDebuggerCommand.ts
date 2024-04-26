@@ -2,24 +2,26 @@ import ParseDisASMCode from 'src/app/disasm/use-cases/parse-disasm-code'
 import LoadROM from 'src/app/nes/use-cases/load-rom'
 import { type ROMLoader } from 'src/nes/rom/types'
 import { type NESModule } from 'src/nes/types'
-import { type DebugAction, type ROMFile } from './useDebugger'
-
-type DebugCommand =
-  | {
-    name: 'OPEN_ROM'
-  }
-  | {
-    name: 'SET_ROM'
-    payload: ROMFile
-  }
-
-export interface DebuggerCommandHandler {
-  execute: (command: DebugCommand) => void
-  connect: (key: string, handler: DebuggerHandler) => void
-}
+import {
+  DEBUG_ACTION_CONNECTED,
+  DEBUG_ACTION_CONNECTING,
+  type DebugAction
+} from '../consts/actions'
+import {
+  DEBUG_COMMAND_LOAD_ROM,
+  DEBUG_COMMAND_SET_ROM,
+  type DebugCommandName,
+  type DebugCommand
+} from '../consts/commands'
 
 type DebuggerHandler = () => void
 type DebuggerDispatch = React.Dispatch<DebugAction>
+
+export interface DebuggerCommandHandler {
+  execute: (command: DebugCommand) => void
+  connect: (commandName: DebugCommandName, handler: DebuggerHandler) => void
+  disconnect: (commandName: DebugCommandName) => void
+}
 
 export function useDebuggerCommand (
   nes: NESModule,
@@ -27,7 +29,7 @@ export function useDebuggerCommand (
 ): DebuggerCommandHandler {
   const parseDisASMCodeUseCase = ParseDisASMCode.create(nes)
 
-  const handlers = new Map<string, DebuggerHandler>()
+  const handlers = new Map<DebugCommandName, DebuggerHandler>()
 
   const handleError = (error: Error): void => {
     console.error(error)
@@ -40,14 +42,28 @@ export function useDebuggerCommand (
     await parseDisASMCodeUseCase.execute()
   }
 
-  const connect = (key: string, handler: DebuggerHandler): void => {
-    if (handlers.has(key)) {
+  const connect = (
+    commandName: DebugCommandName,
+    handler: DebuggerHandler
+  ): void => {
+    console.log('connect')
+    if (handlers.has(commandName)) {
       return
     }
-    handlers.set(key, handler)
+    handlers.set(commandName, handler)
+  }
+
+  const disconnect = (commandName: DebugCommandName): void => {
+    console.log('disconnect')
+    if (handlers.has(commandName)) {
+      return
+    }
+
+    handlers.delete(commandName)
   }
 
   const execute = (command: DebugCommand): void => {
+    console.log('execute', command.name)
     const handler = handlers.get(command.name)
 
     if (handler !== undefined) {
@@ -56,11 +72,14 @@ export function useDebuggerCommand (
     }
 
     switch (command.name) {
-      case 'SET_ROM':
+      case DEBUG_COMMAND_LOAD_ROM:
+        debuggerDispatch({ type: DEBUG_ACTION_CONNECTING })
+        break
+      case DEBUG_COMMAND_SET_ROM:
         loadROMHandler(command.payload.file)
           .then(async () => {
             debuggerDispatch({
-              type: 'CONNECT',
+              type: DEBUG_ACTION_CONNECTED,
               rom: {
                 ...command.payload
               }
@@ -74,6 +93,7 @@ export function useDebuggerCommand (
 
   return {
     connect,
+    disconnect,
     execute
   }
 }

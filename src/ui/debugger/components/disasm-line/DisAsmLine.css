@@ -1,0 +1,14 @@
+.DisAsmLine {
+  display: flex;
+}
+
+.DisAsmLine:hover {
+  background-color: #18181a;
+}
+
+.DisAsmLineAddress,
+.DisAsmLineBytes,
+.DisAsmLineInstruction {
+  min-width: 200px;
+  padding: 0.5rem 1rem;
+}

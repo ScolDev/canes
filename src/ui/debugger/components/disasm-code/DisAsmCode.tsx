@@ -3,11 +3,13 @@ import { useDebuggerContext } from '../../DebuggerContextProvider'
 import { type DisASMNode } from 'src/nes/disasm/types'
 import { DisAsmLine } from '../disasm-line/DisAsmLine'
 
+import './DisAsmCode.css'
+
 interface DisAsmCodeProps {
-  linesToLoad: number
+  linesToLoad?: number
 }
 
-export function DisAsmCode ({ linesToLoad }: DisAsmCodeProps): JSX.Element {
+export function DisAsmCode ({ linesToLoad = 200 }: DisAsmCodeProps): JSX.Element {
   const { queryHandler } = useDebuggerContext()
   const [lines, setLines] = useState<DisASMNode[]>([])
 
@@ -20,7 +22,7 @@ export function DisAsmCode ({ linesToLoad }: DisAsmCodeProps): JSX.Element {
   }, [linesToLoad])
 
   return (
-    <section className="Debugger-disasm" role="disasm">
+    <section className="DisAsmCode" role="disasm">
       {lines.map((lineNode) => (
         <DisAsmLine key={lineNode.line.address} node={lineNode} />
       ))}

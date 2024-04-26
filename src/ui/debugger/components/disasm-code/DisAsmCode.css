@@ -1,0 +1,9 @@
+.DisAsmCode {
+  box-sizing: border-box;
+  font-size: 1.3rem;
+  font-weight: 800;
+  padding: 2rem;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+}

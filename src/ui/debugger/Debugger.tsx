@@ -1,15 +1,10 @@
-import './Debugger.css'
-import { Rom } from './components/rom/Rom'
 import { DebuggerContextProvider } from './DebuggerContextProvider'
-import { DisASM } from './components/disasm/DisAsm'
+import { DebuggerLayout } from './components/layouts/debugger-layout/DebuggerLayout'
 
 export function Debugger (): JSX.Element {
   return (
     <DebuggerContextProvider>
-      <main className="Debugger">
-        <Rom />
-        <DisASM />
-      </main>
+      <DebuggerLayout />
     </DebuggerContextProvider>
   )
 }
