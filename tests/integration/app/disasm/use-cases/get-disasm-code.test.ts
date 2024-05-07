@@ -4,8 +4,8 @@ import { DebuggerNotLoaded } from 'src/app/disasm/errors/debugger-not-loaded'
 import { DisASMCodeNotParsed } from 'src/app/disasm/errors/disasm-code-not-parsed'
 import GetDisASMCode from 'src/app/disasm/use-cases/get-disasm-code'
 import LoadDisASMCode from 'src/app/disasm/use-cases/parse-disasm-code'
-import LoadROM from 'src/app/nes/use-cases/load-rom'
 import { NES } from 'src/nes/nes'
+import ROMService from 'src/nes/services/rom-service'
 import { type NESModule } from 'src/nes/types'
 import { createROMLoader } from 'tests/integration/helpers'
 
@@ -33,12 +33,12 @@ describe('GetDisASMCode use case', () => {
     }
 
     const loadDebugger = LoadDebugger.create(nes)
-    const loadROM = LoadROM.create(nes, createROMLoader())
+    const romService = ROMService.create(nes, createROMLoader())
     const loadDisASMCode = LoadDisASMCode.create(nes)
     const getDisASMCode = GetDisASMCode.create(nes)
 
     await loadDebugger.execute()
-    await loadROM.execute()
+    await romService.loadROM()
     await loadDisASMCode.execute()
 
     const lines = getDisASMCode.execute({
@@ -68,12 +68,12 @@ describe('GetDisASMCode use case', () => {
     }
 
     const loadDebugger = LoadDebugger.create(nes)
-    const loadROM = LoadROM.create(nes, createROMLoader())
+    const romService = ROMService.create(nes, createROMLoader())
     const loadDisASMCode = LoadDisASMCode.create(nes)
     const getDisASMCode = GetDisASMCode.create(nes)
 
     await loadDebugger.execute()
-    await loadROM.execute()
+    await romService.loadROM()
     await loadDisASMCode.execute()
 
     const lines = getDisASMCode.execute({
@@ -90,33 +90,32 @@ describe('GetDisASMCode use case', () => {
     const expectedNumOfLines = 10
 
     const loadDebugger = LoadDebugger.create(nes)
-    const loadROM = LoadROM.create(nes, createROMLoader())
+    const romService = ROMService.create(nes, createROMLoader())
     const loadDisASMCode = LoadDisASMCode.create(nes)
     const getDisASMCode = GetDisASMCode.create(nes)
 
-    loadDebugger.execute()
-      .then(async () => {
-        await loadROM.execute()
-        await loadDisASMCode.execute()
+    loadDebugger.execute().then(async () => {
+      await romService.loadROM()
+      await loadDisASMCode.execute()
 
-        const nesDebugger = nes.getComponents().nesDebugger
-        if (nesDebugger === undefined) {
-          throw new DebuggerNotLoaded()
-        }
+      const nesDebugger = nes.getComponents().nesDebugger
+      if (nesDebugger === undefined) {
+        throw new DebuggerNotLoaded()
+      }
 
-        nesDebugger.pause()
+      nesDebugger.pause()
 
-        setTimeout(() => {
-          const lines = getDisASMCode.execute({
-            numOfLines: expectedNumOfLines
-          })
+      setTimeout(() => {
+        const lines = getDisASMCode.execute({
+          numOfLines: expectedNumOfLines
+        })
 
-          expect(lines.length).toBe(10)
-          expect(nes.isPowerOn()).toBe(false)
+        expect(lines.length).toBe(10)
+        expect(nes.isPowerOn()).toBe(false)
 
-          done()
-        }, 100)
-      })
+        done()
+      }, 100)
+    })
   })
 
   test('should throw an Error on GetDisASMCode use case when Debugger has not been loaded.', () => {
@@ -136,12 +135,12 @@ describe('GetDisASMCode use case', () => {
 
   test('should throw an Error on GetDisASMCode use case when dissasembly code has not been loaded.', async () => {
     const loadDebugger = LoadDebugger.create(nes)
-    const loadROM = LoadROM.create(nes, createROMLoader())
+    const romService = ROMService.create(nes, createROMLoader())
     const getDisASMCode = GetDisASMCode.create(nes)
 
     try {
       await loadDebugger.execute()
-      await loadROM.execute()
+      await romService.loadROM()
 
       getDisASMCode.execute({
         fromAddress: 0x8000,

@@ -1,6 +1,6 @@
 import ParseDisASMCode from 'src/app/disasm/use-cases/parse-disasm-code'
-import LoadROM from 'src/app/nes/use-cases/load-rom'
 import { type ROMLoader } from 'src/nes/rom/types'
+import ROMService from 'src/nes/services/rom-service'
 import { type NESModule } from 'src/nes/types'
 import {
   DEBUG_ACTION_CONNECTED,
@@ -36,9 +36,9 @@ export function useDebuggerCommand (
   }
 
   const loadROMHandler = async (romFile: ROMLoader): Promise<void> => {
-    const loadROMUseCase = LoadROM.create(nes, romFile)
+    const romService = ROMService.create(nes, romFile)
 
-    await loadROMUseCase.execute()
+    await romService.loadROM()
     await parseDisASMCodeUseCase.execute()
   }
 

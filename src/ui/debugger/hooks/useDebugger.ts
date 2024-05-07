@@ -3,7 +3,7 @@ import {
   type DebuggerCommandHandler,
   useDebuggerCommand
 } from './useDebuggerCommand'
-import NESService from 'src/app/nes/services/nes-service'
+import NESService from 'src/nes/services/nes-service'
 import LoadDebugger from 'src/app/debugger/uses-cases/load-debugger'
 import {
   type DebuggerQueryHandler,

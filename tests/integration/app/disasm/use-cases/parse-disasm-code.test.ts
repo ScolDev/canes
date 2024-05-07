@@ -1,22 +1,22 @@
 import LoadDebugger from 'src/app/debugger/uses-cases/load-debugger'
 import { DebuggerNotLoaded } from 'src/app/disasm/errors/debugger-not-loaded'
 import ParseDisASMCode from 'src/app/disasm/use-cases/parse-disasm-code'
-import LoadROM from 'src/app/nes/use-cases/load-rom'
 import { NES } from 'src/nes/nes'
+import ROMService from 'src/nes/services/rom-service'
 import { type NESModule } from 'src/nes/types'
 import { createROMLoader } from 'tests/integration/helpers'
 
-describe('ParseDisASMCode use cases', () => {
+describe('ParseDisASMCode use case', () => {
   let nes: NESModule
   let loadDebugger: LoadDebugger
-  let loadROM: LoadROM
+  let romService: ROMService
   let parseDisASMCode: ParseDisASMCode
 
   beforeEach(() => {
     nes = NES.create()
 
     loadDebugger = LoadDebugger.create(nes)
-    loadROM = LoadROM.create(nes, createROMLoader())
+    romService = ROMService.create(nes, createROMLoader())
     parseDisASMCode = ParseDisASMCode.create(nes)
   })
 
@@ -39,7 +39,7 @@ describe('ParseDisASMCode use cases', () => {
     }
 
     await loadDebugger.execute()
-    await loadROM.execute()
+    await romService.loadROM()
     await parseDisASMCode.execute()
 
     const { nesDebugger } = nes.getComponents()

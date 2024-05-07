@@ -1,11 +1,11 @@
 import LoadDebugger from 'src/app/debugger/uses-cases/load-debugger'
 import { DebuggerNotLoaded } from 'src/app/disasm/errors/debugger-not-loaded'
-import LoadROM from 'src/app/nes/use-cases/load-rom'
 import { NES } from 'src/nes/nes'
+import ROMService from 'src/nes/services/rom-service'
 import { type NESModule } from 'src/nes/types'
 import { createROMLoader } from 'tests/integration/helpers'
 
-describe('NES debugger use cases', () => {
+describe('LoadDebugger use case', () => {
   let nes: NESModule
 
   beforeEach(() => {
@@ -33,9 +33,9 @@ describe('NES debugger use cases', () => {
 
   test('should execute the LoadDebugger use case when the NES is power on', async () => {
     const loadDebugger = LoadDebugger.create(nes)
-    const loadROM = LoadROM.create(nes, createROMLoader())
+    const loadROM = ROMService.create(nes, createROMLoader())
 
-    await loadROM.execute()
+    await loadROM.loadROM()
     await loadDebugger.execute()
 
     const { nesDebugger } = nes.getComponents()
