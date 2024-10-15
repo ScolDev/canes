@@ -1,5 +1,5 @@
 export interface CodeRange {
-  numOfLines: number
+  numOfLines?: number
   fromLineNumber?: number
   fromAddress?: number
 }

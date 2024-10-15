@@ -5,7 +5,7 @@ import {
   DEBUG_ACTION_CONNECTING,
   type DebugAction
 } from '../consts/actions'
-import { DEBUG_STATE_CONNECTED, DEBUG_STATE_CONNECTING } from '../consts/state'
+import { DebuggerStates } from '../consts/states'
 
 export interface ROMFile {
   file: ROMLoader
@@ -40,9 +40,9 @@ const initialState: DebugState = {
 const debugReducer: Reducer<DebugState, DebugAction> = (state, action) => {
   switch (action.type) {
     case DEBUG_ACTION_CONNECTED:
-      return { status: DEBUG_STATE_CONNECTED, rom: action.rom }
+      return { status: DebuggerStates.CONNECTED, rom: action.rom }
     case DEBUG_ACTION_CONNECTING:
-      return { status: DEBUG_STATE_CONNECTING }
+      return { status: DebuggerStates.CONNECTING }
     default:
       return state
   }

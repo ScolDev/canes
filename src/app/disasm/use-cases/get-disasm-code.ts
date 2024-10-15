@@ -4,10 +4,10 @@ import { CPUMemoryMap } from 'src/nes/core/memory/consts/memory-map'
 import { DebuggerNotLoaded } from '../errors/debugger-not-loaded'
 import { DisASMCodeNotParsed } from '../errors/disasm-code-not-parsed'
 
-interface Request {
+export interface DisASMCodeRequest {
   fromAddress?: number
   fromLineNumber?: number
-  numOfLines: number
+  numOfLines?: number
 }
 
 type Response = DisASMNode[]
@@ -15,7 +15,7 @@ type Response = DisASMNode[]
 export default class GetDisASMCode {
   private constructor (private readonly nes: NESModule) {}
 
-  execute (request: Request): Response {
+  execute (request: DisASMCodeRequest): Response {
     const { fromAddress, fromLineNumber } = request
     const { nesDebugger } = this.nes.getComponents()
 

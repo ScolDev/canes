@@ -42,11 +42,12 @@ export default class DisASM implements NESDisASMComponent {
     this.buildCodeFromTopToBottom(this.code, options)
   }
 
-  read ({ numOfLines, fromLineNumber, fromAddress }: CodeRange): DisASMNode[] {
+  read ({ fromLineNumber, fromAddress, numOfLines = this.code.getNumOfLines() }: CodeRange): DisASMNode[] {
     const lines: DisASMNode[] = []
 
     let line = 0
     let currentLineNumber = 0
+
     while (line < numOfLines) {
       let node: DisASMNode | undefined
 

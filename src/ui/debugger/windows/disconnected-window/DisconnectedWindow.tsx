@@ -1,8 +1,8 @@
 import { useDebuggerContext } from 'src/ui/debugger/DebuggerContextProvider'
-import { Rom } from '../../rom/Rom'
+import { Rom } from 'src/ui/debugger/components/rom/Rom'
 import { DEBUG_COMMAND_OPEN_ROM } from 'src/ui/debugger/consts/commands'
 
-export function DebuggerDisconnectedLayout (): JSX.Element {
+export function DisconnectedWindow (): JSX.Element {
   const { state, commandHandler } = useDebuggerContext()
 
   return (

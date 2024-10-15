@@ -7,3 +7,9 @@
   width: 100%;
   overflow-y: auto;
 }
+
+.DisAsmCode__code {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
